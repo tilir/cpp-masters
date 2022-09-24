@@ -12,13 +12,12 @@
 
 module;
 
-#include <cstring>
-
 // inevitable hack
 #include "yyret.h"
 
 export module parser;
 
+import<cstring>;
 import<iostream>;
 import<sstream>;
 import<string>;
