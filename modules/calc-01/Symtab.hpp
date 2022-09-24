@@ -17,6 +17,8 @@
 
 #include "INode.hpp"
 
+namespace __detail {
+
 class Symtab_local final {
   std::unordered_map<std::string, Node::INode *> Symbols_;
 
@@ -37,8 +39,10 @@ public:
   }
 };
 
+}
+
 class Symtab final {
-  std::unordered_map<const Node::IScope *, Symtab_local> Tables_;
+  std::unordered_map<const Node::IScope *, __detail::Symtab_local> Tables_;
 
 public:
   void add(const Node::IScope *Scope, std::string Symbol, Node::INode *N) {
