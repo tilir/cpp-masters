@@ -76,7 +76,7 @@ public:
 
   // IScope interface
 public:
-  IScope *push() { return new Scope(this); }
+  IScope *push() override { return new Scope(this); }
   IScope *resetScope() const override { return PrevScope_; }
   void addBranch(INode *Branch) override { Branches_.push_back(Branch); }
   INode *access(const std::string &VarName) override;

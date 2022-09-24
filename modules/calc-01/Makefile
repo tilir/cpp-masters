@@ -10,7 +10,7 @@
 #
 #-----------------------------------------------------------------------------
 
-ADDFLAGS = -g -O0 -Wno-unused -Wno-unused-function -Wno-unused-label -Werror -Wall -Wextra
+ADDFLAGS = -g -O0 -Wall -Wextra -Wno-unused -Wno-unused-function -Wno-unused-label -Werror
 
 .PHONY: all
 all: paracli
