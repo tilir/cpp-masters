@@ -54,7 +54,7 @@ int main(int argc, char **argv) try {
   std::unique_ptr<FILE, decltype(fdeleter)> F(OpenFile(argv[1]), fdeleter);
   yyin = F.get();
   std::unique_ptr<Node::IScope> CurrentScopeOwner{createScope()};
-  CurrentScope = CurrentScopeOwner.get();  
+  CurrentScope = CurrentScopeOwner.get();
   yyparse();
 } catch (const std::exception &e) {
   std::cerr << "Exception: " << e.what() << std::endl;

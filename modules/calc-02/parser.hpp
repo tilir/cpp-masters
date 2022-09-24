@@ -14,7 +14,7 @@
 
 import node;
 
-import <string>;
+import<string>;
 
 #define YYERROR_VERBOSE 1
 

@@ -39,7 +39,7 @@ public:
   }
 };
 
-}
+} // namespace __detail
 
 class Symtab final {
   std::unordered_map<const Node::IScope *, __detail::Symtab_local> Tables_;
