@@ -6,22 +6,11 @@
 //
 //-----------------------------------------------------------------------------
 //
-// ODR usage example (with slight clang/gcc disagreement)
+// inline specialization example (see fullspec.hpp)
 //
 //-----------------------------------------------------------------------------
 
-struct S {
-  static const int n = 5; // declaration
-};
+#include "fullspec.hpp"
+#include <iostream>
 
-int x = S::n + 1; // n not ODR-used
-
-int foo(const int *x) { return *x; }
-
-#if 0
-const int S::n; // definition
-#endif
-
-int y = foo(&S::n) + 1; // n ODR-used [class.static.data]
-
-int main() { return y; }
+int main() { std::cout << foo(20) << std::endl; }

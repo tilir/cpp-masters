@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 //
-// Source code for MIPT course on informatics
-// Page with slides: http://cs.mipt.ru/wp/?page_id=7775
+// Source code for MIPT masters course on C++
+// Slides: https://sourceforge.net/projects/cpp-lects-rus
 // Licensed after GNU GPL v3
 //
 //-----------------------------------------------------------------------------
