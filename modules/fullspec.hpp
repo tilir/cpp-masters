@@ -20,7 +20,7 @@
 int foo(int);
 
 template <typename T> T maxcollatz(T n) {
-  T cmax, xmax;
+  T cmax = 0, xmax = 0;
   for (T x = 2; x < n; ++x) {
     T y = x;
     T c = 0;
@@ -42,7 +42,7 @@ template <typename T> T maxcollatz(T n) {
 #if defined(SP)
 
 template <> int maxcollatz(int n) {
-  int cmax, xmax;
+  int cmax = 0, xmax = 0;
   for (int x = 2; x < n; ++x) {
     int y = x;
     int c = 0;
@@ -66,7 +66,7 @@ template <> int maxcollatz(int n) {
 #if defined(SPI)
 
 template <> inline int maxcollatz(int n) {
-  int cmax, xmax;
+  int cmax = 0, xmax = 0;
   for (int x = 2; x < n; ++x) {
     int y = x;
     int c = 0;
