@@ -6,18 +6,18 @@
 //
 //-----------------------------------------------------------------------------
 //
-// First simple module usage
+// Extended modules: basic layer
 //
 //-----------------------------------------------------------------------------
 
-#include <iostream>
+export module first_module;
 
-import first_module;
+namespace hello {
 
-int main() {
-#ifdef NOPE
-  std::cout << "foo: " << hello::foo() << std::endl;
-#endif
-  std::cout << "bar: " << hello::bar() << std::endl;
-  std::cout << "e: " << hello::e << std::endl;
-}
+int foo(int x) { return x; }
+
+export int e = 42;
+
+export int bar() { return foo(e); }
+
+} // namespace hello

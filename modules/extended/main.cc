@@ -6,13 +6,13 @@
 //
 //-----------------------------------------------------------------------------
 //
-// First simple module usage
+// Extended modules: demo
 //
 //-----------------------------------------------------------------------------
 
 #include <iostream>
 
-import first_module;
+import first_extended;
 
 int main() {
 #ifdef NOPE
@@ -20,4 +20,5 @@ int main() {
 #endif
   std::cout << "bar: " << hello::bar() << std::endl;
   std::cout << "e: " << hello::e << std::endl;
+  std::cout << "buz: " << hello::buz() << std::endl;
 }
