@@ -17,3 +17,6 @@ module;
 export module global;
 
 export template <typename T> void output(T item) { dump(item); }
+// template void output<int>(int item);
+export template<> void output<int>(int item);
+
