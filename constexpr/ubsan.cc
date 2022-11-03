@@ -6,23 +6,21 @@
 //
 //-----------------------------------------------------------------------------
 //
-// enable if with ints overload
+// UB case demo
 //
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
-  return 14;
+template <typename FwdIt, typename Value>
+constexpr FwdIt static_find(FwdIt it, FwdIt fin, Value v) {
+  while ((v != *it) && (it != fin))
+    ++it;
+  return it;
 }
 
-template <typename T, std::enable_if_t<(sizeof(T) <= 4), int> = 0>
-int foo(T x) {
-  return 42;
-}
-
-TEST(sfinae, naiveovr) {
-  EXPECT_EQ(foo('c'), 42);
-  EXPECT_EQ(foo(1.0), 14);
+TEST(cexpr, ubcase) {
+  constexpr int a[] = {1};
+  constexpr auto res = static_find(a, a + 1, 4);
+  EXPECT_EQ(res, a + 2);
 }

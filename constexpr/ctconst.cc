@@ -6,23 +6,23 @@
 //
 //-----------------------------------------------------------------------------
 //
-// enable if with ints overload
+// Floating compile time constness
 //
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
+#include <climits>
 #include <concepts>
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
-  return 14;
-}
+struct S1 {
+  static const int sz = 256;
+};
+const int page_sz1 = 4 * S1::sz;
+int arr1[page_sz1]; // ok, CT constant
 
-template <typename T, std::enable_if_t<(sizeof(T) <= 4), int> = 0>
-int foo(T x) {
-  return 42;
-}
-
-TEST(sfinae, naiveovr) {
-  EXPECT_EQ(foo('c'), 42);
-  EXPECT_EQ(foo(1.0), 14);
-}
+struct S2 {
+  static const int sz;
+};
+const int page_sz2 = 4 * S2::sz;
+const int S2::sz = 256;
+int arr2[page_sz2]; // error: not CT constant

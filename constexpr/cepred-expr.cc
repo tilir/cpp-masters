@@ -6,23 +6,22 @@
 //
 //-----------------------------------------------------------------------------
 //
-// enable if with ints overload
+// core constant expression detailed
 //
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+#include <array>
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
-  return 14;
+consteval bool negate(bool x) { return !x; }
+
+template <typename Predicate> constexpr int f(Predicate pred) {
+  if constexpr (pred(true))
+    return 1;
+  return 0;
 }
 
-template <typename T, std::enable_if_t<(sizeof(T) <= 4), int> = 0>
-int foo(T x) {
-  return 42;
-}
-
-TEST(sfinae, naiveovr) {
-  EXPECT_EQ(foo('c'), 42);
-  EXPECT_EQ(foo(1.0), 14);
+TEST(cexpr, pred) {
+  constexpr int x = f(negate);
+  EXPECT_EQ(x, false);
 }

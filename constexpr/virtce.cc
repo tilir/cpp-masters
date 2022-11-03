@@ -6,23 +6,25 @@
 //
 //-----------------------------------------------------------------------------
 //
-// enable if with ints overload
+// virtual constexpr example: fail
 //
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+#include <array>
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
-  return 14;
-}
+struct Base {
+  constexpr Base() = default;
+  virtual constexpr int data() const { return 1; }
+};
 
-template <typename T, std::enable_if_t<(sizeof(T) <= 4), int> = 0>
-int foo(T x) {
-  return 42;
-}
+struct Derived : Base {
+  constexpr Derived() = default;
+  constexpr int data() const override { return 2; }
+};
 
-TEST(sfinae, naiveovr) {
-  EXPECT_EQ(foo('c'), 42);
-  EXPECT_EQ(foo(1.0), 14);
+TEST(cexpr, opnew) {
+  constexpr Derived d;
+  constexpr const Base *pb = &d; // error
+  EXPECT_EQ(pb->data(), 2);
 }

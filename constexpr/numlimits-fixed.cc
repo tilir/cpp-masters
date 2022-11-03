@@ -6,23 +6,22 @@
 //
 //-----------------------------------------------------------------------------
 //
-// enable if with ints overload
+// numerical limits example fixed
 //
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
+#include <climits>
 #include <concepts>
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
-  return 14;
-}
+template <typename T> struct my_numeric_limits;
+template <> struct my_numeric_limits<char> {
+  static constexpr size_t max() { return CHAR_MAX; }
+};
 
-template <typename T, std::enable_if_t<(sizeof(T) <= 4), int> = 0>
-int foo(T x) {
-  return 42;
-}
+int arr[my_numeric_limits<char>::max()]; // OK
 
-TEST(sfinae, naiveovr) {
-  EXPECT_EQ(foo('c'), 42);
-  EXPECT_EQ(foo(1.0), 14);
+TEST(cexpr, ctarr) {
+  auto n = sizeof(arr);
+  EXPECT_EQ(n, CHAR_MAX * sizeof(int));
 }

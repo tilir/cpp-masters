@@ -6,23 +6,27 @@
 //
 //-----------------------------------------------------------------------------
 //
-// enable if with ints overload
+// Const on result not always great
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-#include <concepts>
+struct Heavy {
+  Heavy() {}
+  Heavy(Heavy &&) {}
+  Heavy(const Heavy &) = delete;
+};
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
-  return 14;
+const Heavy foo() {
+  Heavy x;
+  return x;
 }
 
-template <typename T, std::enable_if_t<(sizeof(T) <= 4), int> = 0>
-int foo(T x) {
-  return 42;
+Heavy bar() {
+  Heavy x;
+  return x;
 }
 
-TEST(sfinae, naiveovr) {
-  EXPECT_EQ(foo('c'), 42);
-  EXPECT_EQ(foo(1.0), 14);
+void buz() {
+  Heavy y = foo();
+  Heavy z = bar();
 }

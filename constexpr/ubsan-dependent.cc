@@ -6,23 +6,24 @@
 //
 //-----------------------------------------------------------------------------
 //
-// enable if with ints overload
+// Even more interesting UB case demo:
+// try with std equals C++17 and C++20
 //
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
-  return 14;
+constexpr int djb2(char const *str) {
+  int hash = 5381;
+  int c = 0;
+
+  while ((c = *str++))
+    hash = ((hash << 5) + hash) + c;
+
+  return hash;
 }
 
-template <typename T, std::enable_if_t<(sizeof(T) <= 4), int> = 0>
-int foo(T x) {
-  return 42;
-}
-
-TEST(sfinae, naiveovr) {
-  EXPECT_EQ(foo('c'), 42);
-  EXPECT_EQ(foo(1.0), 14);
+TEST(sfinae, moreub) {
+  constexpr int x = djb2("hello you :)");
+  EXPECT_EQ(x, -466252103);
 }

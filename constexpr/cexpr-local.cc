@@ -6,23 +6,23 @@
 //
 //-----------------------------------------------------------------------------
 //
-// enable if with ints overload
+// Constexpr local variable fallacy case
 //
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+#include <initializer_list>
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
-  return 14;
+template <typename T> consteval auto ilist_sz(std::initializer_list<T> init) {
+#if defined(BAD)
+  constexpr auto init_sz = init.size();
+#else
+  auto init_sz = init.size();
+#endif
+  return init_sz;
 }
 
-template <typename T, std::enable_if_t<(sizeof(T) <= 4), int> = 0>
-int foo(T x) {
-  return 42;
-}
-
-TEST(sfinae, naiveovr) {
-  EXPECT_EQ(foo('c'), 42);
-  EXPECT_EQ(foo(1.0), 14);
+TEST(cexpr, cevinit) {
+  constexpr auto n = ilist_sz({1, 2, 3});
+  EXPECT_EQ(n, 3);
 }
