@@ -82,7 +82,7 @@ s2.x = repeat(0, 5);
 
 Function entity is an abstraction mechanism. It is a callable.
 
-f0 = { v3 = input(0) + 1; v3 * v3; };
+f0 : () = { v3 = input(0) + 1; v3 * v3; };
 v7 = f0(2); // but not f0(2, 3)
 f1 : (x) = { v3 = x + 1; v3 * v3; };
 f2 : (x, y) = { v3 = x + y; v3 * v3; };
