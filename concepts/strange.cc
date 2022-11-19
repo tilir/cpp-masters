@@ -14,10 +14,8 @@
 #include <concepts>
 
 template <typename T>
-concept Strange = (sizeof(T) == 4) || (requires() {
-                    { T::value }
-                    ->std::convertible_to<bool>;
-                  } && (T::value == true));
+concept Strange = (sizeof(T) == 4) ||
+  (requires() { { T::value } -> std::convertible_to<bool>; } && (T::value == true));
 
 template <typename T> requires Strange<T> int f(T t) { return 42; }
 
