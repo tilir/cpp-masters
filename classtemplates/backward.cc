@@ -6,23 +6,22 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  illustration of point of declaration
+// Partial specialization other way
 //
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
 #include <concepts>
 
-TEST(classtempls, pod) {
-  int x = 2;
-  {
-    int x[x];
-    EXPECT_EQ(sizeof(x), 2 * sizeof(int)); // passed
-  }
+template <typename T> struct vector {};
 
-  int y = 2;
-  {
-    int y = y;
-    // EXPECT_EQ(y, 2); // failed
-  }
+template <typename T> struct X { int primary = 1; };
+
+template <typename T> struct X<vector<T>> { int partial = 2; };
+
+TEST(classtempls, backward) {
+  X<int> a;
+  X<vector<int>> b;
+  EXPECT_EQ(a.primary, 1);
+  EXPECT_EQ(b.partial, 2);
 }

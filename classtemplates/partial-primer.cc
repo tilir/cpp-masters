@@ -21,7 +21,7 @@ template <typename T> struct Foo<T, int> { int partial = 2; };
 
 template <typename T, typename U> struct Foo<T *, U *> { int partial = 3; };
 
-TEST(partialspec, simplest) {
+TEST(classtempls, primer) {
   Foo<int, float> mif;
   EXPECT_EQ(mif.primary, 0);
   Foo<float, float> mff;

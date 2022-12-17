@@ -30,7 +30,7 @@ template <typename T> template <typename R> R DataReader<T>::read() {
   return res;
 }
 
-TEST(disambig, memfunc) {
+TEST(classtempls, memfunc) {
   Data d;
   DataReader<Data> reader(d);
   auto myval = reader.read<int>();

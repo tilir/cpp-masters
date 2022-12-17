@@ -6,23 +6,21 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  illustration of point of declaration
+// Deduction guide without ctor
 //
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+#include <string>
 
-TEST(classtempls, pod) {
-  int x = 2;
-  {
-    int x[x];
-    EXPECT_EQ(sizeof(x), 2 * sizeof(int)); // passed
-  }
+template <typename T> struct NamedValue {
+  T value;
+  std::string name;
+};
 
-  int y = 2;
-  {
-    int y = y;
-    // EXPECT_EQ(y, 2); // failed
-  }
+NamedValue(const char *, const char *)->NamedValue<std::string>;
+
+TEST(classtempls, dedsimple) {
+  NamedValue n{"hello", "world"}; // OK
+  EXPECT_EQ(n.name, "world");
 }

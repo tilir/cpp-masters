@@ -23,7 +23,7 @@ template <typename T> struct FImpl<T *> {
 
 template <typename T> int f(T t) { return FImpl<T>::f(t); }
 
-TEST(partialspec, backward) {
+TEST(classtempls, partialfunc) {
   int x;
   int *px;
   double y;

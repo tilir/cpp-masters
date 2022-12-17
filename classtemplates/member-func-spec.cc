@@ -34,7 +34,7 @@ template <> template <> std::string DataReader<Data>::read<std::string>() {
   return "S";
 }
 
-TEST(fullspec, memfunc) {
+TEST(classtempls, memfuncspec) {
   Data d;
   DataReader<Data> reader(d);
   auto myval = reader.read<int>();
