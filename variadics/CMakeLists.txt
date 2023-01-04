@@ -47,7 +47,16 @@ set(SRCS
   realeff.cc
 )
 
-add_executable(variadic_tests ${SRCS})
-target_include_directories(variadic_tests PRIVATE ${GTEST_INCLUDE_DIRS})
-target_link_libraries(variadic_tests PRIVATE ${GTEST_BOTH_LIBRARIES} Threads::Threads)
-target_compile_features(variadic_tests PRIVATE cxx_std_20)
+set(UNIT_TARGET variadic_unit)
+set(TEST_TARGET variadic_test)
+
+add_executable(${UNIT_TARGET} ${SRCS})
+target_include_directories(${UNIT_TARGET} PRIVATE ${GTEST_INCLUDE_DIRS})
+target_link_libraries(${UNIT_TARGET} PRIVATE ${GTEST_BOTH_LIBRARIES} Threads::Threads)
+target_compile_features(${UNIT_TARGET} PRIVATE cxx_std_20)
+
+add_test(
+  NAME ${TEST_TARGET}
+  COMMAND bash -c "${CMAKE_CURRENT_BINARY_DIR}/${UNIT_TARGET}"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+set_tests_properties(${TEST_TARGET} PROPERTIES DEPENDS ${UNIT_TARGET})

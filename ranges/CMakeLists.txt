@@ -15,14 +15,6 @@
 #
 #------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.11)
-project(ranges)
-
-find_package(GTest REQUIRED)
-
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-
 set(SRCS
   teaser.cc
 # errmsg.cc
@@ -56,7 +48,16 @@ set(SRCS
 # working-concat.cc -- requires separate build
 )
 
-add_executable(ranges_tests ${SRCS})
-target_include_directories(ranges_tests PRIVATE ${GTEST_INCLUDE_DIRS})
-target_link_libraries(ranges_tests PRIVATE ${GTEST_BOTH_LIBRARIES} Threads::Threads)
-target_compile_features(ranges_tests PRIVATE cxx_std_20)
+set(UNIT_TARGET ranges_unit)
+set(TEST_TARGET ranges_test)
+
+add_executable(${UNIT_TARGET} ${SRCS})
+target_include_directories(${UNIT_TARGET} PRIVATE ${GTEST_INCLUDE_DIRS})
+target_link_libraries(${UNIT_TARGET} PRIVATE ${GTEST_BOTH_LIBRARIES} Threads::Threads)
+target_compile_features(${UNIT_TARGET} PRIVATE cxx_std_20)
+
+add_test(
+  NAME ${TEST_TARGET}
+  COMMAND bash -c "${CMAKE_CURRENT_BINARY_DIR}/${UNIT_TARGET}"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+set_tests_properties(${TEST_TARGET} PROPERTIES DEPENDS ${UNIT_TARGET})
