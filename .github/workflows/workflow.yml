@@ -13,10 +13,12 @@ jobs:
       run:
         shell: bash
     steps:
+    - name: Install google test and boost, also install g++-11 for ranges
+      run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock libboost-dev g++-11
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: CMake config
-      run: cmake -S . -B build -D CMAKE_BUILD_TYPE=Release
+      run: cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
     - name: CMake build
       run: cmake --build build
     - name: CMake test
