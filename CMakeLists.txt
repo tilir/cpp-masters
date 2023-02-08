@@ -48,5 +48,6 @@ add_subdirectory(inference)
 add_subdirectory(variadics)
 # add_subdirectory(lambdas) -- in progress
 add_subdirectory(ranges)
+add_subdirectory(allocators)
 
 install()
