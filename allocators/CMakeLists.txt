@@ -21,6 +21,11 @@ set(SRCS
   logging.cc
   freelist.cc
   shortalloc.cc
+  diffallocs.cc
+  # scopedalloc.cc -- problematic case, interesting CT error
+  pmrexample.cc
+  pmrtestres.cc
+  slist.cc
 )
 
 add_gtest(allocs)
