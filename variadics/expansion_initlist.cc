@@ -12,14 +12,18 @@
 
 #include "gtest/gtest.h"
 
-static int g = 0;
+namespace {
 
-static void bar(int x) { g += x; }
+int g = 0;
+
+void bar(int x) { g += x; }
 
 template <typename... T> void foo(T... ts) {
   using R = int[sizeof...(ts)];
   (void)R{(bar(ts), 0)...};
 }
+
+} // namespace
 
 TEST(variadic, expansion_initlist) {
   foo(1, 2, 3);

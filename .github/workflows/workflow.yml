@@ -17,9 +17,15 @@ jobs:
       run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock libboost-dev g++-11
     - name: Checkout repository
       uses: actions/checkout@v3
-    - name: CMake config
+    - name: CMake release config
       run: cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
-    - name: CMake build
+    - name: CMake release build
       run: cmake --build build
-    - name: CMake test
+    - name: CMake release test
       run: env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
+    - name: CMake debug config
+      run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
+    - name: CMake debug build
+      run: cmake --build debug
+    - name: CMake debug test
+      run: env CTEST_OUTPUT_ON_FAILURE=1 cmake --build debug --target test
