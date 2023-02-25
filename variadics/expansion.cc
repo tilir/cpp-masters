@@ -12,6 +12,8 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 int f(int x) { return x; }
 
 int f(int x, int y, int z) { return x + y + z; }
@@ -23,6 +25,8 @@ template <typename... T> int foo(T... args) {
 }
 
 template <typename... T> int bar(T... args) { return f(f(args, args...)...); }
+
+} // namespace
 
 TEST(variadic, expansion) {
   int res;

@@ -12,11 +12,15 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 int g = 0;
 
 void bar(int x) { g += x; }
 
 template <typename... T> void foo(T... ts) { bar(ts)...; }
+
+} // namespace
 
 TEST(variadic, expansion_wrong) {
   foo(1, 2, 3);

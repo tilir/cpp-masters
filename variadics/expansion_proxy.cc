@@ -12,9 +12,11 @@
 
 #include "gtest/gtest.h"
 
-static int g = 0;
+namespace {
 
-static void bar(int x) { g += x; }
+int g = 0;
+
+void bar(int x) { g += x; }
 
 struct expand_t {
   template <typename... T> expand_t(T...) {}
@@ -23,6 +25,8 @@ struct expand_t {
 template <typename... T> void foo(T... ts) {
   expand_t{(bar(ts), void(), 0)...};
 }
+
+} // namespace
 
 TEST(variadic, expansion_proxy) {
   foo(1, 2, 3);
