@@ -6,7 +6,7 @@
 #
 #------------------------------------------------------------------------------
 #
-# Build system for examples (allocators lecture)
+# Build system for examples (runtime polymorphism lecture)
 #
 # Order of examples in SRCS variable corresponds to the order in the lecture.
 # Examples commented out are broken (often -- intentionally).
@@ -16,16 +16,8 @@
 #------------------------------------------------------------------------------
 
 set(SRCS
-  attempt1.cc
-  attempt2.cc
-  logging.cc
-  freelist.cc
-  shortalloc.cc
-  diffallocs.cc
-  # scopedalloc.cc -- problematic case, interesting CT error
-  pmrexample.cc
-  pmrtestres.cc
-  slist.cc
+  virtintf.cc
+  virtintf_crtp.cc
 )
 
-add_gtest(allocs)
+add_gtest(runtimepoly)
