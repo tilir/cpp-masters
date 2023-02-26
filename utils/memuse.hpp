@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <iostream>
+#include <string>
 #include <tuple>
 
 inline size_t memory = 0;
@@ -29,3 +31,11 @@ inline void operator delete(void *p) throw() {
 }
 
 inline auto memuse() { return std::make_pair(memory, alloc); }
+
+inline auto memstat(std::ostream &os) { os << memory << " : " << alloc; }
+
+inline auto memstatln(std::ostream &os, size_t indent) {
+  os << std::string(" ", indent);
+  memstat(os);
+  os << std::endl;
+}

@@ -19,15 +19,20 @@ find_package(GTest REQUIRED)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+add_library(commonutils INTERFACE)
+target_include_directories(commonutils INTERFACE utils)
+
 enable_testing()
 
 function(add_gtest TGT)
   set(UNIT_TARGET ${TGT}_unit)
   set(TEST_TARGET ${TGT}_test)
-   
+
   add_executable(${UNIT_TARGET} ${SRCS})
   target_include_directories(${UNIT_TARGET} PRIVATE ${GTEST_INCLUDE_DIRS})
-  target_link_libraries(${UNIT_TARGET} PRIVATE ${GTEST_BOTH_LIBRARIES} Threads::Threads)
+  target_link_libraries(${UNIT_TARGET} PRIVATE ${GTEST_BOTH_LIBRARIES})
+  target_link_libraries(${UNIT_TARGET} PRIVATE Threads::Threads)
+  target_link_libraries(${UNIT_TARGET} PRIVATE commonutils)
   target_compile_features(${UNIT_TARGET} PRIVATE cxx_std_20)
 
   add_test(
@@ -50,5 +55,6 @@ add_subdirectory(variadics)
 add_subdirectory(ranges)
 add_subdirectory(allocators)
 # add_subdirectory(smartptrs) -- in progress
+add_subdirectory(runtimepoly)
 
 install()
