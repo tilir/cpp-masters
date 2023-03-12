@@ -54,7 +54,7 @@ add_subdirectory(variadics)
 # add_subdirectory(lambdas) -- in progress
 add_subdirectory(ranges)
 add_subdirectory(allocators)
-# add_subdirectory(smartptrs) -- in progress
+add_subdirectory(smartptrs)
 add_subdirectory(runtimepoly)
 
 install()
