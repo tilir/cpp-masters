@@ -13,9 +13,12 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+// clang-format off
 template <typename T>
 concept Strange = (sizeof(T) == 4) ||
-  (requires() { { T::value } -> std::convertible_to<bool>; } && (T::value == true));
+  (requires() { { T::value } -> std::convertible_to<bool>; } &&
+   (T::value == true));
+// clang-format on
 
 template <typename T> requires Strange<T> int f(T t) { return 42; }
 

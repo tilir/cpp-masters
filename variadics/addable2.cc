@@ -20,6 +20,7 @@ template <typename T, typename... Ts> struct first_arg { using type = T; };
 
 template <typename... Ts> using first_arg_t = typename first_arg<Ts...>::type;
 
+// clang-format off
 template <typename... Ts> concept Addable = requires(Ts &&... args) {
   { (... + std::forward<Ts>(args)) } -> std::same_as<first_arg_t<Ts...>>;
   requires are_same_v<Ts...>;
@@ -32,6 +33,7 @@ concept Addable2 = requires(T &&arg, Ts &&... args) {
   requires are_same_v<Ts...>;
   requires sizeof...(Ts) > 0;
 };
+// clang-format on
 
 template <typename... Ts> auto sum_all(Ts &&... args) requires Addable2<Ts...> {
   return (... + std::forward<Ts>(args));

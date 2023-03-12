@@ -12,7 +12,4 @@
 
 #include <iostream>
 
-template <typename T>
-void dump(T val) {
-  std::cout << val << std::endl;
-}
+template <typename T> void dump(T val) { std::cout << val << std::endl; }

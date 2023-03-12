@@ -17,7 +17,7 @@ template <typename T>[[gnu::noinline]] T max(T x, T y) {
 }
 
 // block instancing everywhere
-extern template int max<int> (int, int);
+extern template int max<int>(int, int);
 
 extern int foo(int x, int y);
 extern int bar(int x, int y);

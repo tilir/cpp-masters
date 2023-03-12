@@ -12,9 +12,7 @@
 
 #include "gtest/gtest.h"
 
-template <typename T> int foo(T) {
-   return 1;
-}
+template <typename T> int foo(T) { return 1; }
 
 #ifdef PRIMITIVE
 using S = int;
@@ -25,13 +23,9 @@ using S = P;
 const int ans = 3;
 #endif
 
-template <typename T> int call_foo(T t, S s) {
-  return foo(t) + foo(s);
-}
+template <typename T> int call_foo(T t, S s) { return foo(t) + foo(s); }
 
-int foo(S) {
-   return 2;
-}
+int foo(S) { return 2; }
 
 TEST(cexpr, array) {
   S x;

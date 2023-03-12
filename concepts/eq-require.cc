@@ -21,8 +21,7 @@ struct is_equality_comparable<
     : std::true_type {};
 
 template <typename T, typename U>
-requires is_equality_comparable<T, U>::value
-bool check_eq(T &&lhs, U &&rhs) {
+requires is_equality_comparable<T, U>::value bool check_eq(T &&lhs, U &&rhs) {
   return (lhs == rhs);
 }
 
