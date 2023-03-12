@@ -51,7 +51,7 @@ add_subdirectory(classtemplates)
 # add_subdirectory(concepts) -- in progress
 add_subdirectory(inference)
 add_subdirectory(variadics)
-# add_subdirectory(lambdas) -- in progress
+add_subdirectory(lambdas)
 add_subdirectory(ranges)
 add_subdirectory(allocators)
 add_subdirectory(smartptrs)
