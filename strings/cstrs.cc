@@ -16,9 +16,9 @@
 int main() {
   const char *cinv = "Hello, world";
   const char cmut[] = "Hello, world";
-  char *cheap = new char[14]{"Hello, world"};  
-  cheap = cinv; 
-  cinv = 0; 
+  char *cheap = new char[14]{"Hello, world"};
+  cheap = cinv;
+  cinv = 0;
   cmut = cheap;
   delete cheap;
 }

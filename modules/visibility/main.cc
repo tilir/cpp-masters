@@ -14,6 +14,4 @@
 
 import reachable;
 
-int main() {
-  Y x;
-}
+int main() { Y x; }

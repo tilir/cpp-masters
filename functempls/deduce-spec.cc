@@ -13,12 +13,10 @@
 #include "gtest/gtest.h"
 
 // for all
-template <typename T>
-T foo(T x) { return x; }
+template <typename T> T foo(T x) { return x; }
 
 // for int
-template <>
-int foo(int x) { return x + 1; }
+template <> int foo(int x) { return x + 1; }
 
 TEST(ovrnames, deducetest) {
   double d = 1.5;

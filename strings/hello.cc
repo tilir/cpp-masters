@@ -15,7 +15,8 @@
 int main() {
   const char *cc = "Hello, world!";
   constexpr char cp[14] = "Hello, world!";
-  std::cout << sizeof("Hello, world!") << " : " << "Hello, world!" << std::endl;
+  std::cout << sizeof("Hello, world!") << " : "
+            << "Hello, world!" << std::endl;
   std::cout << sizeof(cc) << " : " << cc << std::endl;
   std::cout << sizeof(cp) << " : " << cp << std::endl;
 
@@ -26,8 +27,8 @@ int main() {
   std::cout << static_cast<const void *>(cc) << std::endl;
   std::cout << static_cast<const void *>(cp) << std::endl;
 
-  const char *vertical = 
-R"(h
+  const char *vertical =
+      R"(h
 e
 l
 l

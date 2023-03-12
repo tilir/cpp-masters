@@ -25,7 +25,9 @@ struct S {
 int operator+(S s, int x) { return x + s.data_; }
 
 template <typename T> int foo(T x) requires requires(T a) {
+  // clang-format off
   { a + 1 } -> std::convertible_to<typename T::inner>;
+  // clang-format on
   requires noexcept(++a);
   requires sizeof(T) == 4;
 }

@@ -18,7 +18,7 @@ using sep_t = boost::char_separator<char>;
 
 int main() {
   std::string str = ";;Hello|world||-foo--bar;yow;baz|";
-  
+
   sep_t sep("-;|");
   boost::tokenizer<sep_t> tokens(str, sep);
   for (auto tok : tokens)

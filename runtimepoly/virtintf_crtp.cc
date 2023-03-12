@@ -6,14 +6,13 @@
 //
 //-----------------------------------------------------------------------------
 //
-//
+// Typical CRTP interface
 //
 //----------------------------------------------------------------------------
 
 #include <iostream>
 #include <sstream>
 
-#include "memuse.hpp"
 #include "gtest/gtest.h"
 
 namespace {

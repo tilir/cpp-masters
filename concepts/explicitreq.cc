@@ -12,13 +12,14 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
-template <typename T, typename U>
-requires requires(T t, U u) {
+// clang-format off
+template <typename T, typename U> requires requires(T t, U u) {
   { t == u } -> std::convertible_to<bool>;
   { t != u } -> std::convertible_to<bool>;
   { u == t } -> std::convertible_to<bool>;
   { u != t } -> std::convertible_to<bool>;
 }
+// clang-format on
 bool foo(T x, U y) {
   if ((x == y) && (y != x)) {
     // weak
