@@ -56,5 +56,6 @@ add_subdirectory(ranges)
 add_subdirectory(allocators)
 add_subdirectory(smartptrs)
 add_subdirectory(runtimepoly)
+add_subdirectory(concurrency)
 
 install()
