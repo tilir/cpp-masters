@@ -52,6 +52,8 @@ constexpr int nmod = 1000000;
 template <typename T>
 void modifier(T &t) {  
   for (int i = 0; i < nmod; i += 1) {
+    if ((i % 1000) != 0)
+      continue;
     t.modify(i);
     noopt(i);
   }
@@ -67,7 +69,7 @@ void getter(const T &t) {
 }
 
 static void UniqueLock() {
-  Unique u;  
+  Unique u;
   std::thread t0(modifier<Unique>, std::ref(u));
   std::thread t1(getter<Unique>, std::cref(u));
   std::thread t2(getter<Unique>, std::cref(u));
@@ -99,6 +101,29 @@ static void SharedLock() {
 }
 
 int main() {
+#ifndef CHECK_STRACE
   measure("UniqueLock", UniqueLock);
   measure("SharedLock", SharedLock);
+#else
+  printf("Start\n");
+  Unique u;
+  Shared s;
+  int *p;
+  int v;
+  p = new int; // SBRK
+  noopt(p);
+  v = u.get();
+  noopt(v);
+  p = new int;
+  noopt(p);
+  u.modify(1);
+  p = new int;
+  noopt(p);
+  v = s.get();
+  noopt(v);
+  p = new int;
+  noopt(p);
+  s.modify(1);
+  noopt(s.value);
+#endif
 }
