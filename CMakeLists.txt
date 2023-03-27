@@ -42,6 +42,14 @@ function(add_gtest TGT)
   set_tests_properties(${TEST_TARGET} PROPERTIES DEPENDS ${UNIT_TARGET})
 endfunction()
 
+function(add_demo TGT)
+  add_executable(${TGT} ${TGT}.cc)
+  target_include_directories(${TGT} PRIVATE ${GTEST_INCLUDE_DIRS})
+  target_link_libraries(${TGT} PRIVATE Threads::Threads)
+  target_link_libraries(${TGT} PRIVATE commonutils)
+  target_compile_features(${TGT} PRIVATE cxx_std_20)
+endfunction()
+
 # add_subdirectory(strings) -- in progress
 # add_subdirectory(functempls) -- in progress
 add_subdirectory(classtemplates)
@@ -57,5 +65,6 @@ add_subdirectory(allocators)
 add_subdirectory(smartptrs)
 add_subdirectory(runtimepoly)
 add_subdirectory(concurrency)
+add_subdirectory(queues)
 
 install()
