@@ -17,8 +17,10 @@
 
 set(SRCS
   classic_queue.cc
-  # classic_queue_demo.cc -- this is a demo
+  # classic_queue_wrong_demo.cc -- hanging queue
+  # classic_queue_demo.cc -- non-hanging but contention
 )
 
 add_gtest(queues)
+add_demo(classic_queue_wrong_demo)
 add_demo(classic_queue_demo)
