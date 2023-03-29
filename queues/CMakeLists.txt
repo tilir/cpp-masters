@@ -17,10 +17,20 @@
 
 set(SRCS
   classic_queue.cc
-  # classic_queue_wrong_demo.cc -- hanging queue
-  # classic_queue_demo.cc -- non-hanging but contention
+# classic_queue_wrong_demo.cc -- hanging queue
+# classic_queue_demo.cc -- non-hanging but contention
+# unbounded_queue_demo.cc -- unbounded queue
+  basic_return.cc
+# auto_return_wrong.cc -- must fail
+  auto_return_generic.cc
+  futures.cc
+  marshalling.cc
+  packaged.cc
+  shared.cc
+  latch.cc
 )
 
 add_gtest(queues)
 add_demo(classic_queue_wrong_demo)
 add_demo(classic_queue_demo)
+add_demo(unbounded_queue_demo)
