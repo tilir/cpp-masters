@@ -66,5 +66,6 @@ add_subdirectory(smartptrs)
 add_subdirectory(runtimepoly)
 add_subdirectory(concurrency)
 add_subdirectory(queues)
+add_subdirectory(atomics)
 
 install()

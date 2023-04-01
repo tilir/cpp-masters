@@ -4,6 +4,8 @@
 #include <chrono>
 #include <functional>
 #include <iostream>
+#include <mutex>
+#include <thread>
 
 namespace chrono = std::chrono;
 
@@ -47,6 +49,25 @@ inline void measure(std::string_view prefix, T callable, Args&& ... args) {
   std::invoke(callable, std::forward<Args>(args)...);
   t.stop();
   std::cout << prefix << ": " << t.elapsed_ms() << std::endl;
+}
+
+template <typename T, typename... Args>
+inline void measure_multithread(int TMin, int TMax, T callable,
+                                Args &&... args) {
+  util::Timer t;
+  for (int nthr = TMin; nthr <= TMax; ++nthr) {
+    t.start();
+
+    std::vector<std::thread> threads(nthr);
+    for (int i = 0; i < nthr; ++i)
+      threads[i] = std::thread(callable, std::forward<Args>(args)...);
+
+    for (int i = 0; i < nthr; ++i)
+      threads[i].join();
+
+    t.stop();
+    std::cout << nthr << " " << t.elapsed_ms() << std::endl;
+  }
 }
 
 #define noopt(i) asm(""::"r"(i))
