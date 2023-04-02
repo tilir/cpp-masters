@@ -6,19 +6,11 @@
 //
 //-----------------------------------------------------------------------------
 //
-// Classic thread-safe queue demo
+// Classic thread-safe queue demo, hanging version
 //
-//  * * * * * *
-//    ^     ^
-//    NRel  (NRel + NCur) % BufSize
-//
-// try:
-// ./build/queues/classic_queue_demo
-// ./build/queues/classic_queue_demo -nprod=2
-// ./build/queues/classic_queue_demo -bufsize=1000
-// ./build/queues/classic_queue_demo -bufsize=1000 -nprod=2
-// ./build/queues/classic_queue_demo -nprod=16 -ncons=16 -bufsize=100
-// ./build/queues/classic_queue_demo -nprod=16 -ncons=16 -bufsize=100
+// killing: -ntasks=100000 -ptime=0 -ctime=0 -nprod=4 -ncons=4
+// while ./build/queues/classic_queue_wrong_demo -ntasks=100000 -ptime=0
+// -ctime=0 -nprod=4 -ncons=4; do echo "Ok"; done
 //
 //----------------------------------------------------------------------------
 
@@ -116,26 +108,21 @@ template <typename T> class ts_queue {
   // look it is unaligned...
   std::vector<T> Buffer;
   int NCur = -1;
-  int NRel = 0; // start position
-  bool Done = false;
   mutable std::mutex Mut;
   std::condition_variable CondCons, CondProd;
 
   // this interface cannot safely be public
   bool full() const { return NCur >= static_cast<int>(Buffer.size()); }
   bool empty() const { return NCur < 0; }
-  bool done() const { return Done; }
 
 public:
   ts_queue(Config Cfg) : Cfg(Cfg), Buffer(Cfg.BufSize) {}
 
   void push(T Data) {
     std::unique_lock<std::mutex> Lk{Mut};
-    CondProd.wait(Lk, [this] { return !full() || done(); });
-    if (Done)
-      return;
+    CondProd.wait(Lk, [this] { return !full(); });
     NCur += 1;
-    Buffer[(NRel + NCur) % Buffer.size()] = Data;
+    Buffer[NCur] = Data;
     if (Cfg.Verbose)
       std::cout << "+";
     CondCons.notify_one();
@@ -143,28 +130,12 @@ public:
 
   void wait_and_pop(T &Data) {
     std::unique_lock<std::mutex> Lk{Mut};
-    CondCons.wait(Lk, [this] { return !empty() || done(); });
-    if (empty())
-      return;
-    Data = Buffer[NRel % Buffer.size()];
-    NRel = (NRel + 1) % Buffer.size();
+    CondCons.wait(Lk, [this] { return !empty(); });
+    Data = Buffer[NCur];
     NCur -= 1;
     if (Cfg.Verbose)
       std::cout << "-";
     CondProd.notify_one(); // wake up producer
-  }
-
-  void wake_and_done() {
-    Done = true;
-    CondCons.notify_all();
-    CondProd.notify_all();
-  }
-
-  // only for extern use, locks NCur
-  // we need this to not stop consume too early
-  bool is_empty() const {
-    std::unique_lock<std::mutex> Lk{Mut};
-    return NCur < 0;
   }
 };
 
@@ -187,7 +158,6 @@ void produce(ts_queue<int> &Q, Config Cfg) {
     std::this_thread::sleep_for(Cfg.PTime);
     Q.push(N);
   }
-  Q.wake_and_done();
 }
 
 void consume(ts_queue<int> &Q, Config Cfg) {
@@ -204,7 +174,6 @@ void consume(ts_queue<int> &Q, Config Cfg) {
     Q.wait_and_pop(N);
     std::this_thread::sleep_for(Cfg.CTime);
   }
-  Q.wake_and_done();
 }
 
 } // namespace

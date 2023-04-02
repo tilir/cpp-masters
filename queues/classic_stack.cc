@@ -6,11 +6,7 @@
 //
 //-----------------------------------------------------------------------------
 //
-// Classic thread-safe queue with non-hanging facilities
-//
-//  * * * * * *
-//    ^     ^
-//    NRel  (NRel + NCur) % BufSize
+// Classic thread-safe stack with non-hanging facilities
 //
 //----------------------------------------------------------------------------
 
@@ -24,30 +20,32 @@
 
 namespace {
 
-constexpr int NTASKS = 1000;
-constexpr int BUFSZ = 100;
+constexpr int NTASKS = 100;
+constexpr int BUFSZ = 10;
 
-template <typename T> class ts_queue {
-  std::vector<T> Buffer; // fixed-size queue
+std::vector<int> Consumed;
+std::mutex ConsMut;
+
+template <typename T> class ts_stack {
+  std::vector<T> Buffer; // fixed-size stack
   int NCur = -1;
-  int NRel = 0; // start position
   bool Done = false;
   mutable std::mutex Mut;
   std::condition_variable CondCons, CondProd;
 
   // this interface cannot safely be public
-  bool full() const { return NCur >= static_cast<int>(Buffer.size()); }
+  bool full() const { return NCur >= static_cast<int>(Buffer.size() - 1); }
   bool empty() const { return NCur < 0; }
   bool done() const { return Done; }
 
 public:
-  ts_queue(int BufSize) : Buffer(BufSize) {}
+  ts_stack(int BufSize) : Buffer(BufSize) {}
 
   void push(T Data) {
     std::unique_lock<std::mutex> Lk{Mut};
     CondProd.wait(Lk, [this] { return !full(); });
     NCur += 1;
-    Buffer[(NRel + NCur) % Buffer.size()] = Data;
+    Buffer[NCur] = Data;
     CondCons.notify_one();
   }
 
@@ -56,17 +54,16 @@ public:
     CondCons.wait(Lk, [this] { return !empty() || done(); });
     if (empty())
       return false;
-    Data = Buffer[NRel % Buffer.size()];
-    NRel = (NRel + 1) % Buffer.size();
+    Data = Buffer[NCur];
     NCur -= 1;
     CondProd.notify_one();
     return true;
   }
 
   void wake_and_done() {
+    std::unique_lock<std::mutex> Lk{Mut};
     Done = true;
     CondCons.notify_all();
-    CondProd.notify_all();
   }
 
   // only for extern use, locks NCur
@@ -80,10 +77,7 @@ public:
 int NTasks;
 std::mutex TaskMut;
 
-std::vector<int> Consumed;
-std::mutex ConsMut;
-
-void produce(ts_queue<int> &Q) {
+void produce(ts_stack<int> &Q) {
   for (;;) {
     int N;
     // critical section
@@ -98,7 +92,7 @@ void produce(ts_queue<int> &Q) {
   }
 }
 
-void consume(ts_queue<int> &Q) {
+void consume(ts_stack<int> &Q) {
   for (;;) {
     // critical section
     {
@@ -120,41 +114,59 @@ void consume(ts_queue<int> &Q) {
 
 } // namespace
 
-TEST(queue, classic_queue_1_1) {
+TEST(stack, classic_stack_1_1) {
   NTasks = NTASKS;
-  ts_queue<int> Q(BUFSZ);
+  ts_stack<int> Q(BUFSZ);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{consume, std::ref(Q)};
 
   t1.join();
+
+  // after all producers join
   Q.wake_and_done();
+
   t2.join();
+
+#if 0
+  std::cout << "Cons: " << std::endl;
+  std::sort(Consumed.begin(), Consumed.end());
+  int Cnt = 0;
+  for (auto &&C : Consumed) {    
+    std::cout << C << " ";
+    if ((Cnt++ % 10) == 0)
+      std::cout << std::endl;
+  }
+  std::cout << std::endl;
+#endif
 
   EXPECT_EQ(Consumed.size(), NTASKS + 1); // [0 .. NTASKS] inclusive
   EXPECT_EQ(NTasks, -1);
 }
 
-TEST(queue, classic_queue_1_2) {
+TEST(stack, classic_stack_1_2) {
   NTasks = NTASKS;
-  ts_queue<int> Q(BUFSZ);
+  ts_stack<int> Q(BUFSZ);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{consume, std::ref(Q)};
   std::thread t3{consume, std::ref(Q)};
 
   t1.join();
+
+  // after all producers join
   Q.wake_and_done();
+
   t2.join();
   t3.join();
 
-  EXPECT_EQ(Consumed.size(), NTASKS + 1); // [0 .. NTASKS] inclusive
+  EXPECT_EQ(Consumed.size(), NTASKS + 1);
   EXPECT_EQ(NTasks, -1);
 }
 
-TEST(queue, classic_queue_2_1) {
+TEST(stack, classic_stack_2_1) {
   NTasks = NTASKS;
-  ts_queue<int> Q(BUFSZ);
+  ts_stack<int> Q(BUFSZ);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{produce, std::ref(Q)};
@@ -162,16 +174,19 @@ TEST(queue, classic_queue_2_1) {
 
   t1.join();
   t2.join();
+
+  // after all producers join
   Q.wake_and_done();
+
   t3.join();
 
-  EXPECT_EQ(Consumed.size(), NTASKS + 1); // [0 .. NTASKS] inclusive
+  EXPECT_EQ(Consumed.size(), NTASKS + 1);
   EXPECT_EQ(NTasks, -1);
 }
 
-TEST(queue, classic_queue_2_2) {
+TEST(stack, classic_stack_2_2) {
   NTasks = NTASKS;
-  ts_queue<int> Q(BUFSZ);
+  ts_stack<int> Q(BUFSZ);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{produce, std::ref(Q)};
@@ -180,10 +195,13 @@ TEST(queue, classic_queue_2_2) {
 
   t1.join();
   t2.join();
+
+  // after all producers join
   Q.wake_and_done();
+
   t3.join();
   t4.join();
 
-  EXPECT_EQ(Consumed.size(), NTASKS + 1); // [0 .. NTASKS] inclusive
+  EXPECT_EQ(Consumed.size(), NTASKS + 1);
   EXPECT_EQ(NTasks, -1);
 }
