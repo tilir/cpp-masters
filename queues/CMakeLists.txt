@@ -16,9 +16,11 @@
 #------------------------------------------------------------------------------
 
 set(SRCS
+  classic_stack.cc
   classic_queue.cc
-# classic_queue_wrong_demo.cc -- hanging queue
-# classic_queue_demo.cc -- non-hanging but contention
+# classic_stack_wrong_demo.cc -- hanging stack
+# classic_stack_demo.cc -- non-hanging
+# classic_queue_demo.cc -- non-hanging bounded queue
 # unbounded_queue_demo.cc -- unbounded queue
   basic_return.cc
 # auto_return_wrong.cc -- must fail
@@ -31,6 +33,7 @@ set(SRCS
 )
 
 add_gtest(queues)
-add_demo(classic_queue_wrong_demo)
-add_demo(classic_queue_demo)
+add_demo(classic_stack_wrong_demo)
+add_demo(classic_stack_demo)
+# add_demo(classic_queue_demo)
 add_demo(unbounded_queue_demo)

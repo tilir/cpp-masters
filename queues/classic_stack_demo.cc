@@ -6,10 +6,15 @@
 //
 //-----------------------------------------------------------------------------
 //
-// Classic thread-safe queue demo, hanging version
+// Classic thread-safe stack demo
 //
-// killing: -ntasks=100000 -ptime=0 -ctime=0 -nprod=4 -ncons=4
-// while ./build/queues/classic_queue_wrong_demo -ntasks=100000 -ptime=0 -ctime=0 -nprod=4 -ncons=4; do echo "Ok"; done
+// try:
+// ./build/stacks/classic_stack_demo
+// ./build/stacks/classic_stack_demo -nprod=2
+// ./build/stacks/classic_stack_demo -bufsize=1000
+// ./build/stacks/classic_stack_demo -bufsize=1000 -nprod=2
+// ./build/stacks/classic_stack_demo -nprod=16 -ncons=16 -bufsize=100
+// ./build/stacks/classic_stack_demo -nprod=16 -ncons=16 -bufsize=100
 //
 //----------------------------------------------------------------------------
 
@@ -17,7 +22,7 @@
 #include <condition_variable>
 #include <iostream>
 #include <mutex>
-#include <queue>
+#include <stack>
 #include <thread>
 #include <vector>
 
@@ -50,7 +55,7 @@ Config parse_cfg(int argc, char **argv) {
   Config Cfg;
   options::Parser OptParser;
   OptParser.template add<int>("verbose", DEF_VERBOSE, "a lot of debug output");
-  OptParser.template add<int>("bufsize", DEF_BUFSIZE, "fixed queue size");
+  OptParser.template add<int>("bufsize", DEF_BUFSIZE, "fixed stack size");
   OptParser.template add<int>("ntasks", DEF_NTASKS,
                               "number of tasks to proceed");
   OptParser.template add<int>("nprod", DEF_NPROD, "number of producers");
@@ -84,7 +89,7 @@ Config parse_cfg(int argc, char **argv) {
   Cfg.CTime = chrono::milliseconds(CTime);
 
   if (Cfg.Verbose) {
-    std::cout << "Hello from classic queue demo!" << std::endl;
+    std::cout << "Hello from classic stack demo!" << std::endl;
     std::cout << "Buffer size: " << Cfg.BufSize << std::endl;
     std::cout << "Number of tasks: " << Cfg.NTasks << std::endl;
     std::cout << "Number of producers: " << Cfg.NProd << std::endl;
@@ -100,26 +105,30 @@ Config parse_cfg(int argc, char **argv) {
 
 namespace {
 
-template <typename T> class ts_queue {
+template <typename T> class ts_stack {
   Config Cfg;
 
-  // fixed-size queue
+  // fixed-size stack
   // look it is unaligned...
   std::vector<T> Buffer;
   int NCur = -1;
+  bool Done = false;
   mutable std::mutex Mut;
   std::condition_variable CondCons, CondProd;
 
   // this interface cannot safely be public
   bool full() const { return NCur >= static_cast<int>(Buffer.size()); }
-  bool empty() const { return NCur < 0; }  
+  bool empty() const { return NCur < 0; }
+  bool done() const { return Done; }
 
 public:
-  ts_queue(Config Cfg) : Cfg(Cfg), Buffer(Cfg.BufSize) {}
+  ts_stack(Config Cfg) : Cfg(Cfg), Buffer(Cfg.BufSize) {}
 
   void push(T Data) {
     std::unique_lock<std::mutex> Lk{Mut};
-    CondProd.wait(Lk, [this] { return !full(); });
+    CondProd.wait(Lk, [this] { return !full() || done(); });
+    if (Done)
+      return;
     NCur += 1;
     Buffer[NCur] = Data;
     if (Cfg.Verbose)
@@ -129,19 +138,34 @@ public:
 
   void wait_and_pop(T &Data) {
     std::unique_lock<std::mutex> Lk{Mut};
-    CondCons.wait(Lk, [this] { return !empty(); });
+    CondCons.wait(Lk, [this] { return !empty() || done(); });
+    if (empty())
+      return;
     Data = Buffer[NCur];
     NCur -= 1;
     if (Cfg.Verbose)
       std::cout << "-";
     CondProd.notify_one(); // wake up producer
   }
+
+  void wake_and_done() {
+    Done = true;
+    CondCons.notify_all();
+    CondProd.notify_all();
+  }
+
+  // only for extern use, locks NCur
+  // we need this to not stop consume too early
+  bool is_empty() const {
+    std::unique_lock<std::mutex> Lk{Mut};
+    return NCur < 0;
+  }
 };
 
 int NTasks;
 std::mutex TaskMut;
 
-void produce(ts_queue<int> &Q, Config Cfg) {
+void produce(ts_stack<int> &Q, Config Cfg) {
   for (;;) {
     int N;
     // critical section
@@ -157,9 +181,10 @@ void produce(ts_queue<int> &Q, Config Cfg) {
     std::this_thread::sleep_for(Cfg.PTime);
     Q.push(N);
   }
+  Q.wake_and_done();
 }
 
-void consume(ts_queue<int> &Q, Config Cfg) {
+void consume(ts_stack<int> &Q, Config Cfg) {
   for (;;) {
     int N;
     // critical section
@@ -173,6 +198,7 @@ void consume(ts_queue<int> &Q, Config Cfg) {
     Q.wait_and_pop(N);
     std::this_thread::sleep_for(Cfg.CTime);
   }
+  Q.wake_and_done();
 }
 
 } // namespace
@@ -183,7 +209,7 @@ int main(int argc, char **argv) try {
 
   std::vector<std::thread> Producers;
   std::vector<std::thread> Consumers;
-  ts_queue<int> Queue(Cfg);
+  ts_stack<int> Queue(Cfg);
 
   util::Timer t;
   t.start();
