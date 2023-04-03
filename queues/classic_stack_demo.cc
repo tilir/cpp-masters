@@ -109,7 +109,7 @@ template <typename T> class ts_stack {
   Config Cfg;
 
   // fixed-size stack
-  // look it is unaligned...
+  // still it is unaligned...
   std::vector<T> Buffer;
   int NCur = -1;
   bool Done = false;
@@ -122,43 +122,48 @@ template <typename T> class ts_stack {
   bool done() const { return Done; }
 
 public:
-  ts_stack(Config Cfg) : Cfg(Cfg), Buffer(Cfg.BufSize) {}
+  ts_stack(Config Cfg) : Cfg(Cfg), Buffer(Cfg.BufSize) {
+    // prevent integer overflow cases
+    if (Cfg.BufSize > (1 << 30))
+      throw std::runtime_error("unsupported buffer size");
+  }
 
   void push(T Data) {
     std::unique_lock<std::mutex> Lk{Mut};
-    CondProd.wait(Lk, [this] { return !full() || done(); });
-    if (Done)
-      return;
-    NCur += 1;
-    Buffer[NCur] = Data;
-    if (Cfg.Verbose)
-      std::cout << "+";
+    CondProd.wait(Lk, [this] { return !full(); });
+
+    // exception safety
+    int NewCur = NCur + 1;
+    Buffer[NewCur] = Data;
+    NCur = NewCur;
+    Lk.unlock();
     CondCons.notify_one();
   }
 
-  void wait_and_pop(T &Data) {
+  bool wait_and_pop(T &Data) {
     std::unique_lock<std::mutex> Lk{Mut};
     CondCons.wait(Lk, [this] { return !empty() || done(); });
     if (empty())
-      return;
+      return false;
     Data = Buffer[NCur];
     NCur -= 1;
-    if (Cfg.Verbose)
-      std::cout << "-";
-    CondProd.notify_one(); // wake up producer
+    Lk.unlock();
+    CondProd.notify_one();
+    return true;
   }
 
   void wake_and_done() {
+    std::unique_lock<std::mutex> Lk{Mut};
     Done = true;
+    Lk.unlock();
     CondCons.notify_all();
-    CondProd.notify_all();
   }
 
   // only for extern use, locks NCur
   // we need this to not stop consume too early
-  bool is_empty() const {
+  bool is_empty_and_done() const {
     std::unique_lock<std::mutex> Lk{Mut};
-    return NCur < 0;
+    return (NCur < 0) && Done;
   }
 };
 
@@ -176,29 +181,28 @@ void produce(ts_stack<int> &Q, Config Cfg) {
       N = NTasks;
       NTasks -= 1;
     }
-
     // spend some time producing, then push
     std::this_thread::sleep_for(Cfg.PTime);
     Q.push(N);
   }
-  Q.wake_and_done();
 }
 
 void consume(ts_stack<int> &Q, Config Cfg) {
   for (;;) {
-    int N;
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0)
+      if (NTasks < 0 && Q.is_empty_and_done())
         break;
     }
 
     // pop, then spend some time consuming
-    Q.wait_and_pop(N);
-    std::this_thread::sleep_for(Cfg.CTime);
+    // if pop succesfull
+    int N;
+    bool Succ = Q.wait_and_pop(N);
+    if (Succ)
+      std::this_thread::sleep_for(Cfg.CTime);
   }
-  Q.wake_and_done();
 }
 
 } // namespace
@@ -223,12 +227,15 @@ int main(int argc, char **argv) try {
   for (auto &P : Producers)
     P.join();
 
+  // after all producers join
+  Queue.wake_and_done();
+
   for (auto &C : Consumers)
     C.join();
 
   t.stop();
-  std::cout << "Done: "
-            << ": " << t.elapsed_ms() << " millisec" << std::endl;
+  std::cout << Cfg.NProd << " " << Cfg.NCons << " " << t.elapsed_ms()
+            << std::endl;
 } catch (const std::runtime_error &E) {
   std::cout << "Runtime error: " << E.what() << "\n";
   return -1;
