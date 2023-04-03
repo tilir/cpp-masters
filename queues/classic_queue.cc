@@ -41,13 +41,21 @@ template <typename T> class ts_queue {
   bool done() const { return Done; }
 
 public:
-  ts_queue(int BufSize) : Buffer(BufSize) {}
+  ts_queue(int BufSize) : Buffer(BufSize) {
+    // prevent integer overflow cases
+    if (BufSize > (1 << 30))
+      throw std::runtime_error("unsupported buffer size");
+  }
 
   void push(T Data) {
     std::unique_lock<std::mutex> Lk{Mut};
     CondProd.wait(Lk, [this] { return !full(); });
-    NCur += 1;
-    Buffer[(NRel + NCur) % Buffer.size()] = Data;
+
+    // exception safety
+    int NewCur = NCur + 1;
+    Buffer[(NRel + NewCur) % Buffer.size()] = Data;
+    NCur = NewCur;
+    Lk.unlock();
     CondCons.notify_one();
   }
 
@@ -59,14 +67,16 @@ public:
     Data = Buffer[NRel % Buffer.size()];
     NRel = (NRel + 1) % Buffer.size();
     NCur -= 1;
+    Lk.unlock();
     CondProd.notify_one();
     return true;
   }
 
   void wake_and_done() {
+    std::unique_lock<std::mutex> Lk{Mut};
     Done = true;
+    Lk.unlock();
     CondCons.notify_all();
-    CondProd.notify_all();
   }
 
   // only for extern use, locks NCur

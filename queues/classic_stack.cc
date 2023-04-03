@@ -39,13 +39,21 @@ template <typename T> class ts_stack {
   bool done() const { return Done; }
 
 public:
-  ts_stack(int BufSize) : Buffer(BufSize) {}
+  ts_stack(int BufSize) : Buffer(BufSize) {
+    // prevent integer overflow cases
+    if (BufSize > (1 << 30))
+      throw std::runtime_error("unsupported buffer size");
+  }
 
   void push(T Data) {
     std::unique_lock<std::mutex> Lk{Mut};
     CondProd.wait(Lk, [this] { return !full(); });
-    NCur += 1;
-    Buffer[NCur] = Data;
+
+    // exception safety
+    int NewCur = NCur + 1;
+    Buffer[NewCur] = Data;
+    NCur = NewCur;
+    Lk.unlock();
     CondCons.notify_one();
   }
 
@@ -56,6 +64,7 @@ public:
       return false;
     Data = Buffer[NCur];
     NCur -= 1;
+    Lk.unlock();
     CondProd.notify_one();
     return true;
   }
@@ -63,6 +72,7 @@ public:
   void wake_and_done() {
     std::unique_lock<std::mutex> Lk{Mut};
     Done = true;
+    Lk.unlock();
     CondCons.notify_all();
   }
 

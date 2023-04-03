@@ -21,7 +21,7 @@ set(SRCS
   sptr_atomic.cc
 # atomic_counter_demo.cc
 # custom_mutex_demo.cc
-  inc_naive.cc
+# inc_naive.cc -- suppose to fail
   inc_corr.cc
 # atomic_twice_demo.cc
 )
