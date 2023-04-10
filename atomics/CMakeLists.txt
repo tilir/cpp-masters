@@ -24,6 +24,7 @@ set(SRCS
   inc_corr.cc
 # atomic_twice_demo.cc
   sptr_atomic.cc
+# stack_reclaim_problem.cc -- suppose to fail
 )
 
 add_gtest(atomics)
