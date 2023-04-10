@@ -25,7 +25,9 @@
 
 namespace {
 
-constexpr int NTASKS = 1000;
+#ifndef NTASKS
+#define NTASKS 1000
+#endif
 
 std::vector<int> Consumed;
 std::mutex ConsMut;
@@ -44,12 +46,22 @@ public:
       std::this_thread::yield();
   }
 
-  void pop(T &Data) {
+  bool pop(T &Data) {
     Node *Old = Head.load();
-    while (!Head.compare_exchange_weak(Old, Old->Next))
+    if (!Old)
+      return false;
+    while (!Head.compare_exchange_weak(Old, Old->Next)) {
+      if (!Old)
+        return false;
       std::this_thread::yield();
+    }
+    if (!Old)
+      return false;
     Data = std::move(Old->Data);
+#ifndef ALLOW_LEAK
     delete Old;
+#endif
+    return true;
   }
 
   bool is_empty() const { return Head.load() == nullptr; }
@@ -80,10 +92,12 @@ void consume(lf_stack<int> &Q) {
     int N = NTasks.load();
     if (N < 0 && Q.is_empty())
       break;
-    Q.pop(N);
-    // record what was consumed
-    std::lock_guard<std::mutex> Lk{ConsMut};
-    Consumed.push_back(N);
+    bool Succ = Q.pop(N);    
+    if (Succ) {
+      // record what was consumed
+      std::lock_guard<std::mutex> Lk{ConsMut};
+      Consumed.push_back(N);
+    }
   }
 }
 
