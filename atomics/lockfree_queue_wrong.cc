@@ -6,12 +6,7 @@
 //
 //-----------------------------------------------------------------------------
 //
-// Lock-free node-based stack with reclaim problems
-//
-// try also NTASKS = 100
-//
-// g++-11 -O2 stack_reclaim_problem.cc -lgtest -lgtest_main -pthread
-// Also try with -fsanitize=thread
+// Lock-free bounded queue with ABA problems
 //
 //----------------------------------------------------------------------------
 
@@ -29,51 +24,113 @@ namespace {
 #define NTASKS 1000
 #endif
 
+#ifndef BUFSIZE
+#define BUFSIZE 128
+#endif
+
 std::vector<int> Consumed;
 std::mutex ConsMut;
+std::mutex LogMut;
 
-template <typename T> class lf_stack {
-  struct Node {
-    Node *Next;
-    T Data;
-  };
-  std::atomic<Node *> Head = nullptr;
+template <typename T> class lf_queue {
+  std::vector<T> Buffer;
+  unsigned BufferMask;
+  std::atomic<unsigned> EnqueuePos, DequeuePos;
 
 public:
-  void push(T Data) {
-    auto New = new Node{Head.load(), std::move(Data)};
-    while (!Head.compare_exchange_weak(New->Next, New))
-      std::this_thread::yield();
+  lf_queue(unsigned BufSize) : Buffer(BufSize), BufferMask(BufSize - 1) {
+    if (BufSize > (1 << 30))
+      throw std::runtime_error("buffer size too large");
+
+    if (BufSize < 2)
+      throw std::runtime_error("buffer size too small");
+
+    if ((BufSize & (BufSize - 1)) != 0)
+      throw std::runtime_error("buffer size is not power of 2");
+
+    EnqueuePos.store(0);
+    DequeuePos.store(0);
   }
 
-  bool pop(T &Data) {
-    Node *Old = Head.load();
+  bool push(T Data) {
+    T *Cell;
+    unsigned Pos;
+    bool Res = false;
 
-    // We can see do-while pattern.
-    // In this case I left while form to match slides.
-    if (!Old)
-      return false;
-    while (!Head.compare_exchange_weak(Old, Old->Next)) {
-      if (!Old)
+    while (!Res) {
+      // fetch the current Position where to enqueue the item
+      Pos = EnqueuePos.load();
+      Cell = &Buffer[Pos & BufferMask];
+
+#ifdef LOG
+      {
+        std::lock_guard<std::mutex> Lk(LogMut);
+        std::cout << "push: ";
+        std::cout << Pos << " " << Cell << std::endl;
+      }
+#endif
+
+      // queue is full (enqueue reached dequeue) and we cannot enqueue and just
+      // return false
+      if (is_full())
         return false;
-      std::this_thread::yield();
+
+      // check if we can increment the enqueue Position
+      Res = EnqueuePos.compare_exchange_weak(Pos, Pos + 1);
     }
 
-    if (!Old)
-      return false;
-    Data = std::move(Old->Data);
-#ifndef ALLOW_LEAK
-    delete Old;
-#endif
+    // write the item we want to enqueue
+    *Cell = std::move(Data);
     return true;
   }
 
-  bool is_empty() const { return Head.load() == nullptr; }
+  bool pop(T &Data) {
+    T *Cell;
+    unsigned Pos;
+    bool Res = false;
+
+    while (!Res) {
+      // fetch the current Position from where we can dequeue an item
+      Pos = DequeuePos.load();
+      Cell = &Buffer[Pos & BufferMask];
+
+#ifdef LOG
+      {
+        std::lock_guard<std::mutex> Lk(LogMut);
+        std::cout << "pop: ";
+        std::cout << Pos << " " << Cell << std::endl;
+      }
+#endif
+
+      // probably the queue is empty, then return false
+      if (is_empty())
+        ;
+      return false;
+
+      // Check if we can increment the dequeue Position
+      Res = DequeuePos.compare_exchange_weak(Pos, Pos + 1);
+    }
+
+    // read the item and update for the next round of the buffer
+    Data = std::move(*Cell);
+    return true;
+  }
+
+  // full if dequepos = enquepos + 1
+  bool is_full() const {
+    return (DequeuePos.load() & BufferMask) ==
+           ((EnqueuePos.load() + 1) & BufferMask);
+  }
+
+  // empty if we are equal
+  bool is_empty() const {
+    return (DequeuePos.load() & BufferMask) == (EnqueuePos.load() & BufferMask);
+  }
 };
 
 std::atomic<int> NTasks;
 
-void produce(lf_stack<int> &Q) {
+void produce(lf_queue<int> &Q) {
   for (;;) {
     int N = NTasks.load();
 
@@ -87,11 +144,12 @@ void produce(lf_stack<int> &Q) {
         return;
       std::this_thread::yield();
     }
-    Q.push(N);
+    while (!Q.push(N))
+      std::this_thread::yield();
   }
 }
 
-void consume(lf_stack<int> &Q) {
+void consume(lf_queue<int> &Q) {
   for (;;) {
     int N = NTasks.load();
     if (N < 0 && Q.is_empty())
@@ -107,9 +165,9 @@ void consume(lf_stack<int> &Q) {
 
 } // namespace
 
-TEST(atomics, lockfree_stack_1_1) {
+TEST(atomics, bounded_lockfree_queue_1_1) {
   NTasks = NTASKS;
-  lf_stack<int> Q;
+  lf_queue<int> Q(BUFSIZE);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{consume, std::ref(Q)};
@@ -133,9 +191,9 @@ TEST(atomics, lockfree_stack_1_1) {
   EXPECT_EQ(NTasks, -1);
 }
 
-TEST(atomics, lockfree_stack_1_2) {
+TEST(atomics, bounded_lockfree_queue_1_2) {
   NTasks = NTASKS;
-  lf_stack<int> Q;
+  lf_queue<int> Q(BUFSIZE);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{consume, std::ref(Q)};
@@ -149,9 +207,9 @@ TEST(atomics, lockfree_stack_1_2) {
   EXPECT_EQ(NTasks, -1);
 }
 
-TEST(atomics, lockfree_stack_2_1) {
+TEST(atomics, bounded_lockfree_queue_2_1) {
   NTasks = NTASKS;
-  lf_stack<int> Q;
+  lf_queue<int> Q(BUFSIZE);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{produce, std::ref(Q)};
@@ -165,9 +223,9 @@ TEST(atomics, lockfree_stack_2_1) {
   EXPECT_EQ(NTasks, -1);
 }
 
-TEST(atomics, lockfree_stack_2_2) {
+TEST(atomics, bounded_lockfree_queue_2_2) {
   NTasks = NTASKS;
-  lf_stack<int> Q;
+  lf_queue<int> Q(BUFSIZE);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{produce, std::ref(Q)};
@@ -183,9 +241,9 @@ TEST(atomics, lockfree_stack_2_2) {
   EXPECT_EQ(NTasks, -1);
 }
 
-TEST(atomics, lockfree_stack_4_4) {
+TEST(atomics, bounded_lockfree_queue_4_4) {
   NTasks = NTASKS;
-  lf_stack<int> Q;
+  lf_queue<int> Q(BUFSIZE);
   Consumed.clear();
   std::thread t1{produce, std::ref(Q)};
   std::thread t2{produce, std::ref(Q)};

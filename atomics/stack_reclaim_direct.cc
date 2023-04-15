@@ -8,10 +8,8 @@
 //
 // Lock-free node-based stack with reclaim problems
 //
-// try also NTASKS = 100
-//
-// g++-11 -O2 stack_reclaim_problem.cc -lgtest -lgtest_main -pthread
-// Also try with -fsanitize=thread
+// g++-11 -std=c++20 -g stack_reclaim_direct.cc -lgtest -lgtest_main -pthread
+// -latomic while ./a.out; do echo "Ok"; done Also try with -fsanitize=thread
 //
 //----------------------------------------------------------------------------
 
@@ -33,42 +31,49 @@ std::vector<int> Consumed;
 std::mutex ConsMut;
 
 template <typename T> class lf_stack {
-  struct Node {
-    Node *Next;
+  struct NodeTy {
+    NodeTy *Next;
     T Data;
   };
-  std::atomic<Node *> Head = nullptr;
+
+  struct Pointer {
+    NodeTy *Node;
+    unsigned long Num;
+    bool operator==(const Pointer &) const = default;
+  };
+
+  std::atomic<Pointer> Head = Pointer{nullptr, 0ul};
+  std::atomic<unsigned long> Num = 0ul;
 
 public:
   void push(T Data) {
-    auto New = new Node{Head.load(), std::move(Data)};
-    while (!Head.compare_exchange_weak(New->Next, New))
-      std::this_thread::yield();
+    auto *N = new NodeTy{nullptr, std::move(Data)};
+    auto Number = Num.fetch_add(1);
+    Pointer New = {N, Number};
+    Pointer Old = Head.load();
+    do {
+      New.Node->Next = Old.Node;
+    } while (!Head.compare_exchange_weak(Old, New));
   }
 
   bool pop(T &Data) {
-    Node *Old = Head.load();
-
-    // We can see do-while pattern.
-    // In this case I left while form to match slides.
-    if (!Old)
-      return false;
-    while (!Head.compare_exchange_weak(Old, Old->Next)) {
-      if (!Old)
+    auto Number = Num.fetch_add(1);
+    Pointer Old = Head.load();
+    Pointer New = {nullptr, Number};
+    do {
+      if (!Old.Node)
         return false;
-      std::this_thread::yield();
-    }
+      New.Node = Old.Node->Next;
+    } while (!Head.compare_exchange_weak(Old, New));
 
-    if (!Old)
+    if (!Old.Node)
       return false;
-    Data = std::move(Old->Data);
-#ifndef ALLOW_LEAK
-    delete Old;
-#endif
+    Data = std::move(Old.Node->Data);
+    delete Old.Node;
     return true;
   }
 
-  bool is_empty() const { return Head.load() == nullptr; }
+  bool is_empty() const { return Head.load().Node == nullptr; }
 };
 
 std::atomic<int> NTasks;

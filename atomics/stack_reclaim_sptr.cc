@@ -6,17 +6,18 @@
 //
 //-----------------------------------------------------------------------------
 //
-// Lock-free node-based stack with reclaim problems
+// Lock-free node-based stack with atomic shared pointer reclaim
 //
 // try also NTASKS = 100
 //
-// g++-11 -O2 stack_reclaim_problem.cc -lgtest -lgtest_main -pthread
-// Also try with -fsanitize=thread
+// g++-11 -std=c++20 -g stack_reclaim_sptr.cc -lgtest -lgtest_main -pthread
+// -latomic Also try with -fsanitize=thread
 //
 //----------------------------------------------------------------------------
 
 #include <atomic>
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -34,37 +35,37 @@ std::mutex ConsMut;
 
 template <typename T> class lf_stack {
   struct Node {
-    Node *Next;
+    std::shared_ptr<Node> Next;
     T Data;
+    Node(T Data) : Data(std::move(Data)) {}
   };
-  std::atomic<Node *> Head = nullptr;
+
+  std::atomic<std::shared_ptr<Node>> Head = nullptr;
+
+  struct Ref {
+    std::shared_ptr<Node> P;
+    T &operator*() { return P->Data; }
+    T *operator->() { return &P->Data; }
+  };
 
 public:
   void push(T Data) {
-    auto New = new Node{Head.load(), std::move(Data)};
+    auto New = std::make_shared<Node>(std::move(Data));
+    New->Next = Head.load();
     while (!Head.compare_exchange_weak(New->Next, New))
       std::this_thread::yield();
   }
 
   bool pop(T &Data) {
-    Node *Old = Head.load();
-
-    // We can see do-while pattern.
-    // In this case I left while form to match slides.
-    if (!Old)
-      return false;
-    while (!Head.compare_exchange_weak(Old, Old->Next)) {
+    auto Old = Head.load();
+    do {
       if (!Old)
         return false;
       std::this_thread::yield();
-    }
-
+    } while (!Head.compare_exchange_weak(Old, Old->Next));
     if (!Old)
       return false;
-    Data = std::move(Old->Data);
-#ifndef ALLOW_LEAK
-    delete Old;
-#endif
+    Data = Old->Data;
     return true;
   }
 
