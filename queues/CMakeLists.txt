@@ -35,5 +35,6 @@ set(SRCS
 add_gtest(queues)
 add_demo(classic_stack_wrong_demo)
 add_demo(classic_stack_demo)
-# add_demo(classic_queue_demo)
+add_demo(classic_queue_demo)
+add_demo(classic_queue_bench)
 add_demo(unbounded_queue_demo)
