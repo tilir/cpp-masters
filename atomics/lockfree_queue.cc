@@ -72,7 +72,7 @@ public:
       // fetch the current Position where to enqueue the item
       Pos = EnqueuePos.load();
       Cell = &Buffer[Pos & BufferMask];
-      auto Seq = Cell->Sequence.load(std::memory_order_acquire);
+      auto Seq = Cell->Sequence.load();
       auto Diff = static_cast<int>(Seq) - static_cast<int>(Pos);
 
 #ifdef LOG
