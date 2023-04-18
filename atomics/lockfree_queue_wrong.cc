@@ -34,11 +34,10 @@ std::mutex LogMut;
 
 template <typename T> class lf_queue {
   std::vector<T> Buffer;
-  unsigned BufferMask;
-  std::atomic<unsigned> EnqueuePos, DequeuePos;
+  std::atomic<unsigned> EnqueuePos = 0, DequeuePos = 0;
 
 public:
-  lf_queue(unsigned BufSize) : Buffer(BufSize), BufferMask(BufSize - 1) {
+  lf_queue(unsigned BufSize) : Buffer(BufSize) {
     if (BufSize > (1 << 30))
       throw std::runtime_error("buffer size too large");
 
@@ -47,9 +46,6 @@ public:
 
     if ((BufSize & (BufSize - 1)) != 0)
       throw std::runtime_error("buffer size is not power of 2");
-
-    EnqueuePos.store(0);
-    DequeuePos.store(0);
   }
 
   bool push(T Data) {
@@ -60,7 +56,7 @@ public:
     while (!Res) {
       // fetch the current Position where to enqueue the item
       Pos = EnqueuePos.load();
-      Cell = &Buffer[Pos & BufferMask];
+      Cell = &Buffer[Pos % Buffer.size()];
 
 #ifdef LOG
       {
@@ -92,7 +88,7 @@ public:
     while (!Res) {
       // fetch the current Position from where we can dequeue an item
       Pos = DequeuePos.load();
-      Cell = &Buffer[Pos & BufferMask];
+      Cell = &Buffer[Pos % Buffer.size()];
 
 #ifdef LOG
       {
@@ -104,8 +100,7 @@ public:
 
       // probably the queue is empty, then return false
       if (is_empty())
-        ;
-      return false;
+        return false;
 
       // Check if we can increment the dequeue Position
       Res = DequeuePos.compare_exchange_weak(Pos, Pos + 1);
@@ -118,13 +113,14 @@ public:
 
   // full if dequepos = enquepos + 1
   bool is_full() const {
-    return (DequeuePos.load() & BufferMask) ==
-           ((EnqueuePos.load() + 1) & BufferMask);
+    return (DequeuePos.load() % Buffer.size()) ==
+           ((EnqueuePos.load() + 1) % Buffer.size());
   }
 
   // empty if we are equal
   bool is_empty() const {
-    return (DequeuePos.load() & BufferMask) == (EnqueuePos.load() & BufferMask);
+    return (DequeuePos.load() % Buffer.size()) ==
+           (EnqueuePos.load() % Buffer.size());
   }
 };
 
