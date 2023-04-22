@@ -3,12 +3,15 @@
 # Gnuplot script for atomic vs mutex counter experiment
 #
 # queue under load
-# ./build/queues/classic_queue_bench -nthreads=20 -ntasks=10000 -ptime=1 -ctime=1 > classic_1x1.dat
-# ./build/atomics/lockfree_bench -nthreads=20 -ntasks=10000 -ptime=1 -ctime=1 > lockfree_1x1.dat
+# ./build/queues/classic_queue_bench -nthreads=7 -ntasks=10000 -ptime=1 -ctime=1 > classic_1x1.dat
+# ./build/atomics/lockfree_bench -nthreads=7 -ntasks=10000 -ptime=1 -ctime=1 > lockfree_1x1.dat
 #
 # measuring just contention
-# ./build/queues/classic_queue_bench -nthreads=30 -ntasks=100000 -ptime=0 -ctime=0 > classic_0x0.dat
-# ./build/atomics/lockfree_bench -nthreads=30 -ntasks=100000 -ptime=0 -ctime=0 > lockfree_0x0.dat
+# ./build/queues/classic_queue_bench -nthreads=7 -ntasks=100000 -ptime=0 -ctime=0 > classic_0x0.dat
+# ./build/atomics/lockfree_bench -nthreads=7 -ntasks=100000 -ptime=0 -ctime=0 > lockfree_0x0.dat
+#
+# memory models and align magic
+# ./build/atomics/lockfree_basic_bench -nthreads=7 -ntasks=100000 -ptime=0 -ctime=0 > lockfree_basic_0x0.dat
 #
 # run plotter with
 # > gnuplot -persist -c ./atomics/lockfree_comparison.plot
@@ -35,3 +38,8 @@ plot 'classic_1x1.dat' with linespoints title 'Classic queue, 1024, 10000',\
 set output "lockfree_comparison_contention.png"
 plot 'classic_0x0.dat' with linespoints title 'Classic queue, 1024, 100000',\
      'lockfree_0x0.dat' with linespoints title 'Lock-free queue, 1024, 100000'
+
+# lock-free contention only (100000 tasks)
+set output "lockfree_comparison_improved.png"
+plot 'lockfree_basic_0x0.dat' with linespoints title 'Basic lock-free, 1024, 100000',\
+     'lockfree_0x0.dat' with linespoints title 'Improved lock-free, 1024, 100000'

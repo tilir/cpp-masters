@@ -56,18 +56,17 @@ public:
       std::this_thread::yield();
   }
 
-  std::shared_ptr<T> pop() {
+  bool pop(T &Data) {
     auto Old = Head.load();
     do {
       if (!Old)
-        return nullptr;
+        return false;
       std::this_thread::yield();
     } while (!Head.compare_exchange_weak(Old, Old->Next));
     if (!Old)
-      return nullptr;
-
-    // aliasing ctor
-    return std::shared_ptr<T>{Old, &Old->Data};
+      return false;
+    Data = Old->Data;
+    return true;
   }
 
   bool is_empty() const { return Head.load() == nullptr; }
@@ -98,11 +97,11 @@ void consume(lf_stack<int> &Q) {
     int N = NTasks.load();
     if (N < 0 && Q.is_empty())
       break;
-    auto SData = Q.pop();
-    if (SData) {
+    bool Succ = Q.pop(N);
+    if (Succ) {
       // record what was consumed
       std::lock_guard<std::mutex> Lk{ConsMut};
-      Consumed.push_back(*SData);
+      Consumed.push_back(N);
     }
   }
 }

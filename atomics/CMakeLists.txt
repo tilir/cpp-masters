@@ -26,7 +26,8 @@ set(SRCS
   sptr_atomic.cc
 # stack_reclaim_problem.cc -- suppose to fail
 # stack_reclaim_direct.cc -- suppose to fail
-# stack_reclaim_sptr.cc -- temporary switch off for unknown reasons (TODO: return it)
+# stack_reclaim_sptr_wrong.cc -- supposed to fail
+  stack_reclaim_sptr.cc
 # chasing_test.cc -- suppose to fail (rarely)
 # lockfree_queue_wrong.cc -- supposed to fail
 # lockfree_queue.cc -- temporary switch off for unknown reasons (TODO: return it)
@@ -38,4 +39,5 @@ add_demo(custom_mutex_demo)
 add_demo(atomic_twice_demo)
 add_demo(lockfree_queue_demo)
 add_demo(lockfree_queue_improved_demo)
+add_demo(lockfree_basic_bench) # without magic
 add_demo(lockfree_bench)
