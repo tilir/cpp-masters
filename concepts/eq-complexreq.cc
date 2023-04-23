@@ -12,7 +12,8 @@
 
 #include "gtest/gtest.h"
 
-template <typename T, typename U> requires requires(T t, U u) { t == u; }
+template <typename T, typename U>
+requires requires(T t, U u) { t == u; }
 bool check_eq(T &&lhs, U &&rhs) { return (lhs == rhs); }
 
 TEST(concepts, reqreq) {

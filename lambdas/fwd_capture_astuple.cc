@@ -14,7 +14,7 @@
 #include <utility>
 
 TEST(lamdas, fwd_capture_astuple) {
-  auto foo = []<typename... T>(T && ... a) {
+  auto foo = []<typename... T>(T &&...a) {
     return [a = std::forward_as_tuple(a...)]() mutable {
       return ++std::get<0>(a);
     };

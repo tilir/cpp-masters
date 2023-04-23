@@ -26,7 +26,7 @@ template <typename T> class Stack {
     StackElem(T e, StackElem *nxt) : elem(e), next(nxt) {}
 
     template <class... Args>
-    StackElem(Args &&... args, StackElem *nxt)
+    StackElem(Args &&...args, StackElem *nxt)
         : elem(std::forward<Args>(args)...), next(nxt) {}
   };
 
@@ -41,7 +41,7 @@ public:
 
   void push_back(const T &);
 
-  template <class... Args> void emplace_back(Args &&... args);
+  template <class... Args> void emplace_back(Args &&...args);
 };
 
 template <typename T> void Stack<T>::push_back(const T &elem) {
@@ -51,7 +51,7 @@ template <typename T> void Stack<T>::push_back(const T &elem) {
 
 template <typename T>
 template <class... Args>
-void Stack<T>::emplace_back(Args &&... args) {
+void Stack<T>::emplace_back(Args &&...args) {
   StackElem *newelem = new StackElem(std::forward<Args>(args)..., top_);
   top_ = newelem;
 }

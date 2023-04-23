@@ -13,11 +13,20 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
-template <typename T> concept Ord = requires(T a, T b) { a < b; };
-template <typename T> concept Inc = requires(T a) { ++a; };
-template <typename T> concept Void = std::is_same_v<T, void>;
+template <typename T>
+concept Ord = requires(T a, T b) {
+  a < b;
+};
+template <typename T>
+concept Inc = requires(T a) {
+  ++a;
+};
+template <typename T>
+concept Void = std::is_same_v<T, void>;
 
-template <typename T> requires Ord<T> || Inc<T> || Void<T> struct less {
+template <typename T>
+requires Ord<T> || Inc<T> || Void<T>
+struct less {
   int operator()() const { return 2; }
 };
 

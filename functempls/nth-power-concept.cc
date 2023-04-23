@@ -13,14 +13,14 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
-template <typename T> concept multiplicative = requires(T t) {
-  { t *= t }
-  ->std::convertible_to<T>;
+template <typename T>
+concept multiplicative = requires(T t) {
+  { t *= t } -> std::convertible_to<T>;
 };
 
 template <typename T>
 T do_nth_power(T x, T acc,
-               unsigned n) requires multiplicative<T> &&std::copyable<T> {
+               unsigned n) requires multiplicative<T> && std::copyable<T> {
   while (n > 0) {
     if ((n & 0x1) == 0x1) {
       acc *= x;

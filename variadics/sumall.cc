@@ -12,9 +12,9 @@
 
 #include "gtest/gtest.h"
 
-template <typename... Ts> auto sum_all(Ts &&... args) { return (... + args); }
+template <typename... Ts> auto sum_all(Ts &&...args) { return (... + args); }
 
-template <typename... Ts> auto sum_all_fwd(Ts &&... args) {
+template <typename... Ts> auto sum_all_fwd(Ts &&...args) {
   return (... + std::forward<Ts>(args));
 }
 
