@@ -2,7 +2,7 @@
 #
 # Gnuplot script for mutex vs custom futex
 #
-# collect data with gemm.rb
+# collect data with:
 # ./build/atomics/custom_mutex_demo -type=0 > type0.dat
 # ./build/atomics/custom_mutex_demo -type=1 > type1.dat
 # ./build/atomics/custom_mutex_demo -type=2 > type2.dat
