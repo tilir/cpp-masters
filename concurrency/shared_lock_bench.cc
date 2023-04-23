@@ -7,7 +7,8 @@
 //-----------------------------------------------------------------------------
 //
 // Benchmark: unique vs shared lock
-// quick-bench not support MT: https://quick-bench.com/q/sdeGcN3y2TBDoJNOlzBZGqBn_JQ
+// quick-bench not support MT:
+// https://quick-bench.com/q/sdeGcN3y2TBDoJNOlzBZGqBn_JQ
 //
 //----------------------------------------------------------------------------
 
@@ -19,12 +20,13 @@
 #include "timer.hpp"
 
 struct Unique {
-  mutable std::mutex m; int value;
+  mutable std::mutex m;
+  int value;
 
   int get() const {
     std::unique_lock<std::mutex> lock{m};
     return value;
-  } 
+  }
 
   void modify(int newval) {
     std::unique_lock<std::mutex> lock{m};
@@ -33,12 +35,13 @@ struct Unique {
 };
 
 struct Shared {
-  mutable std::shared_mutex m; int value;
+  mutable std::shared_mutex m;
+  int value;
 
   int get() const {
     std::shared_lock<std::shared_mutex> lock{m};
     return value;
-  } 
+  }
 
   void modify(int newval) {
     std::unique_lock<std::shared_mutex> lock{m};
@@ -49,8 +52,7 @@ struct Shared {
 constexpr int nget = 1000000;
 constexpr int nmod = 1000000;
 
-template <typename T>
-void modifier(T &t) {  
+template <typename T> void modifier(T &t) {
   for (int i = 0; i < nmod; i += 1) {
     if ((i % 1000) != 0)
       continue;
@@ -59,12 +61,11 @@ void modifier(T &t) {
   }
 }
 
-template <typename T>
-void getter(const T &t) {
-  for (int i = 0; i < nget; i += 1) {    
+template <typename T> void getter(const T &t) {
+  for (int i = 0; i < nget; i += 1) {
     int k = t.get();
     noopt(k);
-    noopt(i);    
+    noopt(i);
   }
 }
 

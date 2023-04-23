@@ -14,7 +14,7 @@
 
 static int sum_all() { return 0; }
 
-template <typename T, typename... Ts> static T sum_all(T &&arg, Ts &&... args) {
+template <typename T, typename... Ts> static T sum_all(T &&arg, Ts &&...args) {
   return arg + sum_all(std::forward<Ts>(args)...);
 }
 

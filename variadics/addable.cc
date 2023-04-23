@@ -28,7 +28,7 @@ template <typename... Ts> concept Addable = requires(Ts &&... args) {
 };
 // clang-format on
 
-template <typename... Ts> auto sum_all(Ts &&... args) requires Addable<Ts...> {
+template <typename... Ts> auto sum_all(Ts &&...args) requires Addable<Ts...> {
   return (... + std::forward<Ts>(args));
 }
 

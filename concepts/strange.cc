@@ -20,7 +20,9 @@ concept Strange = (sizeof(T) == 4) ||
    (T::value == true));
 // clang-format on
 
-template <typename T> requires Strange<T> int f(T t) { return 42; }
+template <typename T>
+requires Strange<T>
+int f(T t) { return 42; }
 
 TEST(concepts, strange) {
   int x = f(1);

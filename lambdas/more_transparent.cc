@@ -16,7 +16,7 @@
 namespace {
 
 template <typename Fun, typename... Args>
-decltype(auto) transparent(Fun &&fun, Args &&... args) {
+decltype(auto) transparent(Fun &&fun, Args &&...args) {
   return std::forward<Fun>(fun)(std::forward<Args>(args)...);
 }
 
