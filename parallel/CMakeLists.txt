@@ -15,7 +15,12 @@
 
 set(SRCS
   paralg.cc
+  my_reduce.cc
+  my_reduce_pkg.cc
+  lambdas_async.cc
+  my_reduce_async.cc
 )
 
 add_gtest(parallel)
 add_demo(algo_bench)
+add_demo(reduce_bench)
