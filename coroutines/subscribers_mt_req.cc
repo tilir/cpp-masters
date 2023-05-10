@@ -6,13 +6,14 @@
 //
 //-----------------------------------------------------------------------------
 //
-// Subscribers for multithreads -- bad attempt
+// Subscribers for multithreads: requirements for the frame
 //
 //----------------------------------------------------------------------------
 
 #include <coroutine>
 #include <list>
 #include <mutex>
+#include <thread>
 
 #include "gtest/gtest.h"
 
@@ -23,6 +24,9 @@ struct resumable_no_own {
     using coro_handle = std::coroutine_handle<promise_type>;
     auto get_return_object() { return coro_handle::from_promise(*this); }
     auto initial_suspend() { return std::suspend_never(); }
+
+    // this one is critical: no suspend on final suspend
+    // effectively means "destroy your frame"
     auto final_suspend() noexcept { return std::suspend_never(); }
     void return_void() {}
     void unhandled_exception() { std::terminate(); }
@@ -39,6 +43,7 @@ using coro_t = std::coroutine_handle<>;
 class evt_awaiter_t {
   struct awaiter;
 
+  // we want to pop front and push back WITHOUT iterator invalidation
   mutable std::mutex m_;
   std::list<awaiter> lst_;
   bool set_;
@@ -98,42 +103,52 @@ namespace {
 std::mutex M;
 int G = 0, C = 0;
 evt_awaiter_t Evt;
-std::atomic<int> L = 3;
+
+struct NC {
+  int *PN;
+  NC(int *PN = 0) : PN(PN) {}
+  NC(const NC &) = delete;
+  NC &operator=(const NC &) = delete;
+  NC(NC &&) = delete;
+  NC &operator=(NC &&) = delete;
+};
 
 void producer() {
+  int I = 0;
   {
     std::lock_guard<std::mutex> L(M);
     G += 42;
+    std::cout << "Producer: " << &I << std::endl;
   }
-
   Evt.set();
 }
 
-resumable_no_own consumer() {
-  // this is fragile and errorneous. Figure out how to do better?
-  L -= 1;
+resumable_no_own consumer(int n) {
+  int I = n;
+  NC Nc(&I);
+  {
+    std::lock_guard<std::mutex> L(M);
+    std::cout << "Consumer " << *Nc.PN << ": " << Nc.PN << std::endl;
+  }
+
   co_await Evt;
 
   std::lock_guard<std::mutex> L(M);
+  std::cout << "Consumer resumed " << *Nc.PN << ": " << Nc.PN << std::endl;
   EXPECT_GT(G, 0);
   C += 1;
 }
 
 } // namespace
 
-TEST(coroutines, subscribers_mt) {
-  std::thread t1(consumer);
-  std::thread t2(consumer);
-  std::thread t3(consumer);
-
-  // this is fragile and errorneous. Figure out how to do better?
-  while (L > 0)
-    std::this_thread::yield();
-
-  producer();
+TEST(coroutines, subscribers_mt_req) {
+  std::thread t1(consumer, 1);
+  std::thread t2(consumer, 2);
+  std::thread t3(consumer, 3);
   t1.join();
   t2.join();
   t3.join();
+  producer();
   EXPECT_EQ(C, 3);
 }
 

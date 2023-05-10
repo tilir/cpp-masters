@@ -65,10 +65,8 @@ T parallel_accumulate(Iterator first, Iterator last, T init = 0) {
 
   T result = init;
 
-  if (remainder > 0) {
-    assert(tidx < nthreads);
+  if (remainder > 0)
     result += accumulate_block(first, first + remainder);
-  }
 
   for (unsigned long i = 0; i < nthreads; ++i)
     result += results[i].get();
