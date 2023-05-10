@@ -19,9 +19,13 @@ set(SRCS
   natseq_range.cc
   natseq_zip.cc
   subscribers.cc
-#  subscribers_mt.cc -- shall fail
-  subscribers_natlst.cc
   cancellable.cc
+  fsm.cc
+  optional.cc
+#  subscribers_mt.cc -- shall fail
+  subscribers_mt_demo.cc
+  subscribers_mt_req.cc
+  subscribers_natlst.cc
   futures.cc
 )
 
