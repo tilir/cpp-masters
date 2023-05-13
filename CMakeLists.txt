@@ -50,7 +50,7 @@ function(add_demo TGT)
   target_compile_features(${TGT} PRIVATE cxx_std_20)
 endfunction()
 
-# add_subdirectory(strings) -- in progress
+add_subdirectory(strings)
 # add_subdirectory(functempls) -- in progress
 add_subdirectory(classtemplates)
 # add_subdirectory(modules) -- not simple with cmake
