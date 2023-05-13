@@ -13,7 +13,9 @@
 
 #include <cstring>
 
-int main() {
+#include "gtest/gtest.h"
+
+TEST(strings, cstrs) {
   const char *cinv = "Hello, world";
   const char cmut[] = "Hello, world";
   char *cheap = new char[14]{"Hello, world"};
