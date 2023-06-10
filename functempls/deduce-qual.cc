@@ -29,7 +29,7 @@ template <typename T> std::string deduce3(T &x, T &y) {
   return boost::typeindex::type_id_with_cvr<decltype(x)>().pretty_name();
 }
 
-TEST(deduce, basic) {
+TEST(functemplates, deduce_basic) {
   const int &a = 1;
   const int &b = 2;
   std::string s = deduce(a, b);

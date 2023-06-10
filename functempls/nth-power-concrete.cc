@@ -12,6 +12,8 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 unsigned nth_power(unsigned x, unsigned n) {
   unsigned acc = 1;
   if ((x < 2) || (n == 1))
@@ -36,7 +38,9 @@ unsigned naive_nth_power(unsigned x, unsigned n) {
   return acc;
 }
 
-TEST(nthpower, concrete) {
+} // namespace
+
+TEST(functemplates, nthconcrete) {
   EXPECT_EQ(nth_power(0, 10), 0);
   EXPECT_EQ(nth_power(1, 11), 1);
   EXPECT_EQ(nth_power(2, 11), (1 << 11));

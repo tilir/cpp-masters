@@ -19,7 +19,7 @@
 
 template <typename DstT, typename SrcT> DstT implicit_cast(SrcT x) { return x; }
 
-TEST(deduce, context) {
+TEST(functemplates, deduce_context) {
 #if CT_ERROR
   double v0 = implicit_cast(-1); // fail!
 #endif

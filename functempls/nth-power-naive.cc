@@ -12,6 +12,8 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 template <typename T> T nth_power(T x, unsigned n) {
   T acc = 1;
   if ((x < 2) || (n == 1))
@@ -51,7 +53,9 @@ struct Matrix2x2 {
   }
 };
 
-TEST(nthpower, naive) {
+} // namespace
+
+TEST(functemplates, nthnaive) {
   EXPECT_EQ(nth_power(2, 11), (1 << 11));
   EXPECT_EQ(nth_power(2.0, 11), (1 << 11));
   Matrix2x2 m{1, 0, 0, 1};

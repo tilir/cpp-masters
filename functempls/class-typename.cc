@@ -20,10 +20,10 @@ template <class T> int foo(T x) { return x + 1; }
 
 template <std::integral T> int foo(T x) { return x % 2; }
 
-TEST(conceptform, basic) { EXPECT_EQ(foo(11), 1); }
+TEST(functemplates, class_typename) { EXPECT_EQ(foo(11), 1); }
 
 #if 0
-TEST(conceptform, err) {
+TEST(functemplates, class_typename_err) {
   EXPECT_EQ(foo(0.0), 2);
 }
 #endif

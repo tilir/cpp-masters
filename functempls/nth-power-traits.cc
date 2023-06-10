@@ -6,23 +6,23 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  nth power: adding concepts
+//  nth power: approach with explicit traits
 //
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
 
 namespace {
 
-template <typename T>
-concept multiplicative = requires(T t) {
-  { t *= t } -> std::convertible_to<T>;
+template <typename T> struct default_id_trait {
+  static int id() { return 1; }
 };
 
-template <typename T>
-T do_nth_power(T x, T acc,
-               unsigned n) requires multiplicative<T> && std::copyable<T> {
+template <typename T, typename Trait = default_id_trait<T>>
+T nth_power(T x, unsigned n) {
+  T acc = Trait::id();
+  if ((x == acc) || (n == 1))
+    return x;
   while (n > 0) {
     if ((n & 0x1) == 0x1) {
       acc *= x;
@@ -32,12 +32,6 @@ T do_nth_power(T x, T acc,
     n /= 2;
   }
   return acc;
-}
-
-unsigned nth_power(unsigned x, unsigned n) {
-  if (x < 2u || n == 1u)
-    return x;
-  return do_nth_power<unsigned>(x, 1u, n);
 }
 
 struct Matrix2x2 {
@@ -64,29 +58,13 @@ struct Matrix2x2 {
   }
 };
 
-Matrix2x2 nth_power(Matrix2x2 x, unsigned n) {
-  Matrix2x2 eye{1, 0, 0, 1};
-  if (x == eye || n == 1u)
-    return x;
-  return do_nth_power<Matrix2x2>(x, eye, n);
-}
-
-#if defined(WRONG)
-
-struct Wrong {};
-
-Wrong nth_power(Wrong x, unsigned n) {
-  Wrong eye;
-  if (n == 1u)
-    return x;
-  return do_nth_power<Wrong>(x, eye, n);
-}
-
-#endif
+template <> struct default_id_trait<Matrix2x2> {
+  static Matrix2x2 id() { return {1, 0, 0, 1}; }
+};
 
 } // namespace
 
-TEST(functemplates, nthconcept) {
+TEST(functemplates, nthtraits) {
   EXPECT_EQ(nth_power(2, 11), (1 << 11));
   EXPECT_EQ(nth_power(2.0, 11), (1 << 11));
   Matrix2x2 m{1, 0, 0, 1};
