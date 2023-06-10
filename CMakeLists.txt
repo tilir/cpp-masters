@@ -51,7 +51,7 @@ function(add_demo TGT)
 endfunction()
 
 add_subdirectory(strings)
-# add_subdirectory(functempls) -- in progress
+add_subdirectory(functempls)
 add_subdirectory(classtemplates)
 # add_subdirectory(modules) -- not simple with cmake
 # add_subdirectory(sfinae) -- in progress

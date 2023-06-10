@@ -18,7 +18,7 @@ template <typename T> T foo(T x) { return x; }
 // for int
 template <> int foo(int x) { return x + 1; }
 
-TEST(ovrnames, deducetest) {
+TEST(functemplates, deduce_spec) {
   double d = 1.5;
   d = foo(d);
   EXPECT_EQ(d, 1.5);

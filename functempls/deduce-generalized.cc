@@ -23,7 +23,7 @@ template <typename T> std::string deduce(T (*p)(T)) {
 
 int bar(int x) { return x; }
 
-TEST(deduce, extended) {
+TEST(functemplates, deduce_extended) {
   std::string s = deduce(bar);
   EXPECT_EQ(s, "int");
 }
@@ -33,7 +33,7 @@ template <typename T, int N> std::string deduce2(T const (&)[N]) {
          std::to_string(N);
 }
 
-TEST(deduce, array) {
+TEST(functemplates, deduce_array) {
   std::string s = deduce2({1, 2, 3});
   EXPECT_EQ(s, "int 3");
 }

@@ -6,11 +6,13 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  nth power: factoring out "clean" algortithmic part
+//  nth power: factoring out "clean" algorithmic part
 //
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
+
+namespace {
 
 template <typename T> T do_nth_power(T x, T acc, unsigned n) {
   while (n > 0) {
@@ -61,7 +63,9 @@ Matrix2x2 nth_power(Matrix2x2 x, unsigned n) {
   return do_nth_power<Matrix2x2>(x, eye, n);
 }
 
-TEST(nthpower, clean) {
+} // namespace
+
+TEST(functemplates, nthclean) {
   EXPECT_EQ(nth_power(2, 11), (1 << 11));
   EXPECT_EQ(nth_power(2.0, 11), (1 << 11));
   Matrix2x2 m{1, 0, 0, 1};

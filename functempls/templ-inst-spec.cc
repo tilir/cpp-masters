@@ -15,6 +15,8 @@
 #define EARLY 0
 #define SPECIALIZE 1
 
+namespace {
+
 template <typename T> T max(T x, T y) { return x > y ? x : y; }
 
 #if (EARLY == 1)
@@ -29,4 +31,6 @@ template <> int max<int>(int x, int y) { return x > y ? x : y; }
 extern template int max<int>(int, int);
 #endif
 
-TEST(maxmin, maxorder) { EXPECT_EQ(max(2, 11), 11); }
+} // namespace
+
+TEST(functemplates, inst_spec) { EXPECT_EQ(max(2, 11), 11); }

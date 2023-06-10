@@ -17,7 +17,7 @@
 
 template <typename T = double> double foo(T x = 1.5) { return x; }
 
-TEST(deduce, context) {
+TEST(functemplates, deduce_default) {
   double v0 = foo(2.0);
   EXPECT_EQ(v0, 2.0);
   double v1 = foo<int>();
