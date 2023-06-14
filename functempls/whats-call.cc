@@ -6,31 +6,44 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  class vs typename holywar solved with concepts
+//  what can foo(s) mean
 //
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
 
 namespace {
 
-#if 0
-template <typename T> int foo(T x) { return x; }
-template <class T> int foo(T x) { return x + 1; }
-#endif
+struct foo {
+  int x = 1;
+  foo() = default;
+  static int s;
+  foo(int x) { s = x; }
+};
 
-template <std::integral T> int foo(T x) { return x % 2; }
+int foo::s;
 
 } // namespace
 
-TEST(functemplates, class_typename) {
-  int res = foo(11);
-  EXPECT_EQ(res, 1);
+TEST(functemplates, structfoo) {
+  foo(s);
+  EXPECT_EQ(s.x, 1);
 }
 
-#if 0
-TEST(functemplates, class_typename_err) {
-  EXPECT_EQ(foo(0.0), 2);
+TEST(functemplates, structctorfoo) {
+  int x = 2;
+  delete new foo(x);
+  EXPECT_EQ(foo::s, 2);
 }
-#endif
+
+namespace {
+
+int foo(int) { return 3; }
+
+} // namespace
+
+TEST(functemplates, fnfoo) {
+  int s = 0;
+  foo(s);
+  EXPECT_EQ(foo(s), 3);
+}

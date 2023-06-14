@@ -6,27 +6,17 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  template specialization type deduction
+//  generate specialization then delete it
+//  failure is "redefinition"
 //
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
 
-namespace {
+template <typename T> T max(T x, T y) { return x > y ? x : y; }
 
-// for all
-template <typename T> T foo(T x) { return x; }
+template <> int max<int>(int x, int y) { return x > y ? x : y; }
 
-// for int
-template <> int foo(int x) { return x + 1; }
+template <> int max<int>(int x, int y) = delete;
 
-} // namespace
-
-TEST(functemplates, deduce_spec) {
-  double d = 1.5;
-  d = foo(d);
-  EXPECT_EQ(d, 1.5);
-  int i = 2;
-  i = foo(i);
-  EXPECT_EQ(i, 3);
-}
+TEST(max_test_case, testWillPass) { EXPECT_EQ(max(2, 11), 11); }

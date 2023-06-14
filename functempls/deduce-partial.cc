@@ -17,7 +17,11 @@
 
 #define CT_ERROR 0
 
+namespace {
+
 template <typename DstT, typename SrcT> DstT implicit_cast(SrcT x) { return x; }
+
+} // namespace
 
 TEST(functemplates, deduce_context) {
 #if CT_ERROR

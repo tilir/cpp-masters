@@ -6,7 +6,7 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  template type deduction with default arguments
+//  template type deduction with NTTP
 //
 //----------------------------------------------------------------------------
 
@@ -16,14 +16,18 @@
 #define CT_ERROR 0
 
 namespace {
-template <typename T = double> double foo(T x = 1.5) { return x; }
+
+template <auto n> int foo() { return n; }
+
 } // namespace
 
-TEST(functemplates, deduce_default) {
-  double v0 = foo(2.0);
-  EXPECT_EQ(v0, 2.0);
-  double v1 = foo<int>();
-  EXPECT_EQ(v1, 1);
-  double v2 = foo();
-  EXPECT_EQ(v2, 1.5);
+TEST(functemplates, context) {
+  double v0 = foo<1>();
+  EXPECT_EQ(v0, 1);
+
+// still not supported in CLANG 16
+#if 0
+  double v1 = foo<2.0>();
+  EXPECT_EQ(v1, 2);
+#endif
 }

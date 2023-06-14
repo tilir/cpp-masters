@@ -6,24 +6,22 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  template type deduction with default arguments
+//  simple example on ICS tail sequence importance
 //
 //----------------------------------------------------------------------------
 
-#include <boost/type_index.hpp>
-#include <gtest/gtest.h>
-
-#define CT_ERROR 0
+#include "gtest/gtest.h"
 
 namespace {
-template <typename T = double> double foo(T x = 1.5) { return x; }
+
+struct A {
+  operator int() { return 42; }
+  operator double() { return 1.0; }
+};
+
 } // namespace
 
-TEST(functemplates, deduce_default) {
-  double v0 = foo(2.0);
-  EXPECT_EQ(v0, 2.0);
-  double v1 = foo<int>();
-  EXPECT_EQ(v1, 1);
-  double v2 = foo();
-  EXPECT_EQ(v2, 1.5);
+TEST(functemplates, icstail) {
+  int Res = A{};
+  EXPECT_EQ(Res, 42);
 }

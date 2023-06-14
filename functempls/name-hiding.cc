@@ -6,24 +6,30 @@
 //
 //-----------------------------------------------------------------------------
 //
-//  template type deduction with default arguments
+//  simple name hiding example
 //
 //----------------------------------------------------------------------------
 
-#include <boost/type_index.hpp>
-#include <gtest/gtest.h>
-
-#define CT_ERROR 0
+#include "gtest/gtest.h"
 
 namespace {
-template <typename T = double> double foo(T x = 1.5) { return x; }
+
+struct B {
+  int f(int) { return 42; }
+};
+
+struct D : B {
+  // introduces name
+  // using B::f;
+
+  // hides name
+  int f(const char *) { return 14; }
+};
+
 } // namespace
 
-TEST(functemplates, deduce_default) {
-  double v0 = foo(2.0);
-  EXPECT_EQ(v0, 2.0);
-  double v1 = foo<int>();
-  EXPECT_EQ(v1, 1);
-  double v2 = foo();
-  EXPECT_EQ(v2, 1.5);
+TEST(functemplates, namehiding) {
+  D d;
+  int res = d.f(0);
+  EXPECT_EQ(res, 14);
 }
