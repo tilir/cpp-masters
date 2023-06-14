@@ -21,6 +21,20 @@ set(SRCS
   nth-power-concept.cc
   class-typename.cc
   templ-inst-spec.cc
+  # generate-then-delete.cc -- supposed to fail
+  non-type-params.cc
+  non-type-spec.cc
+  templ-templ.cc
+  deduce-qual.cc
+  deduce-generalized.cc
+  deduce-partial.cc
+  deduce-nttp.cc
+  deduce-spec.cc
+  whats-call.cc
+  name-hiding.cc
+  name-res-examples.cc
+  ics-tail.cc
+  crocodile.cc
 )
 
 add_gtest(functempls)

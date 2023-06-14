@@ -17,14 +17,14 @@ struct foo {
   int x = 1;
 };
 
-TEST(ovrnames, structtest) {
+TEST(functemplates, ovr_structtest) {
   foo(s);
   EXPECT_EQ(s.x, 1);
 }
 
 int foo(...) { return 2; }
 
-TEST(ovrnames, variadics) {
+TEST(functemplates, ovr_variadics) {
   int s = 0;
   foo(s);
   EXPECT_EQ(foo(s), 2);
@@ -36,7 +36,7 @@ struct C {
 
 int foo(C x) { return 3; }
 
-TEST(ovrnames, usrtest) {
+TEST(functemplates, ovr_usrtest) {
   int s = 0;
   foo(s);
   EXPECT_EQ(foo(s), 3);
@@ -44,7 +44,7 @@ TEST(ovrnames, usrtest) {
 
 int foo(double x) { return 4; }
 
-TEST(ovrnames, impltest) {
+TEST(functemplates, ovr_impltest) {
   int s = 0;
   foo(s);
   EXPECT_EQ(foo(s), 4);
@@ -52,7 +52,7 @@ TEST(ovrnames, impltest) {
 
 template <typename T> int foo(T x) { return 5; }
 
-TEST(ovrnames, templtest) {
+TEST(functemplates, ovr_templtest) {
   int s = 0;
   foo(s);
   EXPECT_EQ(foo(s), 5);
@@ -60,7 +60,7 @@ TEST(ovrnames, templtest) {
 
 int foo(int x) { return 6; }
 
-TEST(ovrnames, functest) {
+TEST(functemplates, ovr_functest) {
   int s = 0;
   foo(s);
   EXPECT_EQ(foo(s), 6);

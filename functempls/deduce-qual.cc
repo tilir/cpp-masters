@@ -15,6 +15,8 @@
 #include <boost/type_index.hpp>
 #include <gtest/gtest.h>
 
+namespace {
+
 #define CT_ERROR 0
 
 template <typename T> std::string deduce(T x, T y) {
@@ -28,6 +30,8 @@ template <typename T> std::string deduce2(const T &x, const T &y) {
 template <typename T> std::string deduce3(T &x, T &y) {
   return boost::typeindex::type_id_with_cvr<decltype(x)>().pretty_name();
 }
+
+} // namespace
 
 TEST(functemplates, deduce_basic) {
   const int &a = 1;

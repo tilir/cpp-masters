@@ -12,6 +12,8 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 struct Pair {
   int x = 1, y = 1;
 };
@@ -24,12 +26,7 @@ constexpr Pair p;
 int x = 1;
 int y = 1;
 
-TEST(nontypes, foo) {
-  int res = foo<2, &x, y, p>();
-  EXPECT_EQ(res, 2 + 1 + 1 + 1 + 1);
-}
-
-#if 0
+#if defined(WRONG)
 
 class PairEnc {
   int x = 1, y = 1;
@@ -40,11 +37,6 @@ template <int N, int *PN, int &RN, PairEnc P> int bar() {
 }
 
 constexpr PairEnc pe;
-
-TEST(nontypes, bar) {
-  int res = bar<2, &x, y, pe>();
-  EXPECT_EQ(res, 2 + 1 + 1 + 1 + 1);
-}
 
 #endif
 
@@ -59,7 +51,17 @@ template <int N, int *PN, int &RN, MoreComplex M> int buz() {
 
 constexpr MoreComplex mc;
 
-TEST(nontypes, buz) {
-  int res = buz<2, &x, y, mc>();
+} // namespace
+
+TEST(functemplates, nttp) {
+  int res = foo<2, &x, y, p>();
+  EXPECT_EQ(res, 2 + 1 + 1 + 1 + 1);
+
+#if defined(WRONG)
+  res = bar<2, &x, y, pe>();
+  EXPECT_EQ(res, 2 + 1 + 1 + 1 + 1);
+#endif
+
+  res = buz<2, &x, y, mc>();
   EXPECT_EQ(res, 2 + 1 + 1 + 1 + 1);
 }

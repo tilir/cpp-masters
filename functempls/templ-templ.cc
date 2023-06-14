@@ -12,9 +12,11 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 template <template <typename> typename Container, typename Element>
-int get_size(const Container<Element> &a) {
-  return a.size();
+int get_size(const Container<Element> &A) {
+  return A.size();
 }
 
 template <typename T> struct MyCont {
@@ -24,16 +26,16 @@ template <typename T> struct MyCont {
 // no size function
 template <typename T> struct OtherCont {};
 
-template <> int get_size<OtherCont, int>(const OtherCont<int> &a) { return 10; }
+template <> int get_size<OtherCont, int>(const OtherCont<int> &A) { return 10; }
 
-TEST(templtempl, basic) {
-  MyCont<int> c;
-  int sz = get_size<MyCont, int>(c);
-  EXPECT_EQ(sz, 0);
-}
+} // namespace
 
-TEST(templtempl, spec) {
-  OtherCont<int> c;
-  int sz = get_size<OtherCont, int>(c);
-  EXPECT_EQ(sz, 10);
+TEST(functemplates, templtempl) {
+  MyCont<int> Mc;
+  int Sz = get_size<MyCont, int>(Mc);
+  EXPECT_EQ(Sz, 0);
+
+  OtherCont<int> Oc;
+  Sz = get_size<OtherCont, int>(Oc);
+  EXPECT_EQ(Sz, 10);
 }
