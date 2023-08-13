@@ -12,11 +12,15 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 // compile time only
 consteval int ctsqr(int n) { return n * n; }
 
 // OK, global constinit
 constinit int g = ctsqr(100);
+
+} // namespace
 
 TEST(cexpr, cevinit) {
   constexpr int c = ctsqr(100);

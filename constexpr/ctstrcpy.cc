@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <array>
 
+namespace {
+
 constexpr char *strncopy(char *dst, const char *src, size_t n) {
   for (size_t i = 0; i < n; ++i) {
     dst[i] = src[i];
@@ -32,7 +34,9 @@ constexpr auto concat(char const (&a)[N1], char const (&b)[N2]) {
   return result;
 }
 
-TEST(cexpr, array) {
+} // namespace
+
+TEST(cexpr, strncopy) {
   constexpr auto hello = concat("Hello, ", "world!");
   EXPECT_EQ(hello.back(), '\0');
   EXPECT_EQ(hello[7], 'w');

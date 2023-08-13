@@ -33,7 +33,7 @@ constexpr int foo() {
   return sum;
 }
 
-TEST(cexpr, opnew) {
+TEST(cexpr, virtceok) {
   constexpr int data = foo(); // ok
   EXPECT_EQ(data, 3);
 }

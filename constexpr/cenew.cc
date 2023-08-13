@@ -11,9 +11,10 @@
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <array>
 #include <string>
 #include <vector>
+
+namespace {
 
 constexpr int test() {
   int *p = new int(2);
@@ -31,6 +32,8 @@ constexpr int tests() {
   std::string s = "Hello";
   return s[1];
 }
+
+} // namespace
 
 TEST(cexpr, opnew) {
   constexpr int x = test();

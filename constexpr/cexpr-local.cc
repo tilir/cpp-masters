@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <initializer_list>
 
+namespace {
+
 template <typename T> consteval auto ilist_sz(std::initializer_list<T> init) {
 #if defined(BAD)
   constexpr auto init_sz = init.size();
@@ -22,7 +24,9 @@ template <typename T> consteval auto ilist_sz(std::initializer_list<T> init) {
   return init_sz;
 }
 
-TEST(cexpr, cevinit) {
+} // namespace
+
+TEST(cexpr, cexprlocal) {
   constexpr auto n = ilist_sz({1, 2, 3});
   EXPECT_EQ(n, 3);
 }

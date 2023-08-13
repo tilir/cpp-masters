@@ -14,6 +14,8 @@
 #include <array>
 #include <string>
 
+namespace {
+
 struct TagEntity {
   bool isValid = false;
   std::string value;
@@ -46,6 +48,8 @@ template <typename CommonTags> struct FixMsg {
 
   std::array<TagEntity, CommonTagsCount> commonTags_;
 };
+
+} // namespace
 
 TEST(cexpr, mplike) {
   using MyCommonTags = std::integer_sequence<int, 11, 35, 10914, 10916>;

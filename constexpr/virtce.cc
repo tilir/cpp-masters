@@ -23,7 +23,7 @@ struct Derived : Base {
   constexpr int data() const override { return 2; }
 };
 
-TEST(cexpr, opnew) {
+TEST(cexpr, virtce) {
   constexpr Derived d;
   constexpr const Base *pb = &d; // error
   EXPECT_EQ(pb->data(), 2);

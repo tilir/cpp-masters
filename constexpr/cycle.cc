@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <array>
 
+namespace {
+
 template <size_t N, typename T, size_t Size>
 constexpr std::array<T, N * Size> cycle_elems(std::array<T, Size> a) {
   std::array<T, N * Size> result{};
@@ -20,6 +22,8 @@ constexpr std::array<T, N * Size> cycle_elems(std::array<T, Size> a) {
     result[i] = a[i % Size];
   return result;
 }
+
+} // namespace
 
 TEST(cexpr, array) {
   constexpr std::array<size_t, 5> arr = {0, 4, 2, 1, 3};

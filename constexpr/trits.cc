@@ -12,6 +12,8 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 template <typename T = int> constexpr T ct_trit(const char *t) {
   T x = 0;
   size_t b = 0;
@@ -37,6 +39,8 @@ template <typename T = int> constexpr T ct_trit(const char *t) {
   }
   return x;
 }
+
+} // namespace
 
 TEST(cexpr, trits) {
   EXPECT_EQ(ct_trit<int>("10j"), 8);

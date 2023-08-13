@@ -11,7 +11,7 @@
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+#include <type_traits>
 
 // template case: constexpr works
 

@@ -1,4 +1,18 @@
+//-----------------------------------------------------------------------------
+//
+// Source code for MIPT masters course on C++
+// Slides: https://sourceforge.net/projects/cpp-lects-rus
+// Licensed after GNU GPL v3
+//
+//-----------------------------------------------------------------------------
+//
+// CE binary number parser
+//
+//-----------------------------------------------------------------------------
+
 #include "gtest/gtest.h"
+
+namespace {
 
 template <typename... Ts>
 constexpr unsigned long long binparser(unsigned long long accum, char c,
@@ -13,7 +27,9 @@ template <char... Chars> constexpr unsigned long long operator"" _binary() {
   return binparser(0ull, Chars...);
 }
 
-TEST(cexpr, complex) {
+} // namespace
+
+TEST(cexpr, binparser) {
   constexpr unsigned long long c = 1010101010101_binary;
   EXPECT_EQ(c, 5461);
 }

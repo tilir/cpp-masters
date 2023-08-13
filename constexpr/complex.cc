@@ -12,6 +12,8 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 class Complex {
   double re, im;
 
@@ -30,6 +32,8 @@ constexpr Complex operator+(Complex lhs, Complex rhs) {
   lhs += rhs;
   return lhs;
 }
+
+} // namespace
 
 TEST(cexpr, complex) {
   constexpr Complex c(0.0, 1.0);
