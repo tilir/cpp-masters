@@ -11,11 +11,14 @@
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+
+namespace {
 
 struct S {
   constexpr int n = 42;
 };
+
+} // namespace
 
 TEST(cexpr, ctfield) {
   S s;

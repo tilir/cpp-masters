@@ -1,4 +1,18 @@
+//-----------------------------------------------------------------------------
+//
+// Source code for MIPT masters course on C++
+// Slides: https://sourceforge.net/projects/cpp-lects-rus
+// Licensed after GNU GPL v3
+//
+//-----------------------------------------------------------------------------
+//
+// Complex numbers example: literal operands
+//
+//-----------------------------------------------------------------------------
+
 #include "gtest/gtest.h"
+
+namespace {
 
 class Complex {
   double re, im;
@@ -21,7 +35,9 @@ constexpr Complex operator+(Complex lhs, Complex rhs) {
 
 constexpr Complex operator"" _i(long double arg) { return Complex(0.0, arg); }
 
-TEST(cexpr, complex) {
+} // namespace
+
+TEST(cexpr, complexop) {
   constexpr Complex c = 0.0 + 1.0_i;
   constexpr Complex d = 1.0 + 2.0_i;
   constexpr Complex e = c + d;

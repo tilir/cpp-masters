@@ -6,24 +6,20 @@
 //
 //-----------------------------------------------------------------------------
 //
-// Even more interesting UB case demo:
-// try with std equals C++17 and C++20
+// constexpr core constant expression tricky case
 //
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
 
-constexpr int djb2(char const *str) {
-  int hash = 5381;
-  int c = 0;
+struct S {
+  int n_;
+  S(int n) : n_(n) {} // non-constexpr ctor!
+  constexpr int get() { return 42; }
+};
 
-  while ((c = *str++))
-    hash = ((hash << 5) + hash) + c;
-
-  return hash;
-}
-
-TEST(cexpr, moreub) {
-  constexpr int x = djb2("hello you :)");
-  EXPECT_EQ(x, -466252103);
+TEST(cexpr, cce) {
+  S s{2};
+  constexpr int k = s.get();
+  EXPECT_EQ(k, 42);
 }

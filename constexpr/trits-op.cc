@@ -12,6 +12,8 @@
 
 #include "gtest/gtest.h"
 
+namespace {
+
 template <typename T = int> constexpr T ct_trit(const char *t) {
   T x = 0;
   size_t b = 0;
@@ -42,7 +44,9 @@ constexpr long long operator"" _trit(char const *s, size_t len) {
   return ct_trit<long long>(s);
 }
 
-TEST(cexpr, complex) {
+} // namespace
+
+TEST(cexpr, tritsop) {
   constexpr unsigned long long c = "10j01"_trit;
   EXPECT_EQ(c, 73);
 }

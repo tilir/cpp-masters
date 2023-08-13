@@ -55,7 +55,7 @@ add_subdirectory(functempls)
 add_subdirectory(classtemplates)
 # add_subdirectory(modules) -- not simple with cmake
 add_subdirectory(sfinae)
-# add_subdirectory(constexpr) -- in progress
+add_subdirectory(constexpr)
 # add_subdirectory(concepts) -- in progress
 add_subdirectory(inference)
 add_subdirectory(variadics)

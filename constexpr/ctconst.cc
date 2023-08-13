@@ -11,8 +11,6 @@
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <climits>
-#include <concepts>
 
 struct S1 {
   static const int sz = 256;
