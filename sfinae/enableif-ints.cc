@@ -11,7 +11,9 @@
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+#include <type_traits>
+
+namespace {
 
 template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
   return 14;
@@ -22,7 +24,9 @@ int foo(T x) {
   return 42;
 }
 
-TEST(sfinae, naiveovr) {
+} // namespace
+
+TEST(sfinae, enableifints) {
   EXPECT_EQ(foo('c'), 42);
   EXPECT_EQ(foo(1.0), 14);
 }

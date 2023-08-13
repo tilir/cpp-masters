@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 template <typename T> struct has_typedef_foobar {
   using yes = char[1];
   using no = char[2];
@@ -24,7 +26,10 @@ template <typename T> struct has_typedef_foobar {
 struct foo {
   using foobar = float;
 };
+
 struct bar {};
+
+} // namespace
 
 TEST(sfinae, hasfoobarnaive) {
   EXPECT_EQ(has_typedef_foobar<foo>::value, true);

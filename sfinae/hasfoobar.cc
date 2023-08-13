@@ -14,6 +14,8 @@
 #include <concepts>
 #include <type_traits>
 
+namespace {
+
 template <typename, typename = void>
 struct has_typedef_foobar : std::false_type {};
 
@@ -24,7 +26,10 @@ struct has_typedef_foobar<T, std::void_t<typename T::foobar>> : std::true_type {
 struct foo {
   using foobar = float;
 };
+
 struct bar {};
+
+} // namespace
 
 TEST(sfinae, hasfoobar) {
   EXPECT_EQ(has_typedef_foobar<foo>::value, true);

@@ -27,14 +27,14 @@ void race() {
   // going up
   for (int i = 0; i < 1000000; ++i) {
     std::lock_guard<std::mutex> lk{mforx};
-    x += 1;
+    x = x + 1;
     use(x);
   }
 
   // going down
   for (int i = 0; i < 1000000; ++i) {
     std::lock_guard<std::mutex> lk{mforx};
-    x -= 1;
+    x = x - 1;
     use(x);
   }
 }

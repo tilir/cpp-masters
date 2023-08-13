@@ -11,8 +11,9 @@
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
 #include <type_traits>
+
+namespace {
 
 using ftype = int();
 
@@ -64,6 +65,8 @@ public:
 };
 
 int foo(fire_once<ftype> f) { return std::move(f)() + 1; }
+
+} // namespace
 
 TEST(sfinae, fonce) {
   auto n = std::make_unique<int>(14);

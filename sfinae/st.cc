@@ -27,7 +27,7 @@ template <typename T> int call_foo(T t, S s) { return foo(t) + foo(s); }
 
 int foo(S) { return 2; }
 
-TEST(cexpr, array) {
+TEST(sfinae, stexample) {
   S x;
   int res = call_foo(x, x);
   EXPECT_EQ(res, ans);

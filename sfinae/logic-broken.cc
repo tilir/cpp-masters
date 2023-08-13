@@ -11,7 +11,8 @@
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+
+namespace {
 
 // instead std::integral_constant
 template <typename T, T v> struct integral_constant {
@@ -40,6 +41,8 @@ template <typename T, typename U> bool and_v = and_<T, U>::value;
 
 template <typename T> struct not_ : false_type {};
 template <> struct not_<false_type> : true_type {};
+
+} // namespace
 
 TEST(sfinae, notbroken) {
   bool test1 = is_same_v<int, int> && !is_same_v<char, int>;
