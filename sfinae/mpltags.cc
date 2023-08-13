@@ -47,7 +47,7 @@ template <typename CommonTags> struct FixMsg {
   std::array<TagEntity, CommonTagsCount> commonTags_;
 };
 
-TEST(meta, mpl) {
+TEST(sfinae, mpl) {
   using MyCommonTags = mpl::vector_c<int, 11, 35, 10914, 10916>;
   FixMsg<MyCommonTags> fixMsg;
   auto &tagEntity11 = fixMsg.getTagEntity<11>();

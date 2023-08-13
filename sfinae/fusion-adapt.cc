@@ -50,7 +50,7 @@ struct mypoint {
 
 BOOST_FUSION_ADAPT_STRUCT(mypoint, (double, x)(double, y));
 
-TEST(meta, fusion) {
+TEST(sfinae, fusion) {
   mypoint a{2.0, 0.0};
   mypoint b{4.0, 0.0};
   double d2 = pydist(a, b);

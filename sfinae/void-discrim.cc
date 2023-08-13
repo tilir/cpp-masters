@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <type_traits>
 
+namespace {
+
 struct One {
   using fst = int;
 };
@@ -28,6 +30,8 @@ template <typename T, std::void_t<typename T::fst> * = nullptr> int foo() {
 template <typename T, std::void_t<typename T::snd> * = nullptr> int foo() {
   return 2;
 }
+
+} // namespace
 
 TEST(sfinae, discrimbroken) {
   auto x = foo<One>();

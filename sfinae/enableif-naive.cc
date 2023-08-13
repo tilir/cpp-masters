@@ -11,7 +11,9 @@
 //----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+#include <type_traits>
+
+namespace {
 
 template <typename T, typename = std::enable_if_t<(sizeof(T) > 4)>>
 int foo(T x) {
@@ -22,6 +24,8 @@ template <typename T, typename = std::enable_if_t<(sizeof(T) <= 4)>>
 int foo(T x) {
   return 42;
 }
+
+} // namespace
 
 TEST(sfinae, naiveovr) {
   EXPECT_EQ(foo('c'), 14);

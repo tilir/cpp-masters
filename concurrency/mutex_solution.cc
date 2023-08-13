@@ -18,7 +18,7 @@
 
 namespace {
 
-volatile int x = 0;
+int x = 0;
 std::mutex mforx;
 
 void __attribute__((noinline)) use(int c) { asm(""); }

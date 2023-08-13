@@ -13,12 +13,16 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 template <int N> struct Danger { typedef char block[N]; };
 
 template <typename T, int N> struct Tricky {
   int k = N;
   void test_lazyness() { Danger<N> no_boom_yet; }
 };
+
+} // namespace
 
 TEST(sfinae, tricky) {
   Tricky<int, -2> ok;

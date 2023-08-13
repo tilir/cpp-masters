@@ -11,7 +11,9 @@
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
+#include <type_traits>
+
+namespace {
 
 template <typename T> struct TypeIdentity { using type = T; };
 
@@ -41,6 +43,8 @@ template <typename T, Void_t<typename T::fst> * = nullptr> int foo() {
 template <typename T, Void_t<typename T::snd> * = nullptr> int foo() {
   return 2;
 }
+
+} // namespace
 
 TEST(sfinae, discrimfixed) {
   auto x = foo<One>();
