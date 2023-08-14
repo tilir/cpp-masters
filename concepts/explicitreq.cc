@@ -12,6 +12,8 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 // clang-format off
 template <typename T, typename U> requires requires(T t, U u) {
   { t == u } -> std::convertible_to<bool>;
@@ -35,6 +37,8 @@ bool operator==(W, int) { return true; }
 bool operator==(int, W) { return true; }
 bool operator!=(W, int) { return true; }
 bool operator!=(int, W) { return true; }
+
+} // namespace
 
 TEST(concepts, explicitreq) {
   auto c1 = foo(1, W{}); // corr

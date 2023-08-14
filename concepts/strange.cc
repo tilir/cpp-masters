@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 // clang-format off
 template <typename T>
 concept Strange = (sizeof(T) == 4) ||
@@ -23,6 +25,8 @@ concept Strange = (sizeof(T) == 4) ||
 template <typename T>
 requires Strange<T>
 int f(T t) { return 42; }
+
+} // namespace
 
 TEST(concepts, strange) {
   int x = f(1);

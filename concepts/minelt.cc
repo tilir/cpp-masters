@@ -15,6 +15,8 @@
 #include <forward_list>
 #include <vector>
 
+namespace {
+
 template <typename T, typename = void>
 struct is_totally_ordered : std::false_type {};
 
@@ -44,6 +46,8 @@ requires is_forward_iterator<Iter>::value &&
   }
   return min;
 }
+
+} // namespace
 
 TEST(concepts, combine) {
 #ifdef WRONG1

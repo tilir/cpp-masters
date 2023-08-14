@@ -11,6 +11,10 @@
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
+#include <type_traits>
+#include <vector>
+
+namespace {
 
 template <typename It>
 struct is_input_iterator
@@ -38,7 +42,9 @@ requires is_random_iterator<Iter>::value int my_distance(Iter first,
   return last - first;
 }
 
-TEST(concepts, overload) {
+} // namespace
+
+TEST(concepts, disttoosimple) {
   std::vector<int> v = {2, 3, 1, 4, 5};
   auto dist = my_distance(v.begin(), v.end()); // fail
   EXPECT_EQ(dist, 5);
