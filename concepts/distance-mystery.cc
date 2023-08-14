@@ -11,8 +11,10 @@
 //-----------------------------------------------------------------------------
 
 #include "gtest/gtest.h"
-#include <concepts>
 #include <iterator>
+#include <type_traits>
+
+namespace {
 
 class junk_iter_t {
   int *state_;
@@ -68,7 +70,7 @@ public:
   value_type &operator*() const { return *state_; }
   value_type *operator->() const { return state_; }
 
-  bool equals(const junk_iter_t &lhs) const { return true; }
+  bool equals(const junk_iter_t &rhs) const { return state_ == rhs.state_; }
 };
 
 static inline bool operator==(junk_iter_t lhs, junk_iter_t rhs) {
@@ -89,7 +91,9 @@ static inline junk_iter_t operator-(junk_iter_t it, int n) {
   return it;
 }
 
-TEST(concepts, eq) {
+} // namespace
+
+TEST(concepts, distancemystery) {
   int arr[10];
   junk_iter_t fst(arr), snd(arr + 3);
   auto dist = std::distance(fst, snd);

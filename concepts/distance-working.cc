@@ -14,6 +14,8 @@
 #include <concepts>
 #include <iterator>
 
+namespace {
+
 // -------------------------------- stdlib-like part
 
 template <class T, class U>
@@ -156,7 +158,9 @@ static inline junk_iter_t operator-(junk_iter_t it, int n) {
   return it;
 }
 
-TEST(concepts, strange) {
+} // namespace
+
+TEST(concepts, distworking) {
   int arr[10];
   junk_iter_t fst(arr), snd(arr + 3);
   auto dist = my_distance(fst, snd);

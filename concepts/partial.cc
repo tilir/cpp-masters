@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 template <typename T>
 concept Ord = requires(T a, T b) {
   a < b;
@@ -41,6 +43,8 @@ template <> struct less<void> {
 struct NoComp {
   void operator++() {}
 };
+
+} // namespace
 
 TEST(concepts, ordvoid) {
   less<void> l1;

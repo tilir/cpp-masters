@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 struct S {
   int data_ = 0;
   using inner = int;
@@ -32,6 +34,8 @@ template <typename T> int foo(T x) requires requires(T a) {
   requires sizeof(T) == 4;
 }
 { return ++x + 1; }
+
+} // namespace
 
 TEST(concepts, compound) {
   S s;

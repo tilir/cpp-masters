@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 // no recursive definitions
 
 template <bool b, bool... bs>
@@ -32,6 +34,8 @@ concept Inner = requires {
 template <typename T>
 requires Inner<T>
 concept Outer = requires { typename T::outer; };
+
+} // namespace
 
 TEST(concepts, whatcanido) {
   auto x = foo<true, true, true>(); // corr

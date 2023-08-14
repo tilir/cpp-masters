@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 template <typename R, typename T>
 bool contains(R const &range, T const &value) {
   for (auto const &x : range)
@@ -20,6 +22,8 @@ bool contains(R const &range, T const &value) {
       return true;
   return false;
 }
+
+} // namespace
 
 TEST(concepts, contain) {
   std::vector<std::string> v{"0", "1", "2"};

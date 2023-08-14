@@ -13,6 +13,8 @@
 #include "gtest/gtest.h"
 #include <concepts>
 
+namespace {
+
 template <typename T, typename U, typename = void>
 struct is_equality_comparable : std::false_type {};
 template <typename T, typename U>
@@ -28,6 +30,8 @@ template <typename T, typename U> bool check_eq(T &&lhs, U &&rhs) {
     return (lhs == rhs);
   }
 }
+
+} // namespace
 
 TEST(concepts, eqstatic) {
   constexpr bool string_int = is_equality_comparable<std::string, int>::value;
