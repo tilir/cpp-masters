@@ -12,6 +12,7 @@
 
 #include <cassert>
 #include <coroutine>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
