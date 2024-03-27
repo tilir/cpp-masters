@@ -17,7 +17,7 @@ namespace {
 
 int x = 0;
 
-void __attribute__((noinline)) use(int c) { asm(""); }
+void __attribute__((noinline)) use(int c) { asm(""::"r"(c)); }
 
 void race() {
   // going up
