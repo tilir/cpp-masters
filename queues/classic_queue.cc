@@ -17,6 +17,7 @@
 #include <condition_variable>
 #include <iostream>
 #include <mutex>
+#include <set>
 #include <thread>
 #include <vector>
 
@@ -29,7 +30,7 @@ constexpr int BUFSZ = 100;
 
 template <typename T> class ts_queue {
   std::vector<T> Buffer; // fixed-size queue
-  int NCur = -1;
+  int NCur = 0;
   int NRel = 0; // start position
   bool Done = false;
   mutable std::mutex Mut;
@@ -37,7 +38,7 @@ template <typename T> class ts_queue {
 
   // this interface cannot safely be public
   bool full() const { return NCur >= static_cast<int>(Buffer.size()); }
-  bool empty() const { return NCur < 0; }
+  bool empty() const { return NCur <= 0; }
   bool done() const { return Done; }
 
 public:
@@ -52,9 +53,9 @@ public:
     CondProd.wait(Lk, [this] { return !full(); });
 
     // exception safety
-    int NewCur = NCur + 1;
-    Buffer[(NRel + NewCur) % Buffer.size()] = Data;
-    NCur = NewCur;
+    Buffer[(NRel + NCur) % Buffer.size()] = Data;
+    std::clog << "+";
+    ++NCur;
     Lk.unlock();
     CondCons.notify_one();
   }
@@ -66,7 +67,8 @@ public:
       return false;
     Data = Buffer[NRel % Buffer.size()];
     NRel = (NRel + 1) % Buffer.size();
-    NCur -= 1;
+    --NCur;
+    std::clog << "-";
     Lk.unlock();
     CondProd.notify_one();
     return true;
@@ -83,7 +85,7 @@ public:
   // we need this to not stop consume too early
   bool is_empty_and_done() const {
     std::unique_lock<std::mutex> Lk{Mut};
-    return (NCur < 0) && Done;
+    return (NCur <= 0) && Done;
   }
 };
 
@@ -130,6 +132,21 @@ void consume(ts_queue<int> &Q) {
 
 } // namespace
 
+void check_consumed() {
+  // Hi MIPT! -- YouTube user
+  std::set<int> Consumed_set(Consumed.begin(), Consumed.end());
+  EXPECT_EQ(Consumed_set.size(), Consumed.size());
+}
+
+int check_env() {
+  if (std::getenv("VERBOSE") == nullptr) {
+    std::clog.setstate(std::ios_base::eofbit);
+  }
+  return 0;
+}
+
+int unused = check_env();
+
 TEST(queue, classic_queue_1_1) {
   NTasks = NTASKS;
   ts_queue<int> Q(BUFSZ);
@@ -143,6 +160,7 @@ TEST(queue, classic_queue_1_1) {
 
   EXPECT_EQ(Consumed.size(), NTASKS + 1); // [0 .. NTASKS] inclusive
   EXPECT_EQ(NTasks, -1);
+  check_consumed();
 }
 
 TEST(queue, classic_queue_1_2) {
@@ -160,6 +178,7 @@ TEST(queue, classic_queue_1_2) {
 
   EXPECT_EQ(Consumed.size(), NTASKS + 1); // [0 .. NTASKS] inclusive
   EXPECT_EQ(NTasks, -1);
+  check_consumed();
 }
 
 TEST(queue, classic_queue_2_1) {
@@ -177,6 +196,7 @@ TEST(queue, classic_queue_2_1) {
 
   EXPECT_EQ(Consumed.size(), NTASKS + 1); // [0 .. NTASKS] inclusive
   EXPECT_EQ(NTasks, -1);
+  check_consumed();
 }
 
 TEST(queue, classic_queue_2_2) {
@@ -196,4 +216,5 @@ TEST(queue, classic_queue_2_2) {
 
   EXPECT_EQ(Consumed.size(), NTASKS + 1); // [0 .. NTASKS] inclusive
   EXPECT_EQ(NTasks, -1);
+  check_consumed();
 }
