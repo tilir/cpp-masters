@@ -16,7 +16,7 @@ project(cppmasters)
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(GoogleTest REQUIRED)
+find_package(GTest REQUIRED)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
