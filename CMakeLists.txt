@@ -16,10 +16,7 @@ project(cppmasters)
 
 set(CMAKE_CXX_STANDARD 20)
 
-include(FetchContent)
-FetchContent_Declare(googletest URL https://github.com/google/googletest/archive/e2239ee6043f73722e7aa812a459f54a28552929.zip)
-FetchContent_MakeAvailable(googletest)
-include(GoogleTest)
+find_package(GoogleTest REQUIRED)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
