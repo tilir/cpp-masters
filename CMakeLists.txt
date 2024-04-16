@@ -32,7 +32,7 @@ function(add_gtest TGT)
 
   add_executable(${UNIT_TARGET} ${SRCS})
   target_include_directories(${UNIT_TARGET} PRIVATE ${GTEST_INCLUDE_DIRS})
-  target_link_libraries(${UNIT_TARGET} PRIVATE gtest gtest_main)
+  target_link_libraries(${UNIT_TARGET} PRIVATE ${GTEST_BOTH_LIBRARIES})
   target_link_libraries(${UNIT_TARGET} PRIVATE Threads::Threads)
   target_link_libraries(${UNIT_TARGET} PRIVATE commonutils)
   target_compile_features(${UNIT_TARGET} PRIVATE cxx_std_20)
