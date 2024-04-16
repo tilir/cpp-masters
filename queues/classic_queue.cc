@@ -54,7 +54,6 @@ public:
 
     // exception safety
     Buffer[(NRel + NCur) % Buffer.size()] = Data;
-    std::clog << "+";
     ++NCur;
     Lk.unlock();
     CondCons.notify_one();
@@ -68,7 +67,6 @@ public:
     Data = Buffer[NRel % Buffer.size()];
     NRel = (NRel + 1) % Buffer.size();
     --NCur;
-    std::clog << "-";
     Lk.unlock();
     CondProd.notify_one();
     return true;
@@ -133,19 +131,9 @@ void consume(ts_queue<int> &Q) {
 } // namespace
 
 void check_consumed() {
-  // Hi MIPT! -- YouTube user
   std::set<int> Consumed_set(Consumed.begin(), Consumed.end());
   EXPECT_EQ(Consumed_set.size(), Consumed.size());
 }
-
-int check_env() {
-  if (std::getenv("VERBOSE") == nullptr) {
-    std::clog.setstate(std::ios_base::eofbit);
-  }
-  return 0;
-}
-
-int unused = check_env();
 
 TEST(queue, classic_queue_1_1) {
   NTasks = NTASKS;
