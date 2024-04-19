@@ -14,6 +14,8 @@
 cmake_minimum_required(VERSION 3.11)
 project(cppmasters)
 
+set(CMAKE_CXX_STANDARD 20)
+
 find_package(GTest REQUIRED)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -46,6 +48,7 @@ function(add_demo TGT)
   add_executable(${TGT} ${TGT}.cc)
   target_include_directories(${TGT} PRIVATE ${GTEST_INCLUDE_DIRS})
   target_link_libraries(${TGT} PRIVATE Threads::Threads)
+  target_link_libraries(${TGT} PRIVATE atomic)
   target_link_libraries(${TGT} PRIVATE commonutils)
   target_compile_features(${TGT} PRIVATE cxx_std_20)
 endfunction()
