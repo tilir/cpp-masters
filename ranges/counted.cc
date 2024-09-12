@@ -12,6 +12,7 @@
 
 #include "gtest/gtest.h"
 #include <ranges>
+#include <utility>
 #include <vector>
 
 namespace views = std::views;
