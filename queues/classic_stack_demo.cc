@@ -213,22 +213,22 @@ int main(int argc, char **argv) try {
 
   std::vector<std::thread> Producers;
   std::vector<std::thread> Consumers;
-  ts_stack<int> Queue(Cfg);
+  ts_stack<int> Stack(Cfg);
 
   util::Timer t;
   t.start();
 
   for (int N = 0; N < Cfg.NProd; ++N)
-    Producers.emplace_back(produce, std::ref(Queue), Cfg);
+    Producers.emplace_back(produce, std::ref(Stack), Cfg);
 
   for (int N = 0; N < Cfg.NCons; ++N)
-    Consumers.emplace_back(consume, std::ref(Queue), Cfg);
+    Consumers.emplace_back(consume, std::ref(Stack), Cfg);
 
   for (auto &P : Producers)
     P.join();
 
   // after all producers join
-  Queue.wake_and_done();
+  Stack.wake_and_done();
 
   for (auto &C : Consumers)
     C.join();

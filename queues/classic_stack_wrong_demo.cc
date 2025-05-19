@@ -6,10 +6,10 @@
 //
 //-----------------------------------------------------------------------------
 //
-// Classic thread-safe queue demo, hanging version
+// Classic thread-safe stack demo, hanging version
 //
 // killing: -ntasks=100000 -ptime=0 -ctime=0 -nprod=4 -ncons=4
-// while ./build/queues/classic_queue_wrong_demo -ntasks=100000 -ptime=0
+// while ./build/queues/classic_stack_wrong_demo -ntasks=100000 -ptime=0
 // -ctime=0 -nprod=4 -ncons=4; do echo "Ok"; done
 //
 //----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ Config parse_cfg(int argc, char **argv) {
 
 namespace {
 
-template <typename T> class ts_queue {
+template <typename T> class ts_stack {
   Config Cfg;
 
   // fixed-size queue
@@ -116,7 +116,7 @@ template <typename T> class ts_queue {
   bool empty() const { return NCur < 0; }
 
 public:
-  ts_queue(Config Cfg) : Cfg(Cfg), Buffer(Cfg.BufSize) {}
+  ts_stack(Config Cfg) : Cfg(Cfg), Buffer(Cfg.BufSize) {}
 
   void push(T Data) {
     std::unique_lock<std::mutex> Lk{Mut};
