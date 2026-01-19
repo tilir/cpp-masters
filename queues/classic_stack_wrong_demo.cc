@@ -142,7 +142,7 @@ public:
 int NTasks;
 std::mutex TaskMut;
 
-void produce(ts_queue<int> &Q, Config Cfg) {
+void produce(ts_stack<int> &Q, Config Cfg) {
   for (;;) {
     int N;
     // critical section
@@ -160,7 +160,7 @@ void produce(ts_queue<int> &Q, Config Cfg) {
   }
 }
 
-void consume(ts_queue<int> &Q, Config Cfg) {
+void consume(ts_stack<int> &Q, Config Cfg) {
   for (;;) {
     int N;
     // critical section
@@ -184,7 +184,7 @@ int main(int argc, char **argv) try {
 
   std::vector<std::thread> Producers;
   std::vector<std::thread> Consumers;
-  ts_queue<int> Queue(Cfg);
+  ts_stack<int> Queue(Cfg);
 
   util::Timer t;
   t.start();
