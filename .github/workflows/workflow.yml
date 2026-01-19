@@ -13,18 +13,18 @@ jobs:
       run:
         shell: bash
     steps:
-    - name: Install google test and boost, also install g++-12 (for atomic shared pointers)
-      run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock libboost-dev g++-12
+    - name: Install google test, boost and proper version of g++
+      run: sudo apt-get install libgtest-dev googletest google-mock libboost-dev g++-13
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: CMake release config
-      run: cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_BUILD_TYPE=Release
+      run: cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-13 -DCMAKE_BUILD_TYPE=Release
     - name: CMake release build
       run: cmake --build build
     - name: CMake release test
       run: env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
     - name: CMake debug config
-      run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_BUILD_TYPE=Release
+      run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-13 -DCMAKE_BUILD_TYPE=Release
     - name: CMake debug build
       run: cmake --build debug
     - name: CMake debug test
