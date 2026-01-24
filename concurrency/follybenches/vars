@@ -1,0 +1,3 @@
+FOLLY_INST=/home/tilir/folly-install/folly
+GFLAGS_INST=$(python3 /home/tilir/folly/build/fbcode_builder/getdeps.py --scratch-path /home/tilir/folly/scratch show-inst-dir gflags)
+
