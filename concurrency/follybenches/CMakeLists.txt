@@ -8,5 +8,7 @@ find_package(gflags CONFIG REQUIRED)
 find_package(folly CONFIG REQUIRED)
 
 add_executable(mutex_bench mutex_bench.cc)
+add_executable(rwlock_bench rwlock_bench.cc)
 target_link_libraries(mutex_bench PRIVATE Folly::folly Folly::follybenchmark gflags)
+target_link_libraries(rwlock_bench PRIVATE Folly::folly Folly::follybenchmark gflags)
 

@@ -6,6 +6,7 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#include <shared_mutex>
 
 #include <folly/Benchmark.h>
 #include <folly/init/Init.h>
@@ -36,20 +37,18 @@ struct alignas(std::hardware_destructive_interference_size) T {
 };
 
 std::unique_ptr<T> src = nullptr;
-std::mutex msrc;
+std::shared_mutex msrc;
 
-template <typename Fn>
-  requires std::invocable<Fn&, const T*>
+template <typename Fn> requires std::invocable<Fn&, const T*>
 auto readAndAccess(Fn&& fn) {
-  std::scoped_lock lk{msrc};
-  auto res = std::invoke(std::forward<Fn>(fn), src.get());
-  return res;
+  std::shared_lock l{msrc};
+  return std::invoke(std::forward<Fn>(fn), src.get());
 }
 
 void update(std::unique_ptr<T> newptr) {
   std::unique_lock lk{msrc};
   auto oldptr = std::exchange(src, std::move(newptr));
-  lk.unlock();  
+  lk.unlock();
 }
 
 // ----------
