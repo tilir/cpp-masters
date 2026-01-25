@@ -28,7 +28,7 @@ DEFINE_int32(writers, 1, "Number of writer threads");
 DEFINE_int32(writer_duration_ms, 2000,
              "Scenario duration (ms) for readers/writers");
 
-DEFINE_int32(writer_pause_ns, 1,
+DEFINE_int32(writer_pause_ns, 10,
              "Pause between writer updates (ns) outside critical section");
 
 // ---------- API
