@@ -6,9 +6,11 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#include <shared_mutex>
 
 #include <folly/Benchmark.h>
 #include <folly/init/Init.h>
+#include <folly/synchronization/Rcu.h>
 #include <gflags/gflags.h>
 
 std::atomic<int> current_value{1};
@@ -26,30 +28,29 @@ DEFINE_int32(writers, 1, "Number of writer threads");
 DEFINE_int32(writer_duration_ms, 2000,
              "Scenario duration (ms) for readers/writers");
 
-DEFINE_int32(writer_pause_ns, 10,
+DEFINE_int32(writer_pause_ns, 1,
              "Pause between writer updates (ns) outside critical section");
 
 // ---------- API
 
-struct alignas(std::hardware_destructive_interference_size) T {
+struct alignas(std::hardware_destructive_interference_size) T : folly::hazptr_obj_base<T> {
   int x;
+  T(int x): x(x) {}
 };
 
-std::unique_ptr<T> src = nullptr;
-std::mutex msrc;
+std::atomic<T*> src = nullptr;
 
-template <typename Fn>
-  requires std::invocable<Fn&, const T*>
+template <typename Fn> requires std::invocable<Fn&, const T*>
 auto readAndAccess(Fn&& fn) {
-  std::scoped_lock lk{msrc};
-  auto res = std::invoke(std::forward<Fn>(fn), src.get());
-  return res;
+  thread_local auto h = folly::make_hazard_pointer<>();
+  T *srcptr = h.protect(src);  
+  return std::invoke(std::forward<Fn>(fn), srcptr);
 }
 
 void update(std::unique_ptr<T> newptr) {
-  std::unique_lock lk{msrc};
-  auto oldptr = std::exchange(src, std::move(newptr));
-  lk.unlock();  
+  T *oldptr = src.exchange(newptr.release(), std::memory_order_relaxed);
+  if (oldptr)
+    oldptr->retire();
 }
 
 // ----------
@@ -59,9 +60,8 @@ struct alignas(std::hardware_destructive_interference_size) ScenarioStats {
   std::uint64_t failedChecks = 0;
 };
 
-void reset_state() {
-  std::scoped_lock lk{msrc};
-  src.reset();
+void reset_state() {  
+  src.store(nullptr);
   current_value.store(1, std::memory_order_relaxed);
 }
 
@@ -156,7 +156,7 @@ BENCHMARK(MutexRW, iters) {
   }
 
   if (FLAGS_verify && agg.failedChecks != 0) {
-    std::cerr << "[mutex] failed checks: " << agg.failedChecks << "\n";
+    std::cerr << "[sptr] failed checks: " << agg.failedChecks << "\n";
     std::abort();
   }
 
@@ -175,7 +175,7 @@ BENCHMARK(MutexRW, iters) {
     }
   }
 
-  std::cout << "[mutex] bmk results\n";
+  std::cout << "[sptr] bmk results\n";
   std::cout << "readers=" << numReaders << "\n";
   std::cout << "rps_per_reader=" << rps_per_reader << "\n";
 }

@@ -54,7 +54,7 @@ plot_specs = series.map do |s|
 end.join(", ")
 
 puts <<~GNUPLOT
-  set term pngcairo size 900,600
+  set term pngcairo size 1500,600
   set grid
   set xlabel "Number of readers"
   set ylabel "RPS per reader"

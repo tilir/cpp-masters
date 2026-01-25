@@ -27,7 +27,7 @@ DEFINE_int32(writers, 1, "Number of writer threads");
 DEFINE_int32(writer_duration_ms, 2000,
              "Scenario duration (ms) for readers/writers");
 
-DEFINE_int32(writer_pause_ns, 0,
+DEFINE_int32(writer_pause_ns, 10,
              "Pause between writer updates (ns) outside critical section");
 
 // ---------- API
@@ -155,7 +155,7 @@ BENCHMARK(MutexRW, iters) {
   }
 
   if (FLAGS_verify && agg.failedChecks != 0) {
-    std::cerr << "[mutex] failed checks: " << agg.failedChecks << "\n";
+    std::cerr << "[rwlock] failed checks: " << agg.failedChecks << "\n";
     std::abort();
   }
 
@@ -174,7 +174,7 @@ BENCHMARK(MutexRW, iters) {
     }
   }
 
-  std::cout << "[mutex] bmk results\n";
+  std::cout << "[rwlock] bmk results\n";
   std::cout << "readers=" << numReaders << "\n";
   std::cout << "rps_per_reader=" << rps_per_reader << "\n";
 }
