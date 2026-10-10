@@ -37,6 +37,16 @@ def tool_default(local_bin, local_name, system_name)
 end
 
 iwyu = ENV.fetch('IWYU_BINARY', tool_default(local_bin, 'include-what-you-use', 'include-what-you-use'))
+# iwyu_tool interprets IWYU_BINARY as a pathname, not a command on PATH.
+# Resolve bare command names before passing the override to that driver.
+unless iwyu.include?(File::SEPARATOR)
+  iwyu = ENV.fetch('PATH', '').split(File::PATH_SEPARATOR).map { |dir|
+    File.expand_path(iwyu, dir)
+  }.find { |path| File.file?(path) && File.executable?(path) }
+end
+abort 'include-what-you-use not found (set IWYU_BINARY)' unless
+  iwyu && File.file?(iwyu) && File.executable?(iwyu)
+iwyu = File.realpath(iwyu)
 version, status = Open3.capture2(iwyu, '--version')
 abort 'IWYU 0.25 built against Clang 21 is required (set IWYU_BINARY)' unless
   status.success? && version.match?(/include-what-you-use 0\.25 .*clang version 21\./i)

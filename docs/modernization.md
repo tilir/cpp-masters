@@ -58,8 +58,14 @@ installs the compilers, Ruby, libraries, and builds IWYU 0.25 against LLVM 21.
 The checkout action was updated to [v7](https://github.com/actions/checkout/releases).
 IWYU’s [official release compatibility](https://include-what-you-use.org/downloads/)
 identifies 0.25 with LLVM 21. Workflow YAML and matrix were checked locally.
-GitHub-hosted jobs have not been executed for these unpublished changes;
-local results do not assert a remote green run.
+The [first published IWYU job](https://github.com/tilir/cpp-masters/actions/runs/38064231638/job/114248507934)
+failed before analyzing sources: the standalone
+driver passed a bare executable name in `IWYU_BINARY`, but upstream's Python
+driver resolves that override as a filesystem path, without searching `PATH`.
+The failure was reproduced locally with a PATH-installed tool. The Ruby driver
+now resolves the executable to an absolute real path before passing it on.
+The full local IWYU check also covers this PATH-based invocation. A remote
+rerun is still needed; local results do not assert a remote green run.
 
 ## Compatibility fixes in enabled examples
 
