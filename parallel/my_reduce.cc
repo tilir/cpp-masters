@@ -10,11 +10,14 @@
 //
 //----------------------------------------------------------------------------
 
+#include <assert.h>
 #include <algorithm>
 #include <execution>
+#include <functional>
 #include <iterator>
 #include <numeric>
 #include <random>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -37,10 +40,8 @@ template <typename Iterator,
           typename T = typename std::iterator_traits<Iterator>::value_type>
 T parallel_accumulate(Iterator first, Iterator last, T init = 0) {
   long length = distance(first, last);
-  if (0 == length)
-    return init;
-  if (length <= MINLEN)
-    return std::accumulate(first, last, init);
+  if (0 == length) return init;
+  if (length <= MINLEN) return std::accumulate(first, last, init);
 
   static unsigned nthreads = determine_threads(length);
   long bsize = length / nthreads;
@@ -65,8 +66,7 @@ T parallel_accumulate(Iterator first, Iterator last, T init = 0) {
     accumulate_block(first, first + remainder, std::ref(results[tidx]));
   }
 
-  for (auto &&t : threads)
-    t.join();
+  for (auto &&t : threads) t.join();
 
   return std::accumulate(results.begin(), results.end(), init);
 }

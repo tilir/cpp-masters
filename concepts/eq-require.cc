@@ -10,8 +10,8 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <concepts>
+#include "gtest/gtest.h"
 
 template <typename T, typename U, typename = void>
 struct is_equality_comparable : std::false_type {};
@@ -21,7 +21,8 @@ struct is_equality_comparable<
     : std::true_type {};
 
 template <typename T, typename U>
-requires is_equality_comparable<T, U>::value bool check_eq(T &&lhs, U &&rhs) {
+  requires is_equality_comparable<T, U>::value
+bool check_eq(T &&lhs, U &&rhs) {
   return (lhs == rhs);
 }
 

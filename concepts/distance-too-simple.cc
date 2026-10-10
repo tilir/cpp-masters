@@ -10,9 +10,9 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <type_traits>
 #include <vector>
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -27,7 +27,8 @@ struct is_random_iterator
                       typename std::iterator_traits<It>::iterator_category> {};
 
 template <typename Iter>
-requires is_input_iterator<Iter>::value int my_distance(Iter first, Iter last) {
+  requires is_input_iterator<Iter>::value
+int my_distance(Iter first, Iter last) {
   int n = 0;
   while (first != last) {
     ++first;
@@ -37,8 +38,8 @@ requires is_input_iterator<Iter>::value int my_distance(Iter first, Iter last) {
 }
 
 template <typename Iter>
-requires is_random_iterator<Iter>::value int my_distance(Iter first,
-                                                         Iter last) {
+  requires is_random_iterator<Iter>::value
+int my_distance(Iter first, Iter last) {
   return last - first;
 }
 

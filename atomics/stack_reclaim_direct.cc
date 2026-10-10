@@ -30,7 +30,8 @@ namespace {
 std::vector<int> Consumed;
 std::mutex ConsMut;
 
-template <typename T> class lf_stack {
+template <typename T>
+class lf_stack {
   struct NodeTy {
     NodeTy *Next;
     T Data;
@@ -61,13 +62,11 @@ public:
     Pointer Old = Head.load();
     Pointer New = {nullptr, Number};
     do {
-      if (!Old.Node)
-        return false;
+      if (!Old.Node) return false;
       New.Node = Old.Node->Next;
     } while (!Head.compare_exchange_weak(Old, New));
 
-    if (!Old.Node)
-      return false;
+    if (!Old.Node) return false;
     Data = std::move(Old.Node->Data);
     delete Old.Node;
     return true;
@@ -83,13 +82,11 @@ void produce(lf_stack<int> &Q) {
     int N = NTasks.load();
 
     // check if I need enter CAS loop at all
-    if (N < 0)
-      break;
+    if (N < 0) break;
 
     while (!NTasks.compare_exchange_weak(N, N - 1)) {
       // check if inside CAS loop other producers exhausted tasks
-      if (N < 0)
-        return;
+      if (N < 0) return;
       std::this_thread::yield();
     }
     Q.push(N);
@@ -99,8 +96,7 @@ void produce(lf_stack<int> &Q) {
 void consume(lf_stack<int> &Q) {
   for (;;) {
     int N = NTasks.load();
-    if (N < 0 && Q.is_empty())
-      break;
+    if (N < 0 && Q.is_empty()) break;
     bool Succ = Q.pop(N);
     if (Succ) {
       // record what was consumed

@@ -10,18 +10,23 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <concepts>
 
-template <typename T> struct FImpl {
+template <typename T>
+struct FImpl {
   static int f(T t) { return 0; }
 };
 
-template <typename T> struct FImpl<T *> {
+template <typename T>
+struct FImpl<T *> {
   static int f(T *t) { return 1; }
 };
 
-template <typename T> int f(T t) { return FImpl<T>::f(t); }
+template <typename T>
+int f(T t) {
+  return FImpl<T>::f(t);
+}
 
 TEST(classtempls, partialfunc) {
   int x;

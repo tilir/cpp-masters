@@ -39,7 +39,8 @@ class object_t {
     virtual void draw_(std::ostream &, size_t) const = 0;
   };
 
-  template <typename T> struct model final : concept_t {
+  template <typename T>
+  struct model final : concept_t {
     T data_;
     model(T x) : data_(std::move(x)) {}
     std::unique_ptr<concept_t> copy_() const override {
@@ -73,8 +74,7 @@ public:
 
 void draw(const document_t &x, std::ostream &out, size_t position) {
   out << std::string(position, ' ') << "<document>" << std::endl;
-  for (const auto &e : x)
-    draw(e, out, position + 2);
+  for (const auto &e : x) draw(e, out, position + 2);
   out << std::string(position, ' ') << "</document>" << std::endl;
 }
 

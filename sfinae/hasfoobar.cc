@@ -10,9 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-#include <concepts>
+#include <string>
 #include <type_traits>
+#include "gtest/gtest.h"
 
 namespace {
 

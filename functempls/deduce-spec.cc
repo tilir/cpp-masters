@@ -10,15 +10,23 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 namespace {
 
 // for all
-template <typename T> T foo(T x) { return x; }
+template <typename T>
+T foo(T x) {
+  return x;
+}
 
 // for int
-template <> int foo(int x) { return x + 1; }
+template <>
+int foo(int x) {
+  return x + 1;
+}
 
 } // namespace
 

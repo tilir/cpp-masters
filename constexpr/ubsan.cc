@@ -14,8 +14,7 @@
 
 template <typename FwdIt, typename Value>
 constexpr FwdIt static_find(FwdIt it, FwdIt fin, Value v) {
-  while ((v != *it) && (it != fin))
-    ++it;
+  while ((v != *it) && (it != fin)) ++it;
   return it;
 }
 

@@ -10,8 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <concepts>
 
 TEST(classtempls, pod) {
   int x = 2;

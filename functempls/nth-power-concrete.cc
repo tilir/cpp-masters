@@ -10,14 +10,15 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 namespace {
 
 unsigned nth_power(unsigned x, unsigned n) {
   unsigned acc = 1;
-  if ((x < 2) || (n == 1))
-    return x;
+  if ((x < 2) || (n == 1)) return x;
   while (n > 0) {
     if ((n & 0x1) == 0x1) {
       acc *= x;
@@ -31,10 +32,8 @@ unsigned nth_power(unsigned x, unsigned n) {
 
 unsigned naive_nth_power(unsigned x, unsigned n) {
   unsigned acc = 1;
-  if ((x < 2) || (n == 1))
-    return x;
-  for (unsigned k = 0; k < n; ++k)
-    acc *= x;
+  if ((x < 2) || (n == 1)) return x;
+  for (unsigned k = 0; k < n; ++k) acc *= x;
   return acc;
 }
 

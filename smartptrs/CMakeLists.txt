@@ -11,7 +11,7 @@
 # Order of examples in SRCS variable corresponds to the order in the lecture.
 # Examples commented out are broken (often -- intentionally).
 #
-# Try: cmake -DCMAKE_CXX_COMPILER=clang++-15 ..
+# Try: cmake -DCMAKE_CXX_COMPILER=clang++-21 ..
 #
 #------------------------------------------------------------------------------
 

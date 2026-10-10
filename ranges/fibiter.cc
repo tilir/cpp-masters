@@ -10,10 +10,11 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-#include <numeric>
+#include <iterator>
 #include <ranges>
-#include <vector>
+#include <string>
+#include <utility>
+#include "gtest/gtest.h"
 
 namespace ranges = std::ranges;
 namespace views = std::views;

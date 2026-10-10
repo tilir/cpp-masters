@@ -12,8 +12,7 @@
 //----------------------------------------------------------------------------
 
 #include <cstddef>
-#include <iostream>
-
+#include <string>
 #include "gtest/gtest.h"
 
 int foo() {

@@ -12,7 +12,10 @@
 
 #pragma once
 
-template <typename T> struct logging_alloc {
+#include <stdio.h>
+
+template <typename T>
+struct logging_alloc {
   typedef T value_type;
   typedef T *pointer;
 
@@ -27,7 +30,8 @@ template <typename T> struct logging_alloc {
     ::operator delete(p);
   }
 
-  template <typename U> logging_alloc(const logging_alloc<U> &) {
+  template <typename U>
+  logging_alloc(const logging_alloc<U> &) {
     printf("coercion ctor\n");
   }
 
@@ -43,7 +47,10 @@ template <typename T> struct logging_alloc {
   typedef ptrdiff_t difference_type;
 
   // rebind will be deprecated in C++20, but required in C++98
-  template <typename U> struct rebind { typedef logging_alloc<U> other; };
+  template <typename U>
+  struct rebind {
+    typedef logging_alloc<U> other;
+  };
 
   // C++98 also requires construct and destroy
   void construct(pointer p, const T &t) {

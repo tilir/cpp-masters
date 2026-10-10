@@ -12,9 +12,10 @@
 
 #pragma once
 
+#include <stdlib.h>
 #include <iostream>
 #include <string>
-#include <tuple>
+#include <utility>
 
 inline size_t memory = 0;
 inline size_t alloc = 0;

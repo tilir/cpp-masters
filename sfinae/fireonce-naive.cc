@@ -10,16 +10,18 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <type_traits>
+#include "gtest/gtest.h"
 
 namespace {
 
 using ftype = int();
 
-template <typename T> class fire_once;
+template <typename T>
+class fire_once;
 
-template <typename R, typename... Args> class fire_once<R(Args...)> {
+template <typename R, typename... Args>
+class fire_once<R(Args...)> {
   std::unique_ptr<void, void (*)(void *)> ptr{nullptr, +[](void *) {}};
   R (*invoke)(void *, Args...) = nullptr;
 
@@ -29,7 +31,8 @@ public:
   fire_once &operator=(fire_once &&) = default;
 
   // constructor from anything callable
-  template <typename F> fire_once(F &&f) {
+  template <typename F>
+  fire_once(F &&f) {
     auto pf = std::make_unique<F>(std::move(f));
     invoke = +[](void *pf, Args... args) -> R {
       F *f = reinterpret_cast<F *>(pf);

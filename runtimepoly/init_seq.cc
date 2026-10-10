@@ -10,10 +10,7 @@
 //
 //----------------------------------------------------------------------------
 
-#include <iostream>
-#include <memory>
-#include <sstream>
-
+#include <string> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
 #include "gtest/gtest.h"
 
 namespace {

@@ -11,11 +11,16 @@
 //----------------------------------------------------------------------------
 
 #include <coroutine>
+#include <exception>
 #include <future>
+#include <string>
+#include <thread>
+#include <utility>
 
 #include "gtest/gtest.h"
 
-template <> struct std::coroutine_traits<std::future<int>> {
+template <>
+struct std::coroutine_traits<std::future<int>> {
   struct promise_type : std::promise<int> {
     std::future<int> get_return_object() { return this->get_future(); }
     std::suspend_never initial_suspend() noexcept { return {}; }

@@ -58,7 +58,8 @@ public:
 
   iterator() = default;
   iterator(concat_view<V1, V2> &parent)
-      : parent_(&parent), ifst_(ranges::begin(parent.fst_)),
+      : parent_(&parent),
+        ifst_(ranges::begin(parent.fst_)),
         isnd_(ranges::begin(parent.snd_)) {}
 
   value_type operator*() const { return !first_done_ ? *ifst_ : *isnd_; }
@@ -66,8 +67,7 @@ public:
   iterator &operator++() {
     if (!first_done_) {
       ++ifst_;
-      if (ifst_ == ranges::end(parent_->fst_))
-        first_done_ = true;
+      if (ifst_ == ranges::end(parent_->fst_)) first_done_ = true;
     } else
       ++isnd_;
 
@@ -86,11 +86,13 @@ public:
   }
 };
 
-template <ranges::view V1, ranges::view V2> auto concat_view<V1, V2>::begin() {
+template <ranges::view V1, ranges::view V2>
+auto concat_view<V1, V2>::begin() {
   return concat_view<V1, V2>::iterator{*this};
 }
 
-template <ranges::view V1, ranges::view V2> auto concat_view<V1, V2>::end() {
+template <ranges::view V1, ranges::view V2>
+auto concat_view<V1, V2>::end() {
   return concat_view<V1, V2>::sentinel{ranges::end(snd_)};
 }
 
@@ -103,8 +105,7 @@ static_assert(ranges::view<
 
 bool is_prime(int n) {
   for (int i = 2; i * i < n; ++i)
-    if ((n % i) == 0)
-      return false;
+    if ((n % i) == 0) return false;
   return true;
 }
 
@@ -112,20 +113,17 @@ int main() {
   std::vector<int> v1 = {-1, -2, -3};
   std::vector<int> v2 = {-3, -2, -1};
   auto chain = concat_view(views::all(v1), views::all(v2));
-  for (auto i : chain)
-    std::cout << i << " ";
+  for (auto i : chain) std::cout << i << " ";
   std::cout << std::endl;
 
   auto first_two = concat_view(views::single(2), views::single(3));
-  for (auto i : first_two)
-    std::cout << i << " ";
+  for (auto i : first_two) std::cout << i << " ";
   std::cout << std::endl;
 
   auto modulo_six = [](auto x) { return ((x % 6) == 1) || ((x % 6) == 5); };
   auto others =
       views::iota(5) | views::filter(modulo_six) | views::filter(is_prime);
   auto primes = concat_view(first_two, others);
-  for (auto i : ranges::take_view(primes, 20))
-    std::cout << i << " ";
+  for (auto i : ranges::take_view(primes, 20)) std::cout << i << " ";
   std::cout << std::endl;
 }

@@ -10,23 +10,22 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-#include <functional>
-#include <numeric>
 #include <ranges>
+#include <string>
 #include <vector>
+#include "gtest/gtest.h"
 
 namespace ranges = std::ranges;
 namespace views = std::views;
 
 int accumulate(const ranges::input_range auto &coll) {
   int acc = 0;
-  for (auto &elem : coll)
-    acc += elem;
+  for (auto &elem : coll) acc += elem;
   return acc;
 }
 
-template <auto V> struct EndValue {
+template <auto V>
+struct EndValue {
   bool operator==(auto pos) const { return *pos == V; }
 };
 

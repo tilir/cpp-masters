@@ -12,15 +12,17 @@
 
 #include <cassert>
 #include <coroutine>
+#include <exception>
 #include <optional>
-#include <unordered_map>
-#include <vector>
+#include <ostream>
+#include <string>
 
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> class resume_optional {
+template <typename T>
+class resume_optional {
   struct optional_awaiter {
     std::optional<T> opt_;
 
@@ -53,14 +55,12 @@ public:
   }
 
   std::optional<T> current_value() const {
-    if (handle_)
-      return handle_.promise().opt_;
+    if (handle_) return handle_.promise().opt_;
     return std::nullopt;
   }
 
   ~resume_optional() {
-    if (handle_)
-      handle_.destroy();
+    if (handle_) handle_.destroy();
   }
 
 private:

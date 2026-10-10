@@ -10,10 +10,13 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-#include <concepts>
 #include <forward_list>
+#include <iterator>
+#include <string>
+#include <type_traits>
+#include <utility>
 #include <vector>
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -33,15 +36,13 @@ struct is_forward_iterator
 
 template <typename Iter>
 #if !defined(NOCONSTR)
-requires is_forward_iterator<Iter>::value &&
-    is_totally_ordered<typename Iter::value_type>::value
+  requires is_forward_iterator<Iter>::value &&
+           is_totally_ordered<typename Iter::value_type>::value
 #endif
-        Iter
-        my_min_element(Iter first, Iter last) {
+Iter my_min_element(Iter first, Iter last) {
   Iter min = first;
   while (first != last) {
-    if (*first < *min)
-      min = first;
+    if (*first < *min) min = first;
     ++first;
   }
   return min;

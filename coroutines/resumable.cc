@@ -10,7 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
+#include <assert.h>
 #include <coroutine>
+#include <exception>
+#include <string>
 
 #include "gtest/gtest.h"
 
@@ -31,13 +34,11 @@ struct resumable {
   resumable(resumable &) = delete;
   resumable(resumable &&rhs) : handle_(rhs.handle_) { rhs.handle_ = nullptr; }
   bool resume() {
-    if (!handle_.done())
-      handle_.resume();
+    if (!handle_.done()) handle_.resume();
     return !handle_.done();
   }
   ~resumable() {
-    if (handle_)
-      handle_.destroy();
+    if (handle_) handle_.destroy();
   }
 
 private:

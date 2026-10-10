@@ -11,10 +11,15 @@
 //----------------------------------------------------------------------------
 
 #include <algorithm>
+#include <cctype>
+#include <chrono>
 #include <execution>
-#include <iterator>
+#include <functional>
+#include <iostream>
 #include <numeric>
 #include <random>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "opts.hpp"
@@ -37,12 +42,9 @@ enum class Policy { Seq, Par, Par_Unseq, Wrong };
 constexpr auto getPolicy(std::string P) {
   std::transform(P.begin(), P.end(), P.begin(),
                  [](unsigned char C) { return std::tolower(C); });
-  if (P == "seq")
-    return Policy::Seq;
-  if (P == "par")
-    return Policy::Par;
-  if (P == "par_unseq")
-    return Policy::Par_Unseq;
+  if (P == "seq") return Policy::Seq;
+  if (P == "par") return Policy::Par;
+  if (P == "par_unseq") return Policy::Par_Unseq;
   return Policy::Wrong;
 }
 
@@ -51,12 +53,9 @@ enum class Alg { Transform, Reduce, Sort, Wrong };
 constexpr auto getAlg(std::string P) {
   std::transform(P.begin(), P.end(), P.begin(),
                  [](unsigned char C) { return std::tolower(C); });
-  if (P == "transform")
-    return Alg::Transform;
-  if (P == "reduce")
-    return Alg::Reduce;
-  if (P == "sort")
-    return Alg::Sort;
+  if (P == "transform") return Alg::Transform;
+  if (P == "reduce") return Alg::Reduce;
+  if (P == "sort") return Alg::Sort;
   return Alg::Wrong;
 }
 
@@ -94,8 +93,7 @@ Config parse_cfg(int argc, char **argv) {
 
   if (Cfg.NStart < 1)
     throw std::runtime_error("please specify start size >= 1");
-  if (Cfg.NStep < 1)
-    throw std::runtime_error("please specify step size >= 1");
+  if (Cfg.NStep < 1) throw std::runtime_error("please specify step size >= 1");
   if (Cfg.Steps < 1)
     throw std::runtime_error("please specify num of steps >= 1");
   if (Cfg.P == Policy::Wrong)
@@ -159,14 +157,14 @@ int measureSort(auto It, long Sz, auto P) {
 // returns divisor for linear algs
 int measureAlg(auto It, long Sz, Alg A, auto P) {
   switch (A) {
-  case Alg::Transform:
-    return measureTransform(It, Sz, P);
-  case Alg::Reduce:
-    return measureReduce(It, Sz, P);
-  case Alg::Sort:
-    return measureSort(It, Sz, P);
-  default:
-    throw std::runtime_error("Alg not supported");
+    case Alg::Transform:
+      return measureTransform(It, Sz, P);
+    case Alg::Reduce:
+      return measureReduce(It, Sz, P);
+    case Alg::Sort:
+      return measureSort(It, Sz, P);
+    default:
+      throw std::runtime_error("Alg not supported");
   }
 }
 
@@ -186,17 +184,17 @@ int main(int argc, char **argv) try {
     double D;
     t.start();
     switch (Cfg.P) {
-    case Policy::Seq:
-      D = measureAlg(V.begin(), Sz, Cfg.A, exec::seq);
-      break;
-    case Policy::Par:
-      D = measureAlg(V.begin(), Sz, Cfg.A, exec::par);
-      break;
-    case Policy::Par_Unseq:
-      D = measureAlg(V.begin(), Sz, Cfg.A, exec::par_unseq);
-      break;
-    default:
-      throw std::runtime_error("Policy not suppported");
+      case Policy::Seq:
+        D = measureAlg(V.begin(), Sz, Cfg.A, exec::seq);
+        break;
+      case Policy::Par:
+        D = measureAlg(V.begin(), Sz, Cfg.A, exec::par);
+        break;
+      case Policy::Par_Unseq:
+        D = measureAlg(V.begin(), Sz, Cfg.A, exec::par_unseq);
+        break;
+      default:
+        throw std::runtime_error("Policy not suppported");
     };
     t.stop();
 

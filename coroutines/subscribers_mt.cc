@@ -84,8 +84,7 @@ public:
       set_ = true;
       toresume.splice(toresume.begin(), lst_);
     }
-    for (auto s : toresume)
-      s.coro_.resume();
+    for (auto s : toresume) s.coro_.resume();
   }
 
   void reset() noexcept { set_ = false; }
@@ -127,8 +126,7 @@ TEST(coroutines, subscribers_mt) {
   std::thread t3(consumer);
 
   // this is fragile and errorneous. Figure out how to do better?
-  while (L > 0)
-    std::this_thread::yield();
+  while (L > 0) std::this_thread::yield();
 
   producer();
   t1.join();

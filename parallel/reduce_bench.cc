@@ -10,12 +10,19 @@
 //
 //----------------------------------------------------------------------------
 
+#include <assert.h>
 #include <algorithm>
+#include <cctype>
+#include <chrono>
 #include <execution>
+#include <functional>
 #include <future>
+#include <iostream>
 #include <iterator>
 #include <numeric>
 #include <random>
+#include <stdexcept>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -39,12 +46,9 @@ enum class Policy { Seq, Par, Par_Unseq, Wrong };
 constexpr auto getPolicy(std::string P) {
   std::transform(P.begin(), P.end(), P.begin(),
                  [](unsigned char C) { return std::tolower(C); });
-  if (P == "seq")
-    return Policy::Seq;
-  if (P == "par")
-    return Policy::Par;
-  if (P == "par_unseq")
-    return Policy::Par_Unseq;
+  if (P == "seq") return Policy::Seq;
+  if (P == "par") return Policy::Par;
+  if (P == "par_unseq") return Policy::Par_Unseq;
   return Policy::Wrong;
 }
 
@@ -53,12 +57,9 @@ enum class Alg { Reduce, Naive, Async, Wrong };
 constexpr auto getAlg(std::string P) {
   std::transform(P.begin(), P.end(), P.begin(),
                  [](unsigned char C) { return std::tolower(C); });
-  if (P == "reduce")
-    return Alg::Reduce;
-  if (P == "naive")
-    return Alg::Naive;
-  if (P == "async")
-    return Alg::Async;
+  if (P == "reduce") return Alg::Reduce;
+  if (P == "naive") return Alg::Naive;
+  if (P == "async") return Alg::Async;
   return Alg::Wrong;
 }
 
@@ -96,8 +97,7 @@ Config parse_cfg(int argc, char **argv) {
 
   if (Cfg.NStart < 1)
     throw std::runtime_error("please specify start size >= 1");
-  if (Cfg.NStep < 1)
-    throw std::runtime_error("please specify step size >= 1");
+  if (Cfg.NStep < 1) throw std::runtime_error("please specify step size >= 1");
   if (Cfg.Steps < 1)
     throw std::runtime_error("please specify num of steps >= 1");
   if (Cfg.P == Policy::Wrong)
@@ -135,10 +135,8 @@ template <typename Iterator,
           typename T = typename std::iterator_traits<Iterator>::value_type>
 T naive_accumulate(Iterator first, Iterator last, T init = 0) {
   long length = distance(first, last);
-  if (0 == length)
-    return init;
-  if (length <= MINLEN)
-    return std::accumulate(first, last, init);
+  if (0 == length) return init;
+  if (length <= MINLEN) return std::accumulate(first, last, init);
 
   static unsigned nthreads = determine_threads(length);
   long bsize = length / nthreads;
@@ -163,8 +161,7 @@ T naive_accumulate(Iterator first, Iterator last, T init = 0) {
     accumulate_block(first, first + remainder, std::ref(results[tidx]));
   }
 
-  for (auto &&t : threads)
-    t.join();
+  for (auto &&t : threads) t.join();
 
   return std::accumulate(results.begin(), results.end(), init);
 }
@@ -173,10 +170,8 @@ template <typename Iterator,
           typename T = typename std::iterator_traits<Iterator>::value_type>
 T async_accumulate(Iterator first, Iterator last, T init = 0) {
   long length = distance(first, last);
-  if (0 == length)
-    return init;
-  if (length <= MINLEN)
-    return std::accumulate(first, last, init);
+  if (0 == length) return init;
+  if (length <= MINLEN) return std::accumulate(first, last, init);
 
   static unsigned nthreads = determine_threads(length);
   long bsize = length / nthreads;
@@ -201,8 +196,7 @@ T async_accumulate(Iterator first, Iterator last, T init = 0) {
     result += accumulate_block(first, first + remainder);
   }
 
-  for (unsigned long i = 0; i < nthreads; ++i)
-    result += results[i].get();
+  for (unsigned long i = 0; i < nthreads; ++i) result += results[i].get();
 
   return result;
 }
@@ -239,14 +233,14 @@ int measureAsync(auto It, long Sz, auto P) {
 // returns divisor for linear algs
 int measureAlg(auto It, long Sz, Alg A, auto P) {
   switch (A) {
-  case Alg::Reduce:
-    return measureReduce(It, Sz, P);
-  case Alg::Naive:
-    return measureNaive(It, Sz, P);
-  case Alg::Async:
-    return measureAsync(It, Sz, P);
-  default:
-    throw std::runtime_error("Alg not supported");
+    case Alg::Reduce:
+      return measureReduce(It, Sz, P);
+    case Alg::Naive:
+      return measureNaive(It, Sz, P);
+    case Alg::Async:
+      return measureAsync(It, Sz, P);
+    default:
+      throw std::runtime_error("Alg not supported");
   }
 }
 
@@ -266,17 +260,17 @@ int main(int argc, char **argv) try {
     double D;
     t.start();
     switch (Cfg.P) {
-    case Policy::Seq:
-      D = measureAlg(V.begin(), Sz, Cfg.A, exec::seq);
-      break;
-    case Policy::Par:
-      D = measureAlg(V.begin(), Sz, Cfg.A, exec::par);
-      break;
-    case Policy::Par_Unseq:
-      D = measureAlg(V.begin(), Sz, Cfg.A, exec::par_unseq);
-      break;
-    default:
-      throw std::runtime_error("Policy not suppported");
+      case Policy::Seq:
+        D = measureAlg(V.begin(), Sz, Cfg.A, exec::seq);
+        break;
+      case Policy::Par:
+        D = measureAlg(V.begin(), Sz, Cfg.A, exec::par);
+        break;
+      case Policy::Par_Unseq:
+        D = measureAlg(V.begin(), Sz, Cfg.A, exec::par_unseq);
+        break;
+      default:
+        throw std::runtime_error("Policy not suppported");
     };
     t.stop();
 

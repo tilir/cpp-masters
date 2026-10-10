@@ -37,8 +37,8 @@ class Customer {
 
 public:
   template <typename S1, typename S2 = const char *>
-  requires(!std::is_same_v<std::remove_reference_t<S1>, Customer>)
-      Customer(S1 &&s1, S2 &&s2 = "")
+    requires(!std::is_same_v<std::remove_reference_t<S1>, Customer>)
+  Customer(S1 &&s1, S2 &&s2 = "")
       : fst(std::forward<S1>(s1)), snd(std::forward<S2>(s2)) {}
 };
 

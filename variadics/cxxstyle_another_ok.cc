@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 static int sum_all() { return 0; }

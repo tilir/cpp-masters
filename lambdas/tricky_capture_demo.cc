@@ -10,8 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <utility>
+#include "gtest/gtest.h"
 
 TEST(lamdas, tricky_capture) {
   int a = 5;

@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 int g = 1;
@@ -29,10 +31,14 @@ Verbose bar() {
 }
 
 TEST(rvrefs, nrvo) {
-  { Verbose x = foo(); }
+  {
+    Verbose x = foo();
+  }
   EXPECT_EQ(g, 14); // we are pretty sure
 
   g = 1;
-  { Verbose x = bar(); }
+  {
+    Verbose x = bar();
+  }
   EXPECT_EQ(g, 14); // hope so if NRVO and we are lucky
 }

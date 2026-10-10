@@ -11,14 +11,14 @@
 //----------------------------------------------------------------------------
 
 #include <algorithm>
-#include <iostream>
+#include <iterator>
 #include <memory_resource>
 #include <random>
 #include <string>
 #include <vector>
 
-#include "pmrtestres.hpp"
 #include "gtest/gtest.h"
+#include "pmrtestres.hpp"
 
 static auto mtgen() {
   static std::random_device rd;

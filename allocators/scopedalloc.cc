@@ -20,9 +20,9 @@
 #include <scoped_allocator>
 #include <vector>
 
+#include "gtest/gtest.h"
 #include "memuse.hpp"
 #include "shortalloc.hpp"
-#include "gtest/gtest.h"
 
 constexpr int BUFSZ = 256; // must be multiple of align
 

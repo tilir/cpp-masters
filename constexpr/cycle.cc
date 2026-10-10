@@ -10,16 +10,18 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <stddef.h>
 #include <array>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 
 template <size_t N, typename T, size_t Size>
 constexpr std::array<T, N * Size> cycle_elems(std::array<T, Size> a) {
   std::array<T, N * Size> result{};
-  for (T i = 0; i < N * Size; ++i)
-    result[i] = a[i % Size];
+  for (T i = 0; i < N * Size; ++i) result[i] = a[i % Size];
   return result;
 }
 

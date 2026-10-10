@@ -12,7 +12,8 @@
 
 #include <iostream>
 
-template <typename T> struct D {
+template <typename T>
+struct D {
   enum { max = 10 };
 };
 

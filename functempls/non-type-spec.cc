@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 namespace {
@@ -18,7 +20,8 @@ struct Pair {
   int x = 1, y = 1;
 };
 
-template <int N, int *PN, int &RN, Pair P> int foo() {
+template <int N, int *PN, int &RN, Pair P>
+int foo() {
   return N + *PN + RN + P.x + P.y;
 }
 
@@ -26,7 +29,10 @@ constexpr Pair p;
 int x = 1;
 int y = 1;
 
-template <> int foo<1, nullptr, x, p>() { return 10 + x + p.x + p.y; }
+template <>
+int foo<1, nullptr, x, p>() {
+  return 10 + x + p.x + p.y;
+}
 
 } // namespace
 

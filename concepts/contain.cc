@@ -10,16 +10,15 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <concepts>
+#include "gtest/gtest.h"
 
 namespace {
 
 template <typename R, typename T>
 bool contains(R const &range, T const &value) {
   for (auto const &x : range)
-    if (x == value)
-      return true;
+    if (x == value) return true;
   return false;
 }
 

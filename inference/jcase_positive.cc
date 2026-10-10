@@ -12,9 +12,11 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+#include <type_traits>
+#include <utility>
 #include "gtest/gtest.h"
 
-#include <concepts>
 #include <iostream>
 
 struct MyString {
@@ -37,10 +39,13 @@ class Customer {
 
 public:
   template <typename S1, typename S2 = const char *>
-  requires(std::is_convertible_v<S1, MyString>) Customer(S1 &&s1, S2 &&s2 = "")
+    requires(std::is_convertible_v<S1, MyString>)
+  Customer(S1 &&s1, S2 &&s2 = "")
       : fst(std::forward<S1>(s1)), snd(std::forward<S2>(s2)) {}
 };
 
+// VIP is fully defined here; IWYU misattributes inherited constructors.
+// IWYU pragma: no_forward_declare VIP
 struct VIP : public Customer {
   using Customer::Customer;
 };

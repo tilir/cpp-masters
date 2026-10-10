@@ -12,8 +12,11 @@
 
 #pragma once
 
+#include <stddef.h>
+#include <algorithm>
 #include <iostream>
 #include <memory_resource>
+#include <stdexcept>
 #include <vector>
 
 class test_resource : public std::pmr::memory_resource {

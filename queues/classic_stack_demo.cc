@@ -20,9 +20,11 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <functional>
 #include <iostream>
 #include <mutex>
-#include <stack>
+#include <stdexcept>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -82,8 +84,7 @@ Config parse_cfg(int argc, char **argv) {
     throw std::runtime_error("please specify number of consumers >= 1");
   if (PTime < 0)
     throw std::runtime_error("please specify production time >= 0");
-  if (CTime < 0)
-    throw std::runtime_error("please specify consuming time >= 0");
+  if (CTime < 0) throw std::runtime_error("please specify consuming time >= 0");
 
   Cfg.PTime = chrono::milliseconds(PTime);
   Cfg.CTime = chrono::milliseconds(CTime);
@@ -105,7 +106,8 @@ Config parse_cfg(int argc, char **argv) {
 
 namespace {
 
-template <typename T> class ts_stack {
+template <typename T>
+class ts_stack {
   Config Cfg;
 
   // fixed-size stack
@@ -143,8 +145,7 @@ public:
   bool wait_and_pop(T &Data) {
     std::unique_lock<std::mutex> Lk{Mut};
     CondCons.wait(Lk, [this] { return !empty() || done(); });
-    if (empty())
-      return false;
+    if (empty()) return false;
     Data = Buffer[NCur];
     NCur -= 1;
     Lk.unlock();
@@ -176,8 +177,7 @@ void produce(ts_stack<int> &Q, Config Cfg) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0)
-        break;
+      if (NTasks < 0) break;
       N = NTasks;
       NTasks -= 1;
     }
@@ -192,16 +192,14 @@ void consume(ts_stack<int> &Q, Config Cfg) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0 && Q.is_empty_and_done())
-        break;
+      if (NTasks < 0 && Q.is_empty_and_done()) break;
     }
 
     // pop, then spend some time consuming
     // if pop succesfull
     int N;
     bool Succ = Q.wait_and_pop(N);
-    if (Succ)
-      std::this_thread::sleep_for(Cfg.CTime);
+    if (Succ) std::this_thread::sleep_for(Cfg.CTime);
   }
 }
 
@@ -224,14 +222,12 @@ int main(int argc, char **argv) try {
   for (int N = 0; N < Cfg.NCons; ++N)
     Consumers.emplace_back(consume, std::ref(Stack), Cfg);
 
-  for (auto &P : Producers)
-    P.join();
+  for (auto &P : Producers) P.join();
 
   // after all producers join
   Stack.wake_and_done();
 
-  for (auto &C : Consumers)
-    C.join();
+  for (auto &C : Consumers) C.join();
 
   t.stop();
   std::cout << Cfg.NProd << " " << Cfg.NCons << " " << t.elapsed_ms()

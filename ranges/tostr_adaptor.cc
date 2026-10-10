@@ -18,22 +18,30 @@
 
 namespace views = std::views;
 
-template <typename R> std::string to_string(R rng) {
+template <typename R>
+std::string to_string(R rng) {
   auto v = views::common(rng);
   return std::string(v.begin(), v.end());
 }
 
 struct to_str_closure {
-  template <typename R> auto operator()(R r) const { return to_string(r); }
+  template <typename R>
+  auto operator()(R r) const {
+    return to_string(r);
+  }
 };
 
 struct to_str_adaptor {
-  template <typename R> auto operator()(R r) { return to_string(r); }
+  template <typename R>
+  auto operator()(R r) {
+    return to_string(r);
+  }
 
   auto operator()() { return to_str_closure(); }
 };
 
-template <typename R> auto operator|(R r, const to_str_closure &c) {
+template <typename R>
+auto operator|(R r, const to_str_closure &c) {
   return c(r);
 }
 

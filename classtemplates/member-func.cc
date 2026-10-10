@@ -10,22 +10,29 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <concepts>
 
 struct Data {
-  template <typename T> T read() const { return {}; }
+  template <typename T>
+  T read() const {
+    return {};
+  }
 };
 
-template <typename T> class DataReader {
+template <typename T>
+class DataReader {
   const T &source_;
 
 public:
   DataReader(const T &source) : source_(source) {}
-  template <typename R> R read();
+  template <typename R>
+  R read();
 };
 
-template <typename T> template <typename R> R DataReader<T>::read() {
+template <typename T>
+template <typename R>
+R DataReader<T>::read() {
   R res = source_.template read<R>();
   return res;
 }

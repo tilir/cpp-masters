@@ -10,8 +10,11 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <iostream>
+#include <string>
+#include <utility>
+
+#include "gtest/gtest.h"
 
 struct Heavy {
   Heavy(int sz) { std::cout << "Heavy created" << std::endl; }
@@ -19,7 +22,8 @@ struct Heavy {
   ~Heavy() { std::cout << "Heavy destroyed" << std::endl; }
 };
 
-template <typename T> class Stack {
+template <typename T>
+class Stack {
   struct StackElem {
     T elem;
     StackElem *next;
@@ -41,10 +45,12 @@ public:
 
   void push_back(const T &);
 
-  template <class... Args> void emplace_back(Args &&...args);
+  template <class... Args>
+  void emplace_back(Args &&...args);
 };
 
-template <typename T> void Stack<T>::push_back(const T &elem) {
+template <typename T>
+void Stack<T>::push_back(const T &elem) {
   StackElem *newelem = new StackElem(elem, top_);
   top_ = newelem;
 }
@@ -56,7 +62,8 @@ void Stack<T>::emplace_back(Args &&...args) {
   top_ = newelem;
 }
 
-template <typename T> Stack<T>::~Stack() {
+template <typename T>
+Stack<T>::~Stack() {
   struct StackElem *nxt = top_;
   while (nxt != nullptr) {
     struct StackElem *tmp = nxt->next;

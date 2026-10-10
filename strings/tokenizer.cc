@@ -10,11 +10,13 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-
+#include <boost/token_functions.hpp>
 #include <boost/tokenizer.hpp>
 #include <iostream>
+#include <sstream>
 #include <string>
+
+#include "gtest/gtest.h"
 
 using sep_t = boost::char_separator<char>;
 
@@ -24,8 +26,7 @@ TEST(strings, tokenizer) {
 
   sep_t sep("-;|");
   boost::tokenizer<sep_t> tokens(str, sep);
-  for (auto tok : tokens)
-    Os << "<" << tok << "> ";
+  for (auto tok : tokens) Os << "<" << tok << "> ";
   auto S = Os.str();
   std::cout << S << std::endl;
 

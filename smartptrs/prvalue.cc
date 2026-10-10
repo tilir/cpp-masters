@@ -10,16 +10,13 @@
 //
 //----------------------------------------------------------------------------
 
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <memory_resource>
-
+#include <string> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> class ScopedPointer {
+template <typename T>
+class ScopedPointer {
   T *value;
 
 public:

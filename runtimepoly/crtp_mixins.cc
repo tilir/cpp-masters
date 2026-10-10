@@ -10,14 +10,16 @@
 //
 //----------------------------------------------------------------------------
 
-#include <iostream>
+#include <stddef.h>
 #include <sstream>
+#include <string>
 
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename Derived> struct Comparisons {};
+template <typename Derived>
+struct Comparisons {};
 
 template <typename Derived>
 bool operator==(const Comparisons<Derived> &o1,
@@ -33,7 +35,8 @@ bool operator!=(const Comparisons<Derived> &o1,
   return !(o1 == o2);
 }
 
-template <typename Derived> struct object_t {
+template <typename Derived>
+struct object_t {
   void draw(std::ostream &os, size_t pos) const {
     static_cast<const Derived *>(this)->draw(os, pos);
   }

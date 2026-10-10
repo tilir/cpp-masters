@@ -14,12 +14,11 @@
 //----------------------------------------------------------------------------
 
 #include <atomic>
-#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <mutex>
-#include <thread>
-#include <vector>
+#include <stdexcept>
+#include <string>
 
 #include "opts.hpp"
 #include "timer.hpp"
@@ -96,8 +95,7 @@ void threadfunc_atomic(int Wload) {
     Counters Cnl, Cnn;
     Cnl = ACnt.load();
     do {
-      if (Cnl.A + Cnl.B >= Wload)
-        return;
+      if (Cnl.A + Cnl.B >= Wload) return;
       Cnn = {Cnl.A + 1, Cnl.B + 2};
     } while (!ACnt.compare_exchange_weak(Cnl, Cnn));
   }
@@ -112,8 +110,7 @@ void threadfunc(int Wload) {
     std::lock_guard<std::mutex> L{M};
     Cnt.A += 1;
     Cnt.B += 2;
-    if (Cnt.A + Cnt.B >= Wload)
-      break;
+    if (Cnt.A + Cnt.B >= Wload) break;
   }
 }
 

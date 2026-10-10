@@ -12,7 +12,11 @@
 
 #pragma once
 
-template <typename T> class freelist_alloc {
+#include <stdio.h>
+#include <type_traits>
+
+template <typename T>
+class freelist_alloc {
   using storage_type =
       typename std::aligned_storage<sizeof(T), alignof(T)>::type;
 
@@ -42,7 +46,8 @@ public:
   freelist_alloc() = default;
   freelist_alloc(const freelist_alloc &) {}
 
-  template <typename U> freelist_alloc(const freelist_alloc<U> &) {}
+  template <typename U>
+  freelist_alloc(const freelist_alloc<U> &) {}
 
   freelist_alloc(freelist_alloc &&other) noexcept : list(other.list) {
     other.list = nullptr;
@@ -51,8 +56,7 @@ public:
   freelist_alloc &operator=(const freelist_alloc &) { return *this; }
 
   freelist_alloc &operator=(freelist_alloc &&other) noexcept {
-    if (this == &other)
-      return *this;
+    if (this == &other) return *this;
     clear();
     list = other.list;
     other.list = nullptr;

@@ -10,33 +10,32 @@
 //
 //-----------------------------------------------------------------------------
 
+#include <string>
+#include <type_traits>
 #include "gtest/gtest.h"
-#include <concepts>
 
 namespace {
 
 template <typename T>
-concept Ord = requires(T a, T b) {
-  a < b;
-};
+concept Ord = requires(T a, T b) { a < b; };
 template <typename T>
-concept Inc = requires(T a) {
-  ++a;
-};
+concept Inc = requires(T a) { ++a; };
 template <typename T>
 concept Void = std::is_same_v<T, void>;
 
 template <typename T>
-requires Ord<T> || Inc<T> || Void<T>
+  requires Ord<T> || Inc<T> || Void<T>
 struct less {
   int operator()() const { return 2; }
 };
 
-template <Ord T> struct less<T> {
+template <Ord T>
+struct less<T> {
   int operator()() const { return 22; }
 };
 
-template <> struct less<void> {
+template <>
+struct less<void> {
   int operator()() const { return 42; }
 };
 

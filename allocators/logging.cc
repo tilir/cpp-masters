@@ -10,20 +10,16 @@
 //
 //----------------------------------------------------------------------------
 
-#include <cstdio>
-#include <limits>
-#include <list>
-#include <memory>
+#include <string>
 #include <vector>
 
-#include "logging.hpp"
 #include "gtest/gtest.h"
+#include "logging.hpp"
 
 TEST(allocs, logging) {
   std::vector<int, logging_alloc<int>> v;
 
-  for (int i = 0; i < 16; ++i)
-    v.push_back(i);
+  for (int i = 0; i < 16; ++i) v.push_back(i);
   printf("---\n");
   std::vector<int, logging_alloc<int>> v2 = v;
   v2.push_back(16);

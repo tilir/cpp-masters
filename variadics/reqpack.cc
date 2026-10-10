@@ -10,12 +10,16 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <string>
 #include <type_traits>
+#include <utility>
+
+#include "gtest/gtest.h"
 
 template <typename T, typename... Ts>
-auto sum_all(T &&arg,
-             Ts &&...args) requires(std::is_same_v<T, Ts> &&... && true) {
+auto sum_all(T &&arg, Ts &&...args)
+  requires(std::is_same_v<T, Ts> && ... && true)
+{
   return std::forward<T>(arg) + (... + std::forward<Ts>(args));
 }
 

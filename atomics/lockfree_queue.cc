@@ -34,7 +34,8 @@ std::vector<int> Consumed;
 std::mutex ConsMut;
 std::mutex LogMut;
 
-template <typename T> class lf_queue {
+template <typename T>
+class lf_queue {
   // using unsigned to allow legal wrap around
   struct CellTy {
     std::atomic<unsigned> Sequence;
@@ -47,17 +48,14 @@ template <typename T> class lf_queue {
 
 public:
   lf_queue(unsigned BufSize) : Buffer(BufSize), BufferMask(BufSize - 1) {
-    if (BufSize > (1 << 30))
-      throw std::runtime_error("buffer size too large");
+    if (BufSize > (1 << 30)) throw std::runtime_error("buffer size too large");
 
-    if (BufSize < 2)
-      throw std::runtime_error("buffer size too small");
+    if (BufSize < 2) throw std::runtime_error("buffer size too small");
 
     if ((BufSize & (BufSize - 1)) != 0)
       throw std::runtime_error("buffer size is not power of 2");
 
-    for (unsigned i = 0; i != BufSize; ++i)
-      Buffer[i].Sequence.store(i);
+    for (unsigned i = 0; i != BufSize; ++i) Buffer[i].Sequence.store(i);
 
     EnqueuePos.store(0);
     DequeuePos.store(0);
@@ -86,13 +84,11 @@ public:
 
       // queue is full we cannot enqueue and just return false
       // another option: queue moved forward all way round
-      if (Diff < 0)
-        return false;
+      if (Diff < 0) return false;
 
       // If its Sequence wasn't touched by other producers
       // check if we can increment the enqueue Position
-      if (Diff == 0)
-        Res = EnqueuePos.compare_exchange_weak(Pos, Pos + 1);
+      if (Diff == 0) Res = EnqueuePos.compare_exchange_weak(Pos, Pos + 1);
     }
 
     // write the item we want to enqueue and bump Sequence
@@ -123,13 +119,11 @@ public:
 #endif
 
       // probably the queue is empty, then return false
-      if (Diff < 0)
-        return false;
+      if (Diff < 0) return false;
 
       // Check if its Sequence was changed by a producer and wasn't changed by
       // other consumers and if we can increment the dequeue Position
-      if (Diff == 0)
-        Res = DequeuePos.compare_exchange_weak(Pos, Pos + 1);
+      if (Diff == 0) Res = DequeuePos.compare_exchange_weak(Pos, Pos + 1);
     }
 
     // read the item and update for the next round of the buffer
@@ -148,25 +142,21 @@ void produce(lf_queue<int> &Q) {
     int N = NTasks.load();
 
     // check if I need enter CAS loop at all
-    if (N < 0)
-      break;
+    if (N < 0) break;
 
     while (!NTasks.compare_exchange_weak(N, N - 1)) {
       // check if inside CAS loop other producers exhausted tasks
-      if (N < 0)
-        return;
+      if (N < 0) return;
       std::this_thread::yield();
     }
-    while (!Q.push(N))
-      std::this_thread::yield();
+    while (!Q.push(N)) std::this_thread::yield();
   }
 }
 
 void consume(lf_queue<int> &Q) {
   for (;;) {
     int N = NTasks.load();
-    if (N < 0 && Q.is_empty())
-      break;
+    if (N < 0 && Q.is_empty()) break;
     bool Succ = Q.pop(N);
     if (Succ) {
       // record what was consumed

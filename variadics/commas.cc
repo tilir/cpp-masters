@@ -10,6 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
+#include <type_traits> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
+
 #include "gtest/gtest.h"
 
 // #define BUG

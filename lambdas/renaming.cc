@@ -10,8 +10,11 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <string>
+#include <utility>
 #include <vector>
+
+#include "gtest/gtest.h"
 
 TEST(lamdas, renaming_simple) {
   int a = 1;

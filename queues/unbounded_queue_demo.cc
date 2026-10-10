@@ -15,9 +15,12 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <functional>
 #include <iostream>
 #include <mutex>
 #include <queue>
+#include <stdexcept>
+#include <string>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -72,8 +75,7 @@ Config parse_cfg(int argc, char **argv) {
     throw std::runtime_error("please specify number of consumers >= 1");
   if (PTime < 0)
     throw std::runtime_error("please specify production time >= 0");
-  if (CTime < 0)
-    throw std::runtime_error("please specify consuming time >= 0");
+  if (CTime < 0) throw std::runtime_error("please specify consuming time >= 0");
 
   Cfg.PTime = chrono::milliseconds(PTime);
   Cfg.CTime = chrono::milliseconds(CTime);
@@ -94,11 +96,16 @@ Config parse_cfg(int argc, char **argv) {
 
 namespace {
 
-template <typename T> T Limiter();
+template <typename T>
+T Limiter();
 
-template <> int Limiter<int>() { return -1; }
+template <>
+int Limiter<int>() {
+  return -1;
+}
 
-template <typename T> class ts_queue {
+template <typename T>
+class ts_queue {
   Config Cfg;
 
   // unbounded queue
@@ -119,8 +126,7 @@ public:
     std::unique_lock<std::mutex> Lk{Mut};
     Cond.wait(Lk, [this] { return !Q.empty(); });
     T Task = std::move(Q.front());
-    if (Task == Limiter<T>())
-      return;
+    if (Task == Limiter<T>()) return;
     Data = Task;
     Q.pop();
   }
@@ -140,8 +146,7 @@ void produce(ts_queue<int> &Q, Config Cfg) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0)
-        break;
+      if (NTasks < 0) break;
       N = NTasks;
       NTasks -= 1;
     }
@@ -159,8 +164,7 @@ void consume(ts_queue<int> &Q, Config Cfg) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0)
-        break;
+      if (NTasks < 0) break;
     }
 
     // pop, then spend some time consuming
@@ -189,11 +193,9 @@ int main(int argc, char **argv) try {
   for (int N = 0; N < Cfg.NCons; ++N)
     Consumers.emplace_back(consume, std::ref(Queue), Cfg);
 
-  for (auto &P : Producers)
-    P.join();
+  for (auto &P : Producers) P.join();
 
-  for (auto &C : Consumers)
-    C.join();
+  for (auto &C : Consumers) C.join();
 
   t.stop();
   std::cout << "Done: "

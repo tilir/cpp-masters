@@ -10,8 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <string>
 #include <utility>
+
+#include "gtest/gtest.h"
 
 template <typename I, I... is1, I... is2>
 constexpr auto concat(std::integer_sequence<I, is1...>,

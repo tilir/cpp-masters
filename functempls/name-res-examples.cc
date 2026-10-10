@@ -10,8 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <concepts>
 
 struct foo {
   int x = 1;
@@ -31,7 +31,7 @@ TEST(functemplates, ovr_variadics) {
 }
 
 struct C {
-  C(int){};
+  C(int) {};
 };
 
 int foo(C x) { return 3; }
@@ -50,7 +50,10 @@ TEST(functemplates, ovr_impltest) {
   EXPECT_EQ(foo(s), 4);
 }
 
-template <typename T> int foo(T x) { return 5; }
+template <typename T>
+int foo(T x) {
+  return 5;
+}
 
 TEST(functemplates, ovr_templtest) {
   int s = 0;

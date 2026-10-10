@@ -10,8 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <functional>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 

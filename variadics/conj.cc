@@ -10,14 +10,19 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <string>
 #include <type_traits>
+#include <utility>
+
+#include "gtest/gtest.h"
 
 template <typename T, typename... Ts>
 constexpr inline bool are_same_v = std::conjunction_v<std::is_same<T, Ts>...>;
 
 template <typename... Ts>
-auto sum_all(Ts &&...args) requires are_same_v<Ts...> {
+auto sum_all(Ts &&...args)
+  requires are_same_v<Ts...>
+{
   return (... + std::forward<Ts>(args));
 }
 

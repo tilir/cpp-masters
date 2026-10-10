@@ -10,10 +10,7 @@
 //
 //----------------------------------------------------------------------------
 
-#include <iostream>
-#include <thread>
-#include <unistd.h>
-
+#include <string>
 #include "gtest/gtest.h"
 
 namespace {

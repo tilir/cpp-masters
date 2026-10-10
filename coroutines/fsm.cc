@@ -11,15 +11,20 @@
 //----------------------------------------------------------------------------
 
 #include <cassert>
+#include <cctype>
 #include <coroutine>
+#include <exception>
+#include <iostream>
+#include <string>
 #include <unordered_map>
-#include <vector>
+#include <utility>
 
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> struct generator {
+template <typename T>
+struct generator {
   struct promise_type {
     T current_value;
     using coro_handle = std::coroutine_handle<promise_type>;
@@ -43,8 +48,7 @@ template <typename T> struct generator {
   generator(generator const &) = delete;
   generator(generator &&rhs) : handle_(rhs.handle_) { rhs.handle_ = nullptr; }
   ~generator() {
-    if (handle_)
-      handle_.destroy();
+    if (handle_) handle_.destroy();
   }
 
 private:
@@ -70,8 +74,7 @@ struct resumable_cancelable {
     void unhandled_exception() { std::terminate(); }
 
     auto await_transform(std::suspend_always) {
-      if (is_cancelled)
-        return suspend_tunable{true};
+      if (is_cancelled) return suspend_tunable{true};
       return suspend_tunable{false};
     }
   };
@@ -83,19 +86,16 @@ struct resumable_cancelable {
     rhs.handle_ = nullptr;
   }
   void cancel() {
-    if (handle_.done())
-      return;
+    if (handle_.done()) return;
     handle_.promise().is_cancelled = true;
     handle_.resume();
   }
   bool resume() {
-    if (!handle_.done())
-      handle_.resume();
+    if (!handle_.done()) handle_.resume();
     return !handle_.done();
   }
   ~resumable_cancelable() {
-    if (handle_)
-      handle_.destroy();
+    if (handle_) handle_.destroy();
   }
 
 private:
@@ -119,13 +119,11 @@ struct resumable_noinc {
     rhs.handle_ = nullptr;
   }
   bool resume() {
-    if (!handle_.done())
-      handle_.resume();
+    if (!handle_.done()) handle_.resume();
     return !handle_.done();
   }
   ~resumable_noinc() {
-    if (handle_)
-      handle_.destroy();
+    if (handle_) handle_.destroy();
   }
   coro_handle handle() {
     coro_handle h = handle_;
@@ -139,7 +137,8 @@ private:
 
 using coro_t = std::coroutine_handle<>;
 
-template <typename State, typename Sym> class state_machine {
+template <typename State, typename Sym>
+class state_machine {
   State current_;
   std::unordered_map<State, coro_t> states_;
   generator<Sym> gen_;
@@ -152,7 +151,8 @@ public:
     states_[initial].resume();
   }
 
-  template <typename F> void add_state(State x, F stf) {
+  template <typename F>
+  void add_state(State x, F stf) {
     states_[x] = stf(*this).handle();
   }
 
@@ -160,13 +160,15 @@ public:
 
   State current() const { return current_; }
 
-  template <typename F> auto get_awaiter(F transition);
+  template <typename F>
+  auto get_awaiter(F transition);
 
   Sym genval() const { return gen_.current_value(); }
   void gennext() { gen_.move_next(); }
 };
 
-template <typename F, typename Sym, typename SM> struct stm_awaiter : public F {
+template <typename F, typename Sym, typename SM>
+struct stm_awaiter : public F {
   SM &stm_;
   stm_awaiter(F f, SM &stm) : F{f}, stm_{stm} {}
   bool await_ready() const noexcept { return false; }
@@ -197,49 +199,44 @@ using stm_t = state_machine<State, Sym>;
 generator<Sym> input_seq(std::string s) {
   for (char c : s) {
     switch (std::tolower(c)) {
-    case 'a':
-      co_yield Sym::A;
-      break;
-    case 'b':
-      co_yield Sym::B;
-      break;
-    default:
-      co_yield Sym::Term;
-      break;
+      case 'a':
+        co_yield Sym::A;
+        break;
+      case 'b':
+        co_yield Sym::B;
+        break;
+      default:
+        co_yield Sym::Term;
+        break;
     }
   }
 
-  for (;;)
-    co_yield Sym::Term;
+  for (;;) co_yield Sym::Term;
 }
 
 resumable_noinc StateA(stm_t &stm) {
   auto transition = [](auto sym) {
-    if (sym == Sym::B)
-      return State::B;
+    if (sym == Sym::B) return State::B;
     return State::A;
   };
 
   for (;;) {
     std::cout << "State A" << std::endl;
     bool finish = co_await stm.get_awaiter(transition);
-    if (finish)
-      break;
+    if (finish) break;
   }
 }
 
 resumable_noinc StateB(stm_t &stm) {
   auto transition = [](auto sym) {
-    if (sym == Sym::A)
-      return State::A;
+    if (sym == Sym::A) return State::A;
     return State::B;
   };
 
   for (;;) {
     std::cout << "State B" << std::endl;
     bool finish = co_await stm.get_awaiter(transition);
-    if (finish)
-      break;
+    if (finish) break;
   }
 }
 

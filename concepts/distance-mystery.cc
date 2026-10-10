@@ -10,9 +10,9 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <iterator>
-#include <type_traits>
+#include <string>
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -45,8 +45,7 @@ public:
   }
 
   junk_iter_t &operator+=(int n) {
-    for (int i = 0; i < n; ++i)
-      ++(*this);
+    for (int i = 0; i < n; ++i) ++(*this);
     return *this;
   }
 
@@ -62,8 +61,7 @@ public:
   }
 
   junk_iter_t &operator-=(int n) {
-    for (int i = 0; i < n; ++i)
-      --(*this);
+    for (int i = 0; i < n; ++i) --(*this);
     return *this;
   }
 

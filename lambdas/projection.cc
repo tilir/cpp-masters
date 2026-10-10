@@ -10,9 +10,14 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <functional>
 #include <iostream>
+#include <iterator>
+#include <string>
+#include <utility>
 #include <vector>
+
+#include "gtest/gtest.h"
 
 namespace {
 

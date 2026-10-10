@@ -10,16 +10,18 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <stddef.h>
 #include <array>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 
 constexpr char *strncopy(char *dst, const char *src, size_t n) {
   for (size_t i = 0; i < n; ++i) {
     dst[i] = src[i];
-    if (dst[i] == '\0')
-      return &dst[i + 1];
+    if (dst[i] == '\0') return &dst[i + 1];
   }
   return nullptr;
 }

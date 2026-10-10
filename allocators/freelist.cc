@@ -10,10 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
-#include <cstdio>
-#include <limits>
 #include <list>
-#include <memory>
+#include <string>
 #include <vector>
 
 #include "freelist.hpp"
@@ -21,8 +19,7 @@
 
 TEST(allocs, freelist) {
   std::vector<int, freelist_alloc<int>> v;
-  for (int i = 0; i < 16; ++i)
-    v.push_back(i);
+  for (int i = 0; i < 16; ++i) v.push_back(i);
   printf("---\n");
   std::list<int, freelist_alloc<int>> l(v.begin(), v.end());
   printf("---\n");

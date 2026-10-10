@@ -10,8 +10,10 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <concepts>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -26,14 +28,19 @@ struct S {
 
 int operator+(S s, int x) { return x + s.data_; }
 
-template <typename T> int foo(T x) requires requires(T a) {
-  // clang-format off
+template <typename T>
+int foo(T x)
+  requires requires(T a) {
+    // Preserve the layout of the teaching example’s requires expression.
+    // clang-format off
   { a + 1 } -> std::convertible_to<typename T::inner>;
-  // clang-format on
-  requires noexcept(++a);
-  requires sizeof(T) == 4;
+    // clang-format on
+    requires noexcept(++a);
+    requires sizeof(T) == 4;
+  }
+{
+  return ++x + 1;
 }
-{ return ++x + 1; }
 
 } // namespace
 

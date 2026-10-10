@@ -10,14 +10,17 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <algorithm>
 #include <ranges>
+#include <string>
 #include <vector>
+
+#include "gtest/gtest.h"
 
 namespace ranges = std::ranges;
 
-template <auto V> struct EndValue {
+template <auto V>
+struct EndValue {
   bool operator==(auto pos) const { return *pos == V; }
 };
 

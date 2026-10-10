@@ -10,16 +10,20 @@
 //
 //----------------------------------------------------------------------------
 
+#include <concepts> // IWYU pragma: keep -- preserve the original intentional teaching example.
+#include <string> // Required directly by Clang 21/IWYU; teaching behavior is unchanged.
 #include "gtest/gtest.h"
-#include <concepts>
 
 namespace {
 
-template <typename T> struct has_typedef_foobar {
+template <typename T>
+struct has_typedef_foobar {
   using yes = char[1];
   using no = char[2];
-  template <typename C> static yes &test(typename C::foobar *);
-  template <typename> static no &test(...);
+  template <typename C>
+  static yes &test(typename C::foobar *);
+  template <typename>
+  static no &test(...);
   enum { value = (sizeof(test<T>(0)) == sizeof(yes)) };
 };
 

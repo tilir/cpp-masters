@@ -10,11 +10,12 @@
 //
 //----------------------------------------------------------------------------
 
+#include <stddef.h>
 #include <algorithm>
 #include <iostream>
 #include <memory>
 #include <memory_resource>
-#include <random>
+#include <stdexcept>
 #include <string>
 #include <vector>
 

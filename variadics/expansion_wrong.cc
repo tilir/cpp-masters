@@ -18,7 +18,10 @@ int g = 0;
 
 void bar(int x) { g += x; }
 
-template <typename... T> void foo(T... ts) { bar(ts)...; }
+template <typename... T>
+void foo(T... ts) {
+  bar(ts)...;
+}
 
 } // namespace
 

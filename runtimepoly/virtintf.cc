@@ -10,8 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
-#include <iostream>
+#include <stddef.h>
 #include <sstream>
+#include <string>
 
 #include "gtest/gtest.h"
 

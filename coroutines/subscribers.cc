@@ -11,7 +11,9 @@
 //----------------------------------------------------------------------------
 
 #include <coroutine>
+#include <exception>
 #include <list>
+#include <string>
 
 #include "gtest/gtest.h"
 
@@ -77,8 +79,7 @@ public:
     set_ = true;
     std::list<awaiter> toresume;
     toresume.splice(toresume.begin(), lst_);
-    for (auto s : toresume)
-      s.coro_.resume();
+    for (auto s : toresume) s.coro_.resume();
   }
 
   void reset() noexcept { set_ = false; }

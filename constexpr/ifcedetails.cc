@@ -10,12 +10,13 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <type_traits>
+#include "gtest/gtest.h"
 
 // template case: constexpr works
 
-template <typename T> void bar(T value) {
+template <typename T>
+void bar(T value) {
   if constexpr (std::is_pointer_v<T>)
     std::cout << "Ptr to " << *value << std::endl; // Error
   else

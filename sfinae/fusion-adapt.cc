@@ -10,32 +10,28 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-#include <array>
-#include <boost/fusion/algorithm.hpp>
-#include <boost/fusion/container.hpp>
-#include <boost/fusion/functional.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-#include <boost/fusion/sequence.hpp>
-#include <boost/fusion/support.hpp>
-#include <boost/fusion/tuple.hpp>
+#include <boost/fusion/include/at_c.hpp>
+#include <boost/fusion/include/fold.hpp>
+#include <boost/fusion/include/vector.hpp>
+#include <boost/fusion/include/zip_view.hpp>
 #include <cmath>
-#include <concepts>
 #include <string>
-#include <tuple>
-#include <type_traits>
+#include "gtest/gtest.h"
 
 namespace fusion = boost::fusion;
 
 struct pythagoras {
   typedef double result_type;
-  template <typename T> double operator()(double acc, T const &axis) const {
+  template <typename T>
+  double operator()(double acc, T const &axis) const {
     double d = fusion::at_c<0>(axis) - fusion::at_c<1>(axis);
     return acc + d * d;
   }
 };
 
-template <typename P1, typename P2> double pydist(P1 p1, P2 p2) {
+template <typename P1, typename P2>
+double pydist(P1 p1, P2 p2) {
   typedef fusion::vector<P1 &, P2 &> zip_t;
   double accumulated =
       fusion::fold(fusion::zip_view<zip_t>(zip_t(p1, p2)), 0, pythagoras());

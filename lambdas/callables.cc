@@ -10,8 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <string>
 #include <type_traits>
+
+#include "gtest/gtest.h"
 
 namespace {
 

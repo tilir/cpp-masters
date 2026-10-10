@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 namespace {
@@ -18,7 +20,8 @@ struct Pair {
   int x = 1, y = 1;
 };
 
-template <int N, int *PN, int &RN, Pair P> int foo() {
+template <int N, int *PN, int &RN, Pair P>
+int foo() {
   return N + *PN + RN + P.x + P.y;
 }
 
@@ -32,7 +35,8 @@ class PairEnc {
   int x = 1, y = 1;
 };
 
-template <int N, int *PN, int &RN, PairEnc P> int bar() {
+template <int N, int *PN, int &RN, PairEnc P>
+int bar() {
   return N + *PN + RN + P.x + P.y;
 }
 
@@ -45,7 +49,8 @@ struct MoreComplex : public Pair {
   int z = 1;
 };
 
-template <int N, int *PN, int &RN, MoreComplex M> int buz() {
+template <int N, int *PN, int &RN, MoreComplex M>
+int buz() {
   return N + *PN + RN + M.z + M.arr[0];
 }
 

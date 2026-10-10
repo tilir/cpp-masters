@@ -10,8 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
-#include <iostream>
+#include <chrono>
 #include <mutex>
+#include <sstream>
+#include <string>
 #include <thread>
 
 #include "gtest/gtest.h"
@@ -45,8 +47,7 @@ void foo() {
   if (!resptr) {
     std::lock_guard<std::mutex> lk{resmut};
     {
-      if (!resptr)
-        resptr = new resource();
+      if (!resptr) resptr = new resource();
     }
   }
   resptr->use();

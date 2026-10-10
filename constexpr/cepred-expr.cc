@@ -10,14 +10,14 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <array>
+#include "gtest/gtest.h"
 
 consteval bool negate(bool x) { return !x; }
 
-template <typename Predicate> constexpr int f(Predicate pred) {
-  if constexpr (pred(true))
-    return 1;
+template <typename Predicate>
+constexpr int f(Predicate pred) {
+  if constexpr (pred(true)) return 1;
   return 0;
 }
 

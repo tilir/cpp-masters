@@ -4,8 +4,10 @@
 #include <chrono>
 #include <functional>
 #include <iostream>
-#include <mutex>
+#include <string_view>
 #include <thread>
+#include <utility>
+#include <vector>
 
 namespace chrono = std::chrono;
 
@@ -40,10 +42,10 @@ public:
   }
 };
 
-}
+} // namespace util
 
-template <typename T, typename ... Args>
-inline void measure(std::string_view prefix, T callable, Args&& ... args) {
+template <typename T, typename... Args>
+inline void measure(std::string_view prefix, T callable, Args &&...args) {
   util::Timer t;
   t.start();
   std::invoke(callable, std::forward<Args>(args)...);
@@ -53,7 +55,7 @@ inline void measure(std::string_view prefix, T callable, Args&& ... args) {
 
 template <typename T, typename... Args>
 inline void measure_multithread(int TMin, int TMax, T callable,
-                                Args &&... args) {
+                                Args &&...args) {
   util::Timer t;
   for (int nthr = TMin; nthr <= TMax; ++nthr) {
     t.start();
@@ -62,12 +64,11 @@ inline void measure_multithread(int TMin, int TMax, T callable,
     for (int i = 0; i < nthr; ++i)
       threads[i] = std::thread(callable, std::forward<Args>(args)...);
 
-    for (int i = 0; i < nthr; ++i)
-      threads[i].join();
+    for (int i = 0; i < nthr; ++i) threads[i].join();
 
     t.stop();
     std::cout << nthr << " " << t.elapsed_ms() << std::endl;
   }
 }
 
-#define noopt(i) asm(""::"r"(i))
+#define noopt(i) asm("" ::"r"(i))

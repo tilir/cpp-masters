@@ -10,8 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <functional>
 
 TEST(lamdas, decltyped) {
   decltype([](auto x) { return 2 * x; }) twice;

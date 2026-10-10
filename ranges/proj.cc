@@ -10,10 +10,11 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <algorithm>
-#include <ranges>
+#include <functional>
+#include <string>
 #include <vector>
+#include "gtest/gtest.h"
 
 namespace ranges = std::ranges;
 

@@ -24,15 +24,13 @@ int main() {
   auto vf = views::filter(v, [](int n) { return n % 2; });
   // vf : 4, 10
 
-  for (int &i : vf)
-    i += 1;
+  for (int &i : vf) i += 1;
   // vf : ????
 
   ranges::copy(v, std::ostream_iterator<int>{std::cout, " "});
   std::cout << std::endl;
 
-  for (int &i : vf)
-    i += 1;
+  for (int &i : vf) i += 1;
   // vf : ????
 
   ranges::copy(v, std::ostream_iterator<int>{std::cout, " "});

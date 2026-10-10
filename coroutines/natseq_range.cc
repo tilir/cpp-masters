@@ -10,14 +10,20 @@
 //
 //----------------------------------------------------------------------------
 
+#include <stddef.h> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
 #include <coroutine>
-#include <future>
+#include <exception> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
+#include <iostream> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
+#include <iterator> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
+#include <string> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
+#include <utility> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
 
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> struct range_gen {
+template <typename T>
+struct range_gen {
   struct promise_type {
     const T *value = nullptr;
 #ifdef BUG
@@ -49,8 +55,7 @@ template <typename T> struct range_gen {
 
     iterator &operator++() {
       handle.resume();
-      if (handle.done())
-        handle = nullptr;
+      if (handle.done()) handle = nullptr;
       return *this;
     }
 
@@ -71,23 +76,21 @@ template <typename T> struct range_gen {
   range_gen &operator=(range_gen &&rhs) {
     std::cout << "range_gen &operator=(range_gen&& rhs)\n";
     if (this != &rhs) {
-      handle_ = rhs.handle;
-      rhs.handle = nullptr;
+      // GCC 15 checks this template body even when move assignment is unused.
+      handle_ = rhs.handle_;
+      rhs.handle_ = nullptr;
     }
     return *this;
   }
 
   ~range_gen() {
-    if (handle_)
-      handle_.destroy();
+    if (handle_) handle_.destroy();
   }
 
   iterator begin() {
-    if (!handle_)
-      return iterator{nullptr};
+    if (!handle_) return iterator{nullptr};
     handle_.resume();
-    if (handle_.done())
-      return iterator{nullptr};
+    if (handle_.done()) return iterator{nullptr};
     return handle_;
   }
 
@@ -101,9 +104,9 @@ private:
 
 namespace {
 
-template <typename T> range_gen<T> sequence(T start, T fin, T step) {
-  for (T num = start; num < fin; num += step)
-    co_yield num;
+template <typename T>
+range_gen<T> sequence(T start, T fin, T step) {
+  for (T num = start; num < fin; num += step) co_yield num;
 }
 
 } // namespace

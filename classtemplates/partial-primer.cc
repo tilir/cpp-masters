@@ -10,16 +10,28 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <concepts>
 
-template <typename T, typename U> struct Foo { int primary = 0; };
+template <typename T, typename U>
+struct Foo {
+  int primary = 0;
+};
 
-template <typename T> struct Foo<T, T> { int partial = 1; };
+template <typename T>
+struct Foo<T, T> {
+  int partial = 1;
+};
 
-template <typename T> struct Foo<T, int> { int partial = 2; };
+template <typename T>
+struct Foo<T, int> {
+  int partial = 2;
+};
 
-template <typename T, typename U> struct Foo<T *, U *> { int partial = 3; };
+template <typename T, typename U>
+struct Foo<T *, U *> {
+  int partial = 3;
+};
 
 TEST(classtempls, primer) {
   Foo<int, float> mif;

@@ -10,12 +10,15 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <string>
 #include <type_traits>
+
+#include "gtest/gtest.h"
 
 namespace {
 
-template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0> int foo(T x) {
+template <typename T, std::enable_if_t<(sizeof(T) > 4), int> = 0>
+int foo(T x) {
   return 14;
 }
 

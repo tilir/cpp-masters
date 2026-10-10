@@ -10,8 +10,8 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <concepts>
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -22,7 +22,8 @@ struct is_equality_comparable<
     T, U, std::void_t<decltype(std::declval<T>() == std::declval<U>())>>
     : std::true_type {};
 
-template <typename T, typename U> bool check_eq(T &&lhs, U &&rhs) {
+template <typename T, typename U>
+bool check_eq(T &&lhs, U &&rhs) {
   if constexpr (!is_equality_comparable<T, U>::value) {
     static_assert(0 && "equality comparable expected");
     return false;

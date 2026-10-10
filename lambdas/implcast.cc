@@ -10,8 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <type_traits>
 
 TEST(lamdas, implcast) {
   auto l = [](int x, int y) -> int { return x + y; };

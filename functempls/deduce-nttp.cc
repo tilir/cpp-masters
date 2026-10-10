@@ -10,14 +10,17 @@
 //
 //----------------------------------------------------------------------------
 
-#include <boost/type_index.hpp>
 #include <gtest/gtest.h>
+#include <string>
 
 #define CT_ERROR 0
 
 namespace {
 
-template <auto n> int foo() { return n; }
+template <auto n>
+int foo() {
+  return n;
+}
 
 } // namespace
 

@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 TEST(rvrefs, binding_failures) {

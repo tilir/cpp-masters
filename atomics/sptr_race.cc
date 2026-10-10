@@ -10,18 +10,20 @@
 //
 //----------------------------------------------------------------------------
 
-#include <future>
-#include <iostream>
-#include <latch>
+#include <future> // IWYU pragma: keep -- preserve the original intentional race example.
+#include <iostream> // IWYU pragma: keep -- preserve the original intentional race example.
+#include <latch> // IWYU pragma: keep -- preserve the original intentional race example.
+#include <string> // Required directly by Clang 21/IWYU; teaching behavior is unchanged.
 #include <thread>
-#include <utility>
+#include <utility> // IWYU pragma: keep -- preserve the original intentional race example.
 
 #include "gtest/gtest.h"
 
 namespace {
 
 // control block for shared_pointer
-template <typename T> struct CBlock {
+template <typename T>
+struct CBlock {
   T *Data = nullptr;
   int Counter = 1;
   CBlock(const T &Data) : Data(new T(Data)) {}
@@ -32,7 +34,8 @@ template <typename T> struct CBlock {
 };
 
 // shared_pointer itself
-template <typename T> class MySPTR {
+template <typename T>
+class MySPTR {
   CBlock<T> *B;
 
 public:
@@ -42,8 +45,7 @@ public:
     B->add(1);
   }
   ~MySPTR() {
-    if (B->add(-1) == 0)
-      delete B;
+    if (B->add(-1) == 0) delete B;
   }
   T *operator->() const { return B->Data; }
   T &operator*() const { return *B->Data; }

@@ -14,8 +14,7 @@ void chase() {
   for (;;) {
     a += 1;
     b += 1;
-    if (a > MAXCOUNT)
-      break;
+    if (a > MAXCOUNT) break;
   }
 }
 
@@ -28,8 +27,7 @@ void check() {
       wrongcount += 1;
       break;
     }
-    if (aval > MAXCOUNT)
-      break;
+    if (aval > MAXCOUNT) break;
   }
 }
 

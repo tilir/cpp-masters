@@ -10,8 +10,8 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <type_traits>
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -23,11 +23,13 @@ struct Two {
   using snd = int;
 };
 
-template <typename T, std::void_t<typename T::fst> * = nullptr> int foo() {
+template <typename T, std::void_t<typename T::fst> * = nullptr>
+int foo() {
   return 1;
 }
 
-template <typename T, std::void_t<typename T::snd> * = nullptr> int foo() {
+template <typename T, std::void_t<typename T::snd> * = nullptr>
+int foo() {
   return 2;
 }
 

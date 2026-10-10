@@ -10,8 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <utility>
 
 TEST(lamdas, propagated) {
   int a = 5;

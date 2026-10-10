@@ -11,12 +11,15 @@
 //----------------------------------------------------------------------------
 
 #include <coroutine>
+#include <exception>
+#include <string>
 
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> struct generator {
+template <typename T>
+struct generator {
   struct promise_type {
     T current_value;
     using coro_handle = std::coroutine_handle<promise_type>;
@@ -40,8 +43,7 @@ template <typename T> struct generator {
   generator(generator const &) = delete;
   generator(generator &&rhs) : handle_(rhs.handle_) { rhs.handle_ = nullptr; }
   ~generator() {
-    if (handle_)
-      handle_.destroy();
+    if (handle_) handle_.destroy();
   }
 
 private:

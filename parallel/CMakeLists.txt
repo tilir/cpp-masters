@@ -24,3 +24,12 @@ set(SRCS
 add_gtest(parallel)
 add_demo(algo_bench)
 add_demo(reduce_bench)
+
+# std::execution::par with the libstdc++ PSTL backend needs TBB at link time
+# (only when TBB headers are installed -- otherwise PSTL falls back to serial).
+find_package(TBB QUIET)
+if(TBB_FOUND)
+  foreach(tgt parallel_unit algo_bench reduce_bench)
+    target_link_libraries(${tgt} PRIVATE TBB::tbb)
+  endforeach()
+endif()

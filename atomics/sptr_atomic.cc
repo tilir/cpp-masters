@@ -10,18 +10,17 @@
 //
 //----------------------------------------------------------------------------
 
-#include <future>
-#include <iostream>
-#include <latch>
+#include <atomic>
+#include <string>
 #include <thread>
-#include <utility>
 
 #include "gtest/gtest.h"
 
 namespace {
 
 // control block for shared_pointer
-template <typename T> struct CBlock {
+template <typename T>
+struct CBlock {
   T *Data = nullptr;
   std::atomic<int> Counter = 1;
   CBlock(const T &Data) : Data(new T(Data)) {}
@@ -32,7 +31,8 @@ template <typename T> struct CBlock {
 };
 
 // shared_pointer itself
-template <typename T> class MySPTR {
+template <typename T>
+class MySPTR {
   CBlock<T> *B;
 
 public:
@@ -42,8 +42,7 @@ public:
     B->add(1);
   }
   ~MySPTR() {
-    if (B->add(-1) == 0)
-      delete B;
+    if (B->add(-1) == 0) delete B;
   }
   T *operator->() const { return B->Data; }
   T &operator*() const { return *B->Data; }

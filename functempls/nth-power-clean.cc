@@ -10,11 +10,14 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> T do_nth_power(T x, T acc, unsigned n) {
+template <typename T>
+T do_nth_power(T x, T acc, unsigned n) {
   while (n > 0) {
     if ((n & 0x1) == 0x1) {
       acc *= x;
@@ -27,8 +30,7 @@ template <typename T> T do_nth_power(T x, T acc, unsigned n) {
 }
 
 unsigned nth_power(unsigned x, unsigned n) {
-  if (x < 2u || n == 1u)
-    return x;
+  if (x < 2u || n == 1u) return x;
   return do_nth_power<unsigned>(x, 1u, n);
 }
 
@@ -37,8 +39,7 @@ struct Matrix2x2 {
   bool operator==(const Matrix2x2 &m) const {
     for (int i = 0; i < 2; ++i)
       for (int j = 0; j < 2; ++j)
-        if (n[i][j] != m.n[i][j])
-          return false;
+        if (n[i][j] != m.n[i][j]) return false;
     return true;
   }
   Matrix2x2 &operator*=(const Matrix2x2 &m) {
@@ -46,8 +47,7 @@ struct Matrix2x2 {
     for (int i = 0; i < 2; i++) {
       for (int j = 0; j < 2; j++) {
         int acc = 0;
-        for (int k = 0; k < 2; k++)
-          acc += n[i][k] * m.n[k][j];
+        for (int k = 0; k < 2; k++) acc += n[i][k] * m.n[k][j];
         r.n[i][j] = acc;
       }
     }
@@ -58,8 +58,7 @@ struct Matrix2x2 {
 
 Matrix2x2 nth_power(Matrix2x2 x, unsigned n) {
   Matrix2x2 eye{1, 0, 0, 1};
-  if (x == eye || n == 1u)
-    return x;
+  if (x == eye || n == 1u) return x;
   return do_nth_power<Matrix2x2>(x, eye, n);
 }
 

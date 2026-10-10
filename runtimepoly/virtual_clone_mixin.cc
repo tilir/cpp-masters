@@ -10,9 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
-#include <iostream>
+#include <stddef.h>
 #include <memory>
 #include <sstream>
+#include <string>
 
 #include "gtest/gtest.h"
 
@@ -24,7 +25,8 @@ struct object_t {
   virtual ~object_t() {}
 };
 
-template <typename Base, typename Derived> struct MixClonable : public Base {
+template <typename Base, typename Derived>
+struct MixClonable : public Base {
   std::unique_ptr<Base> clone() const override {
     return std::unique_ptr<Base>(
         new Derived(static_cast<Derived const &>(*this)));

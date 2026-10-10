@@ -19,7 +19,8 @@
 namespace ranges = std::ranges;
 namespace views = std::views;
 
-template <typename R> std::string to_string(R rng) {
+template <typename R>
+std::string to_string(R rng) {
   auto v = views::common(rng);
   return std::string(v.begin(), v.end());
 }

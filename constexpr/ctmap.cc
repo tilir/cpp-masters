@@ -10,24 +10,23 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <array>
 #include <string>
+#include "gtest/gtest.h"
 
 template <typename P, size_t N>
 auto constexpr access(P const (&a)[N], typename P::first_type k) {
   size_t i = 0;
   for (; i < N; ++i)
-    if (k == a[i].first)
-      return a[i].second;
-  if (i == N)
-    throw "not found";
+    if (k == a[i].first) return a[i].second;
+  if (i == N) throw "not found";
 
   // silence compiler: we will never be here
   __builtin_unreachable();
 }
 
-template <typename ElemT, size_t N> struct ct_map_t {
+template <typename ElemT, size_t N>
+struct ct_map_t {
   using KeyT = typename ElemT::first_type;
   using ValueT = typename ElemT::second_type;
 
@@ -47,8 +46,8 @@ template <typename ElemT, size_t N> struct ct_map_t {
 };
 
 template <typename Key, typename Value, size_t N>
-constexpr auto
-make_ct_map(const std::pair<const Key, const Value> (&items)[N]) {
+constexpr auto make_ct_map(
+    const std::pair<const Key, const Value> (&items)[N]) {
   return ct_map_t<std::pair<Key, Value>, N>(items);
 }
 

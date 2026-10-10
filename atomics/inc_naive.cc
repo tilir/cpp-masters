@@ -33,10 +33,8 @@ void threadfunc() {
 
 TEST(atomics, inc_naive) {
   std::vector<std::thread> Threads(NTHREAD);
-  for (auto &&t : Threads)
-    t = std::thread(threadfunc);
-  for (auto &&t : Threads)
-    t.join();
+  for (auto &&t : Threads) t = std::thread(threadfunc);
+  for (auto &&t : Threads) t.join();
   Counters Val = ACnt.load();
   EXPECT_EQ(Val.A, NTHREAD * NITER);
   EXPECT_EQ(Val.B, NTHREAD * NITER);

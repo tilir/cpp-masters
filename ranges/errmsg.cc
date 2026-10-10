@@ -10,9 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <list>
 #include <ranges>
+#include "gtest/gtest.h"
 
 namespace ranges = std::ranges;
 

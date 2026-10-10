@@ -18,15 +18,16 @@
 
 namespace {
 
-template <typename T> struct holder {
+template <typename T>
+struct holder {
   std::mutex lock_;
   T data_;
   holder(T data) : lock_{}, data_(data) {}
 };
 
-template <typename T> void swapholders(holder<T> &lhs, holder<T> &rhs) {
-  if (&lhs == &rhs)
-    return;
+template <typename T>
+void swapholders(holder<T> &lhs, holder<T> &rhs) {
+  if (&lhs == &rhs) return;
 
   std::lock_guard<std::mutex> lk1{lhs.lock_};
   std::this_thread::sleep_for(std::chrono::seconds(1));

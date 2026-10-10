@@ -12,14 +12,16 @@
 
 #include <string>
 
-#include <boost/type_index.hpp>
 #include <gtest/gtest.h>
 
 #define CT_ERROR 0
 
 namespace {
 
-template <typename DstT, typename SrcT> DstT implicit_cast(SrcT x) { return x; }
+template <typename DstT, typename SrcT>
+DstT implicit_cast(SrcT x) {
+  return x;
+}
 
 } // namespace
 

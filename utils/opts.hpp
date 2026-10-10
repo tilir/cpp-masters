@@ -11,12 +11,14 @@
 
 #pragma once
 
-#include <cassert>
+#include <stdlib.h>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <utility>
 
 namespace options {
 
@@ -47,8 +49,7 @@ class Parser final {
         std::cout << ("-" + Name) << "( = " << Desc.value
                   << ") : " << Desc.description << std::endl;
       }
-      if (!IsHelp)
-        throw std::runtime_error("Wrong options");
+      if (!IsHelp) throw std::runtime_error("Wrong options");
       exit(0);
     }
     Values_[Opt].exists = true;
@@ -67,7 +68,8 @@ public:
     Desc.exists = false;
   }
 
-  template <typename T> T get(std::string Name) const {
+  template <typename T>
+  T get(std::string Name) const {
     if (!Parsed_)
       throw std::runtime_error(
           "Please do not query options before they are parsed");
@@ -99,8 +101,7 @@ public:
       TrimPos = Optview.find('=');
       bool HaveVal = (TrimPos != Optview.npos);
       std::string_view Valview = Optview;
-      if (HaveVal)
-        Optview.remove_suffix(Optview.size() - TrimPos);
+      if (HaveVal) Optview.remove_suffix(Optview.size() - TrimPos);
       std::string Opt{Optview};
       process_help_notfound(Opt);
       if (HaveVal) {

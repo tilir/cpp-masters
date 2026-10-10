@@ -10,12 +10,15 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <concepts>
+#include <string>
 #include <type_traits>
+
+#include "gtest/gtest.h"
 
 namespace {
 
+// Preserve the layout of the teaching example’s requires expression.
 // clang-format off
 template <typename T, typename U>
 concept Addable = requires(T t, U u) {
@@ -27,9 +30,9 @@ concept Addable = requires(T t, U u) {
 
 TEST(lamdas, explicit_test) {
   // generic lambda with explicit types
-  auto l = []<typename T, typename U>(T x, U y) requires Addable<T, U> {
-    return x + y;
-  };
+  auto l = []<typename T, typename U>(T x, U y)
+    requires Addable<T, U>
+  { return x + y; };
 
   auto result = l(1, 1.0);
   EXPECT_EQ(result, 2);

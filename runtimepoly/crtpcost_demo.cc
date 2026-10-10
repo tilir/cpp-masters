@@ -10,7 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
-template <typename Derived> struct Base {
+template <typename Derived>
+struct Base {
   void foo() { static_cast<Derived *>(this)->foo(); }
 };
 
@@ -18,11 +19,15 @@ struct Derived : Base<Derived> {
   void foo();
 };
 
-template <typename T> void call(Base<T> &b) { b.foo(); }
+template <typename T>
+void call(Base<T> &b) {
+  b.foo();
+}
 
 template void call(Base<Derived> &b);
 
-template <typename T> void buz(Base<T> &);
+template <typename T>
+void buz(Base<T> &);
 
 void bar() {
   Derived d;

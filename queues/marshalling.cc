@@ -10,8 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
+#include <exception>
 #include <future>
-#include <iostream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <utility>
@@ -24,8 +25,7 @@ TEST(queue, marshalling) {
 
   auto divi = [](auto &&result, auto a, auto b) {
     try {
-      if (b == 0)
-        throw std::overflow_error("Divide by zero");
+      if (b == 0) throw std::overflow_error("Divide by zero");
       result.set_value(a / b);
     } catch (...) {
       result.set_exception(std::current_exception());

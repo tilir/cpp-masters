@@ -12,7 +12,8 @@
 
 #pragma once
 
-template <typename T>[[gnu::noinline]] T max(T x, T y) {
+template <typename T>
+[[gnu::noinline]] T max(T x, T y) {
   return (x > y) ? x : y;
 }
 

@@ -10,12 +10,15 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <experimental/type_traits>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> using has_typedef_foobar_t = typename T::foobar;
+template <typename T>
+using has_typedef_foobar_t = typename T::foobar;
 template <typename T>
 using has_typedef_foobar =
     std::experimental::is_detected<has_typedef_foobar_t, T>;

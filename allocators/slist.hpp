@@ -15,6 +15,7 @@
 #include <iterator>
 #include <memory>
 #include <memory_resource>
+#include <utility>
 
 using std::addressof;
 using std::allocator_traits;
@@ -31,16 +32,17 @@ using std::pmr::polymorphic_allocator;
 
 namespace slist_details {
 
-template <typename Tp> struct node;
+template <typename Tp>
+struct node;
 
-template <typename Tp> struct node_base {
+template <typename Tp>
+struct node_base {
   node<Tp> *next_;
 
   node_base() : next_(nullptr) {}
   node_base(node_base &&rhs) : next_(rhs.next_) { rhs.next_ = nullptr; }
   node_base &operator=(node_base &&rhs) {
-    if (&rhs == this)
-      return *this;
+    if (&rhs == this) return *this;
     next_ = rhs.next_;
     rhs.next_ = nullptr;
     return *this;
@@ -49,13 +51,15 @@ template <typename Tp> struct node_base {
   node_base &operator=(const node_base &) = delete;
 };
 
-template <typename Tp> struct node : node_base<Tp> {
+template <typename Tp>
+struct node : node_base<Tp> {
   union {
     Tp value_;
   };
 };
 
-template <typename Tp> struct const_iterator {
+template <typename Tp>
+struct const_iterator {
   using value_type = Tp;
   using pointer = Tp const *;
   using reference = Tp const &;
@@ -84,7 +88,8 @@ template <typename Tp> struct const_iterator {
       : prev_(const_cast<node_base<Tp> *>(prev)) {}
 };
 
-template <typename Tp> struct iterator : public const_iterator<Tp> {
+template <typename Tp>
+struct iterator : public const_iterator<Tp> {
   using Base = const_iterator<Tp>;
 
   using pointer = Tp *;
@@ -110,7 +115,8 @@ template <typename Tp> struct iterator : public const_iterator<Tp> {
 
 // Singly-linked list that supports the use of a polymorphic
 // allocator.
-template <typename Tp> class slist {
+template <typename Tp>
+class slist {
 public:
   using value_type = Tp;
   using reference = value_type &;
@@ -145,11 +151,14 @@ public:
   Tp &front() { return head_.next_->value_; }
   Tp const &front() const { return head_.next_->value_; }
 
-  template <typename... Args> iterator emplace(iterator i, Args &&... args);
-  template <typename... Args> void emplace_front(Args &&... args) {
+  template <typename... Args>
+  iterator emplace(iterator i, Args &&...args);
+  template <typename... Args>
+  void emplace_front(Args &&...args) {
     emplace(begin(), forward<Args>(args)...);
   }
-  template <typename... Args> void emplace_back(Args &&... args) {
+  template <typename... Args>
+  void emplace_back(Args &&...args) {
     emplace(end(), forward<Args>(args)...);
   }
 
@@ -179,14 +188,16 @@ private:
 };
 
 namespace {
-template <class Tp> bool operator==(const slist<Tp> &a, const slist<Tp> &b) {
+template <class Tp>
+bool operator==(const slist<Tp> &a, const slist<Tp> &b) {
   if (a.size() != b.size())
     return false;
   else
     return equal(a.begin(), a.end(), b.begin());
 }
 
-template <class Tp> bool operator!=(const slist<Tp> &a, const slist<Tp> &b) {
+template <class Tp>
+bool operator!=(const slist<Tp> &a, const slist<Tp> &b) {
   return !(a == b);
 }
 } // namespace
@@ -209,20 +220,22 @@ slist<Tp>::slist(slist &&other, allocator_type a) : slist(a) {
   operator=(move(other));
 }
 
-template <typename Tp> slist<Tp>::~slist() { erase(begin(), end()); }
-
-template <typename Tp> slist<Tp> &slist<Tp>::operator=(const slist &other) {
-  if (&other == this)
-    return *this;
+template <typename Tp>
+slist<Tp>::~slist() {
   erase(begin(), end());
-  for (const Tp &v : other)
-    push_back(v);
+}
+
+template <typename Tp>
+slist<Tp> &slist<Tp>::operator=(const slist &other) {
+  if (&other == this) return *this;
+  erase(begin(), end());
+  for (const Tp &v : other) push_back(v);
   return *this;
 }
 
-template <typename Tp> slist<Tp> &slist<Tp>::operator=(slist &&other) {
-  if (&other == this)
-    return *this;
+template <typename Tp>
+slist<Tp> &slist<Tp>::operator=(slist &&other) {
+  if (&other == this) return *this;
   if (alloc_ == other.alloc_) {
     erase(begin(), end());
     swap(other);
@@ -231,7 +244,8 @@ template <typename Tp> slist<Tp> &slist<Tp>::operator=(slist &&other) {
   return *this;
 }
 
-template <typename Tp> void slist<Tp>::swap(slist &other) noexcept {
+template <typename Tp>
+void slist<Tp>::swap(slist &other) noexcept {
   assert(alloc_ == other.alloc_);
   node_base *new_tail = other.empty() ? &head_ : other.ptail_;
   node_base *new_other_tail = empty() ? &other.head_ : ptail_;
@@ -243,7 +257,7 @@ template <typename Tp> void slist<Tp>::swap(slist &other) noexcept {
 
 template <typename Tp>
 template <typename... Args>
-typename slist<Tp>::iterator slist<Tp>::emplace(iterator i, Args &&... args) {
+typename slist<Tp>::iterator slist<Tp>::emplace(iterator i, Args &&...args) {
   node *new_node = static_cast<node *>(
       alloc_.resource()->allocate(sizeof(node), alignof(node)));
   try {
@@ -256,8 +270,7 @@ typename slist<Tp>::iterator slist<Tp>::emplace(iterator i, Args &&... args) {
 
   new_node->next_ = i.prev_->next_;
   i.prev_->next_ = new_node;
-  if (i.prev_ == ptail_)
-    ptail_ = new_node; // Added at end
+  if (i.prev_ == ptail_) ptail_ = new_node; // Added at end
   ++size_;
   return i;
 }
@@ -265,10 +278,9 @@ typename slist<Tp>::iterator slist<Tp>::emplace(iterator i, Args &&... args) {
 template <typename Tp>
 typename slist<Tp>::iterator slist<Tp>::erase(iterator b, iterator e) {
   node *erase_next = b.prev_->next_;
-  node *erase_past = e.prev_->next_; // one past last erasure
-  if (nullptr == erase_past)
-    ptail_ = b.prev_;          // Erasing at tail
-  b.prev_->next_ = erase_past; // splice out sublist
+  node *erase_past = e.prev_->next_;           // one past last erasure
+  if (nullptr == erase_past) ptail_ = b.prev_; // Erasing at tail
+  b.prev_->next_ = erase_past;                 // splice out sublist
   while (erase_next != erase_past) {
     node *old_node = erase_next;
     erase_next = erase_next->next_;

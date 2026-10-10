@@ -10,9 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
+#include <unistd.h>
 #include <iostream>
 #include <thread>
-#include <unistd.h>
 
 #include "gtest/gtest.h"
 
@@ -24,8 +24,7 @@ void __attribute__((noinline)) use(int c) { asm(""); }
 
 int stick_this_thread_to_core(int core_id) {
   int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
-  if (core_id < 0 || core_id >= num_cores)
-    return EINVAL;
+  if (core_id < 0 || core_id >= num_cores) return EINVAL;
 
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);

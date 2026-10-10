@@ -11,11 +11,13 @@
 //----------------------------------------------------------------------------
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <memory_resource>
-#include <random>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -78,7 +80,8 @@ class polymorphic_allocator_delete {
 
 public:
   polymorphic_allocator_delete(palloc_t alloc) : alloc_(std::move(alloc)) {}
-  template <typename T> void operator()(T *ptr) {
+  template <typename T>
+  void operator()(T *ptr) {
     std::pmr::polymorphic_allocator<T> talloc(alloc_);
     talloc.destroy(ptr);
     talloc.deallocate(ptr, 1);

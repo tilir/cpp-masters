@@ -10,9 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-
 #include <sstream>
+#include <string>
+
+#include "gtest/gtest.h"
 
 const char *answer =
     R"(14 : Hello, world!

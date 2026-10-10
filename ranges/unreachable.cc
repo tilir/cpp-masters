@@ -10,10 +10,16 @@
 //
 //----------------------------------------------------------------------------
 
+#include <algorithm> // std::copy_n (no longer transitively included by gcc-15)
+#include <iostream>  // std::cout
+#include <iterator>
+#include <ranges>
+#include <string>
+#include <utility> // std::exchange
+#include <vector>
+
 #include "boost/type_index.hpp"
 #include "gtest/gtest.h"
-#include <ranges>
-#include <vector>
 
 namespace ti = boost::typeindex;
 namespace ranges = std::ranges;

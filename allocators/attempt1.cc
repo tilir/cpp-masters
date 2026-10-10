@@ -11,14 +11,16 @@
 //----------------------------------------------------------------------------
 
 #include <cstdio>
-#include <limits>
-#include <list>
-#include <memory>
+#include <limits> // IWYU pragma: keep -- preserve the original intentional teaching example.
+#include <list> // IWYU pragma: keep -- preserve the original intentional teaching example.
+#include <memory> // IWYU pragma: keep -- preserve the original intentional teaching example.
+#include <string> // Required directly by Clang 21/IWYU; teaching behavior is unchanged.
 #include <vector>
 
 #include "gtest/gtest.h"
 
-template <typename T> struct logging_alloc {
+template <typename T>
+struct logging_alloc {
   typedef T value_type;
   typedef T *pointer;
 
@@ -40,8 +42,7 @@ template <typename T> struct logging_alloc {
 TEST(allocs, attempt1) {
   std::vector<int, logging_alloc<int>> v;
 
-  for (int i = 0; i < 16; ++i)
-    v.push_back(i);
+  for (int i = 0; i < 16; ++i) v.push_back(i);
   printf("---\n");
   std::vector<int, logging_alloc<int>> v2 = v;
   v2.push_back(16);

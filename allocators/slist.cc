@@ -10,16 +10,13 @@
 //
 //----------------------------------------------------------------------------
 
-#include <algorithm>
-#include <iostream>
+#include <stdio.h>
 #include <memory_resource>
-#include <random>
 #include <string>
-#include <vector>
 
+#include "gtest/gtest.h"
 #include "memuse.hpp"
 #include "slist.hpp"
-#include "gtest/gtest.h"
 
 TEST(allocs, slist) {
   auto initial = memuse();
@@ -37,8 +34,7 @@ TEST(allocs, slist) {
   slist<int> s1(s, s.get_allocator());
   slist<int> s2(std::move(s1));
 
-  for (auto x : s2)
-    printf("%d\n", x);
+  for (auto x : s2) printf("%d\n", x);
 
   EXPECT_EQ(initial, memuse());
 }

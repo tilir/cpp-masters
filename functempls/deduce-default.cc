@@ -10,13 +10,16 @@
 //
 //----------------------------------------------------------------------------
 
-#include <boost/type_index.hpp>
 #include <gtest/gtest.h>
+#include <boost/type_index.hpp>
 
 #define CT_ERROR 0
 
 namespace {
-template <typename T = double> double foo(T x = 1.5) { return x; }
+template <typename T = double>
+double foo(T x = 1.5) {
+  return x;
+}
 } // namespace
 
 TEST(functemplates, deduce_default) {

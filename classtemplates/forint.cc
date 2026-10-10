@@ -10,16 +10,23 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <concepts>
 
-template <typename T> struct Type2Type { using OriginalType = T; };
+template <typename T>
+struct Type2Type {
+  using OriginalType = T;
+};
 
-template <typename T1, typename T2> struct A {
+template <typename T1, typename T2>
+struct A {
   int func() { return internal_func(Type2Type<T1>()); }
 
 private:
-  template <typename V> int internal_func(V) { return 1; }
+  template <typename V>
+  int internal_func(V) {
+    return 1;
+  }
   int internal_func(Type2Type<int>) { return 2; }
 };
 

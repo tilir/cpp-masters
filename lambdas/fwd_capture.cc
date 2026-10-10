@@ -10,12 +10,13 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <utility>
+#include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> auto fwd_capture(T &&x) {
+template <typename T>
+auto fwd_capture(T &&x) {
   struct CapT {
     T value;
   };

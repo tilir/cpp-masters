@@ -14,10 +14,10 @@
 
 namespace {
 
-template <typename T> T nth_power(T x, unsigned n) {
+template <typename T>
+T nth_power(T x, unsigned n) {
   T acc = 1;
-  if ((x < 2) || (n == 1))
-    return x;
+  if ((x < 2) || (n == 1)) return x;
   while (n > 0) {
     if ((n & 0x1) == 0x1) {
       acc *= x;
@@ -34,8 +34,7 @@ struct Matrix2x2 {
   bool operator==(const Matrix2x2 &m) const {
     for (int i = 0; i < 2; ++i)
       for (int j = 0; j < 2; ++j)
-        if (n[i][j] != m.n[i][j])
-          return false;
+        if (n[i][j] != m.n[i][j]) return false;
     return true;
   }
   Matrix2x2 &operator*=(const Matrix2x2 &m) {
@@ -43,8 +42,7 @@ struct Matrix2x2 {
     for (int i = 0; i < 2; i++) {
       for (int j = 0; j < 2; j++) {
         int acc = 0;
-        for (int k = 0; k < 2; k++)
-          acc += n[i][k] * m.n[k][j];
+        for (int k = 0; k < 2; k++) acc += n[i][k] * m.n[k][j];
         r.n[i][j] = acc;
       }
     }

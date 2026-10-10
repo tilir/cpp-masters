@@ -10,8 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <concepts>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -20,7 +22,10 @@ template <typename T> int foo(T x) { return x; }
 template <class T> int foo(T x) { return x + 1; }
 #endif
 
-template <std::integral T> int foo(T x) { return x % 2; }
+template <std::integral T>
+int foo(T x) {
+  return x % 2;
+}
 
 } // namespace
 

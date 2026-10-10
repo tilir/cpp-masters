@@ -10,8 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <utility>
+#include "gtest/gtest.h"
 
 TEST(lamdas, fwd_capture_astuple) {
   auto foo = []<typename... T>(T &&...a) {

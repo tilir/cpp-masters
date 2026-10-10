@@ -12,9 +12,11 @@
 
 #pragma once
 
+#include <stddef.h>
 #include <cassert>
 
-template <size_t N, size_t alignment = alignof(max_align_t)> class arena {
+template <size_t N, size_t alignment = alignof(max_align_t)>
+class arena {
   alignas(alignment) char buf_[N];
   char *ptr_;
 
@@ -24,7 +26,8 @@ public:
   arena(const arena &) = delete;
   arena &operator=(const arena &) = delete;
 
-  template <size_t ReqAlign> char *allocate(size_t n);
+  template <size_t ReqAlign>
+  char *allocate(size_t n);
   void deallocate(char *p, size_t n) noexcept;
 
   static constexpr size_t size() noexcept { return N; }
@@ -64,12 +67,10 @@ char *arena<N, alignment>::allocate(size_t n) {
 template <size_t N, size_t alignment>
 void arena<N, alignment>::deallocate(char *p, size_t n) noexcept {
   assert(pointer_in_buffer(ptr_) && "short_alloc has outlived arena");
-  if (!pointer_in_buffer(p))
-    ::operator delete(p);
+  if (!pointer_in_buffer(p)) ::operator delete(p);
 
   n = align_up(n);
-  if (p + n == ptr_)
-    ptr_ = p;
+  if (p + n == ptr_) ptr_ = p;
 }
 
 template <class T, size_t N, size_t Align = alignof(max_align_t)>
@@ -98,7 +99,8 @@ public:
   template <class U>
   short_alloc(short_alloc<U, N, alignment> &a) noexcept : a_(a.get_arena()) {}
 
-  template <class Up> struct rebind {
+  template <class Up>
+  struct rebind {
     using other = short_alloc<Up, N, alignment>;
   };
 

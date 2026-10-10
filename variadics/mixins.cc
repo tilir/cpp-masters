@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 int g = 0;
@@ -22,7 +24,8 @@ struct C2 {
   C2() { g += 2; }
 };
 
-template <typename... Mixins> struct mixture : public Mixins... {
+template <typename... Mixins>
+struct mixture : public Mixins... {
   mixture(Mixins... ms) : Mixins(ms)... {};
 };
 

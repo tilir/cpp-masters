@@ -10,7 +10,10 @@
 //
 //----------------------------------------------------------------------------
 
+#include <assert.h>
 #include <coroutine>
+#include <exception>
+#include <string>
 
 #include "gtest/gtest.h"
 
@@ -35,8 +38,7 @@ struct resumable_cancelable {
     void unhandled_exception() { std::terminate(); }
 
     auto await_transform(std::suspend_always) {
-      if (is_cancelled)
-        return suspend_tunable{true};
+      if (is_cancelled) return suspend_tunable{true};
       return suspend_tunable{false};
     }
   };
@@ -48,19 +50,16 @@ struct resumable_cancelable {
     rhs.handle_ = nullptr;
   }
   void cancel() {
-    if (handle_.done())
-      return;
+    if (handle_.done()) return;
     handle_.promise().is_cancelled = true;
     handle_.resume();
   }
   bool resume() {
-    if (!handle_.done())
-      handle_.resume();
+    if (!handle_.done()) handle_.resume();
     return !handle_.done();
   }
   ~resumable_cancelable() {
-    if (handle_)
-      handle_.destroy();
+    if (handle_) handle_.destroy();
   }
 
 private:

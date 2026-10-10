@@ -10,12 +10,15 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <initializer_list>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> consteval auto ilist_sz(std::initializer_list<T> init) {
+template <typename T>
+consteval auto ilist_sz(std::initializer_list<T> init) {
 #if defined(BAD)
   constexpr auto init_sz = init.size();
 #else

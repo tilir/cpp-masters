@@ -10,9 +10,11 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <array>
 #include <string>
+#include <utility>
+
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -21,7 +23,8 @@ struct TagEntity {
   std::string value;
 };
 
-template <int N> struct ct_ints {
+template <int N>
+struct ct_ints {
   std::array<int, N> arr_;
 
   template <int... Is>
@@ -29,16 +32,17 @@ template <int N> struct ct_ints {
 
   constexpr int find(int tag) const {
     for (int i = 0; i < N; ++i)
-      if (arr_[i] == tag)
-        return i;
+      if (arr_[i] == tag) return i;
     return N + 1;
   }
 };
 
-template <typename CommonTags> struct FixMsg {
+template <typename CommonTags>
+struct FixMsg {
   static constexpr int CommonTagsCount = CommonTags::size();
 
-  template <int Tag> TagEntity &getTagEntity() {
+  template <int Tag>
+  TagEntity &getTagEntity() {
     constexpr ct_ints<CommonTagsCount> vec(CommonTags{});
     constexpr int idx = vec.find(Tag);
     static_assert(static_cast<int>(idx) < static_cast<int>(CommonTagsCount),

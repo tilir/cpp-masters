@@ -10,9 +10,12 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
-template <typename T> struct Node {
+template <typename T>
+struct Node {
   T data;
   Node *left = nullptr;
   Node *right = nullptr;

@@ -10,11 +10,17 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
-template <typename D> struct CBase {
-  int call_foo() requires requires(D &v) { v.foo(); }
-  { return static_cast<D *>(this)->foo(); }
+template <typename D>
+struct CBase {
+  int call_foo()
+    requires requires(D &v) { v.foo(); }
+  {
+    return static_cast<D *>(this)->foo();
+  }
 };
 
 struct MyView : public CBase<MyView> {

@@ -10,13 +10,17 @@
 //
 //----------------------------------------------------------------------------
 
+#include <stddef.h>
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <memory_resource>
+#include <string>
+#include <vector>
 
-#include "memuse.hpp"
 #include "gtest/gtest.h"
+#include "memuse.hpp"
 
 TEST(rtpoly, discouraging_function) {
   constexpr size_t sz = 1000 * sizeof(double);
@@ -30,8 +34,7 @@ TEST(rtpoly, discouraging_function) {
                     [start]() mutable { return (start += 1.1); });
   };
   f();
-  for (auto x : v1)
-    std::cout << x << std::endl;
+  for (auto x : v1) std::cout << x << std::endl;
   auto use2 = memuse();
   EXPECT_NE(use1, use2);
 }

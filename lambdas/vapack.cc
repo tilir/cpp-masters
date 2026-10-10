@@ -10,10 +10,14 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <string>
+#include <utility>
 #include <vector>
 
-template <typename... Args> int foo(Args... args) {
+#include "gtest/gtest.h"
+
+template <typename... Args>
+int foo(Args... args) {
   auto lm1 = [args...] { return sizeof...(args); };
   auto lm2 = [... xs = args] { return sizeof...(xs); };
   auto lm3 = [&...xs = args] { return sizeof...(xs); };

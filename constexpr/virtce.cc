@@ -10,8 +10,8 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <array>
+#include "gtest/gtest.h"
 
 struct Base {
   constexpr Base() = default;

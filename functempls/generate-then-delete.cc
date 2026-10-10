@@ -13,10 +13,17 @@
 
 #include "gtest/gtest.h"
 
-template <typename T> T max(T x, T y) { return x > y ? x : y; }
+template <typename T>
+T max(T x, T y) {
+  return x > y ? x : y;
+}
 
-template <> int max<int>(int x, int y) { return x > y ? x : y; }
+template <>
+int max<int>(int x, int y) {
+  return x > y ? x : y;
+}
 
-template <> int max<int>(int x, int y) = delete;
+template <>
+int max<int>(int x, int y) = delete;
 
 TEST(max_test_case, testWillPass) { EXPECT_EQ(max(2, 11), 11); }

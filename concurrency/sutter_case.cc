@@ -10,11 +10,18 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+// Generic std::swap comes from <utility>; no exception_ptr overload is used.
+// IWYU pragma: no_include <exception>
+#include <stddef.h>
 #include <cassert>
 #include <iostream>
+#include <new>
 #include <stdexcept>
+#include <string>
+#include <type_traits>
 #include <utility>
+
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -48,19 +55,27 @@ struct Controllable {
 
 int Controllable::control = 5;
 
-template <typename T> void construct(T *p, const T &rhs) { new (p) T(rhs); }
-template <typename T> void construct(T *p, T &&rhs) {
+template <typename T>
+void construct(T *p, const T &rhs) {
+  new (p) T(rhs);
+}
+template <typename T>
+void construct(T *p, T &&rhs) {
   new (p) T(std::move(rhs));
 }
 
-template <class T> void destroy(T *p) { p->~T(); }
-
-template <typename FwdIter> void destroy(FwdIter first, FwdIter last) {
-  while (first != last)
-    destroy(&*first++);
+template <class T>
+void destroy(T *p) {
+  p->~T();
 }
 
-template <typename T> struct MyVectorBuf {
+template <typename FwdIter>
+void destroy(FwdIter first, FwdIter last) {
+  while (first != last) destroy(&*first++);
+}
+
+template <typename T>
+struct MyVectorBuf {
 protected:
   T *buffer_;
   size_t capacity_ = 0, size_ = 0;
@@ -93,7 +108,8 @@ protected:
   }
 };
 
-template <typename T> struct MyVector : private MyVectorBuf<T> {
+template <typename T>
+struct MyVector : private MyVectorBuf<T> {
   using MyVectorBuf<T>::size_;
   using MyVectorBuf<T>::capacity_;
   using MyVectorBuf<T>::buffer_;
@@ -117,14 +133,12 @@ template <typename T> struct MyVector : private MyVectorBuf<T> {
   }
 
   T top() const {
-    if (size_ < 1)
-      throw std::runtime_error("top failed: vector is empty");
+    if (size_ < 1) throw std::runtime_error("top failed: vector is empty");
     return buffer_[size_ - 1];
   }
 
   void pop() {
-    if (size_ < 1)
-      throw std::runtime_error("pop failed: vector is empty");
+    if (size_ < 1) throw std::runtime_error("pop failed: vector is empty");
     size_ -= 1;
     destroy(buffer_ + size_);
   }
@@ -141,8 +155,7 @@ template <typename T> struct MyVector : private MyVectorBuf<T> {
     if (size_ == capacity_) {
       std::cout << "Realloc\n";
       MyVector tmp(capacity_ * 2 + 1);
-      while (tmp.size_ < size_)
-        tmp.push(std::move(buffer_[tmp.size_]));
+      while (tmp.size_ < size_) tmp.push(std::move(buffer_[tmp.size_]));
       tmp.push(std::move(t));
       std::swap(*this, tmp);
     } else {

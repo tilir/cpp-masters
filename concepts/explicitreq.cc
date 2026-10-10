@@ -9,11 +9,14 @@
 // Explicit requires over function. Looks somewhat odd.
 //
 //-----------------------------------------------------------------------------
-#include "gtest/gtest.h"
 #include <concepts>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 
+// Preserve the layout of the teaching example’s requires expression.
 // clang-format off
 template <typename T, typename U> requires requires(T t, U u) {
   { t == u } -> std::convertible_to<bool>;

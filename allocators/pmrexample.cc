@@ -10,10 +10,12 @@
 //
 //----------------------------------------------------------------------------
 
+#include <stddef.h>
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 #include <memory_resource>
+#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
 
@@ -30,6 +32,5 @@ TEST(allocs, pmr) {
                   [start]() mutable { return (start += 1.25); });
   EXPECT_EQ(memuse(), initial);
 
-  for (int i = 0; i < v1.size(); ++i)
-    EXPECT_EQ(v1[i], (i + 1) * 1.25);
+  for (int i = 0; i < v1.size(); ++i) EXPECT_EQ(v1[i], (i + 1) * 1.25);
 }

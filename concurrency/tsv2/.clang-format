@@ -1,0 +1,4 @@
+---
+# Standalone tsv2 demo, not part of the main build; do not reformat.
+DisableFormat: true
+...

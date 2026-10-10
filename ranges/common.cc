@@ -10,11 +10,15 @@
 //
 //----------------------------------------------------------------------------
 
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <ranges>
+#include <string>
+#include <utility>
+#include <vector>
 #include "boost/type_index.hpp"
 #include "gtest/gtest.h"
-#include <numeric>
-#include <ranges>
-#include <vector>
 
 namespace ti = boost::typeindex;
 namespace ranges = std::ranges;

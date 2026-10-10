@@ -1,0 +1,38 @@
+[
+  { include: [ "@<boost/mpl/aux_/preprocessed/[^/]+/vector_c.hpp>", private, "<boost/mpl/vector_c.hpp>", public ] },
+  # Boost Fusion public wrappers own the templates and adaptation macros below.
+  { include: [ "@<boost/fusion/adapted/struct/.*>", private, "<boost/fusion/include/adapt_struct.hpp>", public ] },
+  { include: [ "@<boost/fusion/algorithm/iteration/.*fold.*>", private, "<boost/fusion/include/fold.hpp>", public ] },
+  { include: [ "@<boost/fusion/container/vector/.*>", private, "<boost/fusion/include/vector.hpp>", public ] },
+  { include: [ "<boost/fusion/iterator/deref.hpp>", private, "<boost/fusion/include/deref.hpp>", public ] },
+  { include: [ "<boost/fusion/iterator/next.hpp>", private, "<boost/fusion/include/next.hpp>", public ] },
+  { include: [ "<boost/fusion/sequence/intrinsic/at.hpp>", private, "<boost/fusion/include/at_c.hpp>", public ] },
+  { include: [ "<boost/fusion/sequence/intrinsic/begin.hpp>", private, "<boost/fusion/include/begin.hpp>", public ] },
+  { include: [ "<boost/fusion/view/zip_view/zip_view.hpp>", private, "<boost/fusion/include/zip_view.hpp>", public ] },
+  # These macro internals occur only through BOOST_FUSION_ADAPT_STRUCT here.
+  { include: [ "<boost/mpl/aux_/preprocessor/is_seq.hpp>", private, "<boost/fusion/include/adapt_struct.hpp>", public ] },
+  { include: [ "@<boost/preprocessor/.*>", private, "<boost/fusion/include/adapt_struct.hpp>", public ] },
+  { symbol: [ "std::nullptr_t", public, "<cstddef>", public ] },
+  { symbol: [ "std::byte", public, "<cstddef>", public ] },
+  { symbol: [ "std::swap", public, "<utility>", public ] },
+  { symbol: [ "size_t", public, "<cstddef>", public ] },
+  { symbol: [ "ptrdiff_t", public, "<cstddef>", public ] },
+  { include: [ "@<gtest/.*>", private, "<gtest/gtest.h>", public ] },
+  { include: [ "@<gmock/.*>", private, "<gmock/gmock.h>", public ] },
+
+  # PSTL algorithm declarations also appear without execution-policy overloads.
+  { include: [ "@<pstl/(glue_)?algorithm_.*>", private, "<algorithm>", public ] },
+  { include: [ "@<pstl/(glue_)?numeric_.*>", private, "<numeric>", public ] },
+  { include: [ "@<pstl/(glue_)?memory_.*>", private, "<memory>", public ] },
+  { include: [ "@<pstl/(glue_)?execution_.*>", private, "<execution>", public ] },
+  { include: [ "@<pstl/parallel_backend.*>", private, "<execution>", public ] },
+  { include: [ "@<(oneapi/)?tbb/.*>", private, "<execution>", public ] },
+
+  { include: [ "<stddef.h>", public, "<cstddef>", public ] },
+  { include: [ "<stdio.h>", public, "<cstdio>", public ] },
+  { include: [ "<stdlib.h>", public, "<cstdlib>", public ] },
+  { include: [ "<string.h>", public, "<cstring>", public ] },
+  { include: [ "<assert.h>", public, "<cassert>", public ] },
+  { include: [ "<ctype.h>", public, "<cctype>", public ] },
+  { include: [ "<math.h>", public, "<cmath>", public ] }
+]

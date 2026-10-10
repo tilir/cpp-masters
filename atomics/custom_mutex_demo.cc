@@ -15,12 +15,12 @@
 //----------------------------------------------------------------------------
 
 #include <atomic>
-#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <mutex>
+#include <stdexcept>
+#include <string>
 #include <thread>
-#include <vector>
 
 #include "opts.hpp"
 #include "timer.hpp"
@@ -93,10 +93,7 @@ class futex {
   std::atomic_flag flag{ATOMIC_FLAG_INIT};
 
 public:
-  void lock() {
-    while (flag.test_and_set())
-      ;
-  }
+  void lock() { while (flag.test_and_set()); }
 
   bool try_lock() { return !flag.test_and_set(); }
   void unlock() { flag.clear(); }
@@ -108,8 +105,7 @@ class futex_yield {
 
 public:
   void lock() {
-    while (flag.test_and_set())
-      std::this_thread::yield();
+    while (flag.test_and_set()) std::this_thread::yield();
   }
 
   bool try_lock() { return !flag.test_and_set(); }
@@ -126,8 +122,7 @@ void threadfunc_m(int Wload) {
   for (;;) {
     std::lock_guard<std::mutex> L{M};
     MCnt += 1;
-    if (MCnt >= Wload)
-      break;
+    if (MCnt >= Wload) break;
   }
 }
 
@@ -136,8 +131,7 @@ void threadfunc_f(int Wload) {
   for (;;) {
     std::lock_guard<futex> L{F};
     MCnt += 1;
-    if (MCnt >= Wload)
-      break;
+    if (MCnt >= Wload) break;
   }
 }
 
@@ -146,8 +140,7 @@ void threadfunc_fy(int Wload) {
   for (;;) {
     std::lock_guard<futex_yield> L{FY};
     MCnt += 1;
-    if (MCnt >= Wload)
-      break;
+    if (MCnt >= Wload) break;
   }
 }
 
@@ -156,14 +149,15 @@ void threadfunc_fy(int Wload) {
 int main(int argc, char **argv) {
   auto Cfg = parse_cfg(argc, argv);
   switch (Cfg.Type) {
-  case 0:
-    measure_multithread(Cfg.NThrmin, Cfg.NThrmax, threadfunc_m, Cfg.Workload);
-    break;
-  case 1:
-    measure_multithread(Cfg.NThrmin, Cfg.NThrmax, threadfunc_f, Cfg.Workload);
-    break;
-  case 2:
-    measure_multithread(Cfg.NThrmin, Cfg.NThrmax, threadfunc_fy, Cfg.Workload);
-    break;
+    case 0:
+      measure_multithread(Cfg.NThrmin, Cfg.NThrmax, threadfunc_m, Cfg.Workload);
+      break;
+    case 1:
+      measure_multithread(Cfg.NThrmin, Cfg.NThrmax, threadfunc_f, Cfg.Workload);
+      break;
+    case 2:
+      measure_multithread(Cfg.NThrmin, Cfg.NThrmax, threadfunc_fy,
+                          Cfg.Workload);
+      break;
   }
 }

@@ -10,11 +10,14 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <concepts>
+#include <string>
+
+#include "gtest/gtest.h"
 
 namespace {
 
+// Preserve the layout of the teaching example’s requires expression.
 // clang-format off
 template <typename T>
 concept Strange = (sizeof(T) == 4) ||
@@ -23,8 +26,10 @@ concept Strange = (sizeof(T) == 4) ||
 // clang-format on
 
 template <typename T>
-requires Strange<T>
-int f(T t) { return 42; }
+  requires Strange<T>
+int f(T t) {
+  return 42;
+}
 
 } // namespace
 

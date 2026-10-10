@@ -10,9 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <ranges>
 #include <vector>
+#include "gtest/gtest.h"
 
 namespace ranges = std::ranges;
 namespace views = std::views;
@@ -21,7 +21,10 @@ struct S {
   int x, y;
 };
 
-template <typename T> T &as_lvalue(T &&t) noexcept { return t; }
+template <typename T>
+T &as_lvalue(T &&t) noexcept {
+  return t;
+}
 
 TEST(rngs, danglemessage) {
   std::vector<S> v{{1, 0}, {2, 0}, {4, 0}};

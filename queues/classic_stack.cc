@@ -11,8 +11,11 @@
 //----------------------------------------------------------------------------
 
 #include <condition_variable>
-#include <iostream>
+#include <functional>
+#include <iostream> // IWYU pragma: keep -- std::cout used in #if 0 debug dump below
 #include <mutex>
+#include <stdexcept>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -26,7 +29,8 @@ constexpr int BUFSZ = 10;
 std::vector<int> Consumed;
 std::mutex ConsMut;
 
-template <typename T> class ts_stack {
+template <typename T>
+class ts_stack {
   std::vector<T> Buffer; // fixed-size stack
   int NCur = -1;
   bool Done = false;
@@ -60,8 +64,7 @@ public:
   bool wait_and_pop(T &Data) {
     std::unique_lock<std::mutex> Lk{Mut};
     CondCons.wait(Lk, [this] { return !empty() || done(); });
-    if (empty())
-      return false;
+    if (empty()) return false;
     Data = Buffer[NCur];
     NCur -= 1;
     Lk.unlock();
@@ -93,8 +96,7 @@ void produce(ts_stack<int> &Q) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0)
-        break;
+      if (NTasks < 0) break;
       N = NTasks;
       NTasks -= 1;
     }
@@ -107,8 +109,7 @@ void consume(ts_stack<int> &Q) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0 && Q.is_empty_and_done())
-        break;
+      if (NTasks < 0 && Q.is_empty_and_done()) break;
     }
 
     int N;

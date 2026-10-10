@@ -10,15 +10,16 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <string>
+#include "gtest/gtest.h"
 
-template <typename T> struct NamedValue {
+template <typename T>
+struct NamedValue {
   T value;
   std::string name;
 };
 
-NamedValue(const char *, const char *)->NamedValue<std::string>;
+NamedValue(const char *, const char *) -> NamedValue<std::string>;
 
 TEST(classtempls, dedsimple) {
   NamedValue n{"hello", "world"}; // OK

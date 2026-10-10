@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 namespace {
@@ -20,11 +22,15 @@ int f(int x, int y, int z) { return x + y + z; }
 
 int f(int x, int y, int z, int v) { return x + y + z + v; }
 
-template <typename... T> int foo(T... args) {
+template <typename... T>
+int foo(T... args) {
   return f(f(args...) + f(args)...);
 }
 
-template <typename... T> int bar(T... args) { return f(f(args, args...)...); }
+template <typename... T>
+int bar(T... args) {
+  return f(f(args, args...)...);
+}
 
 } // namespace
 

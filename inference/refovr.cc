@@ -10,6 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+#include <utility>
+
 #include "gtest/gtest.h"
 
 int foo(int &p) { return 1; }

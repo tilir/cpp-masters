@@ -1,4 +1,5 @@
-name: C++ masters course pre-commit and post-push
+name: build-and-test
+
 on:
   push:
     branches:
@@ -6,26 +7,99 @@ on:
   pull_request:
     branches:
       - master
+
 jobs:
-  main:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [release, debug]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install common dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtest-dev google-mock libboost-dev libtbb-dev ninja-build ruby
+
+      - name: Install gcc-15
+        if: matrix.compiler == 'gcc'
+        run: |
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y g++-15
+
+      - name: Install clang-21
+        if: matrix.compiler == 'clang'
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 21
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.compiler }}-${{ matrix.build_type }}
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.compiler }}-${{ matrix.build_type }}
+
+      - name: Test
+        env:
+          CTEST_OUTPUT_ON_FAILURE: "1"
+        run: ctest --preset ${{ matrix.compiler }}-${{ matrix.build_type }} --timeout 60
+
+  format:
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
     steps:
-    - name: Install google test, boost and proper version of g++
-      run: sudo apt-get install libgtest-dev googletest google-mock libboost-dev g++-13
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    - name: CMake release config
-      run: cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-13 -DCMAKE_BUILD_TYPE=Release
-    - name: CMake release build
-      run: cmake --build build
-    - name: CMake release test
-      run: env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
-    - name: CMake debug config
-      run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-13 -DCMAKE_BUILD_TYPE=Release
-    - name: CMake debug build
-      run: cmake --build debug
-    - name: CMake debug test
-      run: env CTEST_OUTPUT_ON_FAILURE=1 cmake --build debug --target test
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install clang-format-21
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 21
+          sudo apt-get install -y clang-format-21 ruby
+
+      - name: Check formatting
+        run: ruby tools/format.rb --check
+
+  iwyu:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtest-dev google-mock libboost-dev libtbb-dev ninja-build ruby
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 21
+
+      - name: Build IWYU 0.25 against LLVM 21
+        run: |
+          sudo apt-get install -y llvm-21-dev libclang-21-dev
+          curl -fsSL https://include-what-you-use.org/downloads/include-what-you-use-0.25.src.tar.gz -o "$RUNNER_TEMP/iwyu.tar.gz"
+          tar -xzf "$RUNNER_TEMP/iwyu.tar.gz" -C "$RUNNER_TEMP"
+          cmake -G Ninja -S "$RUNNER_TEMP/include-what-you-use" -B "$RUNNER_TEMP/iwyu-build" -DCMAKE_PREFIX_PATH=/usr/lib/llvm-21 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$RUNNER_TEMP/iwyu"
+          cmake --build "$RUNNER_TEMP/iwyu-build" --parallel 2
+          cmake --install "$RUNNER_TEMP/iwyu-build"
+          echo "$RUNNER_TEMP/iwyu/bin" >> "$GITHUB_PATH"
+
+      - name: IWYU check
+        env:
+          IWYU_TOOL: iwyu_tool.py
+        run: ruby tools/iwyu.rb --check

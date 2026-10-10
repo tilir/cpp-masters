@@ -10,9 +10,9 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <ranges>
 #include <vector>
+#include "gtest/gtest.h"
 
 namespace views = std::views;
 

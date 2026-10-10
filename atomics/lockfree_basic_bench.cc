@@ -12,9 +12,13 @@
 
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <mutex>
+#include <stdexcept>
+#include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "opts.hpp"
@@ -68,8 +72,7 @@ Config parse_cfg(int argc, char **argv) {
     throw std::runtime_error("please specify max number of threads >= 1");
   if (PTime < 0)
     throw std::runtime_error("please specify production time >= 0");
-  if (CTime < 0)
-    throw std::runtime_error("please specify consuming time >= 0");
+  if (CTime < 0) throw std::runtime_error("please specify consuming time >= 0");
 
   Cfg.PTime = chrono::milliseconds(PTime);
   Cfg.CTime = chrono::milliseconds(CTime);
@@ -92,7 +95,8 @@ namespace {
 
 std::mutex CoutMutex;
 
-template <typename T> class lf_queue {
+template <typename T>
+class lf_queue {
   Config Cfg;
 
   // using unsigned to allow legal wrap around
@@ -111,14 +115,12 @@ public:
     if (Cfg.BufSize > (1 << 30))
       throw std::runtime_error("buffer size too large");
 
-    if (Cfg.BufSize < 2)
-      throw std::runtime_error("buffer size too small");
+    if (Cfg.BufSize < 2) throw std::runtime_error("buffer size too small");
 
     if ((Cfg.BufSize & (Cfg.BufSize - 1)) != 0)
       throw std::runtime_error("buffer size is not power of 2");
 
-    for (unsigned i = 0; i != Cfg.BufSize; ++i)
-      Buffer[i].Sequence.store(i);
+    for (unsigned i = 0; i != Cfg.BufSize; ++i) Buffer[i].Sequence.store(i);
 
     EnqueuePos.store(0);
     DequeuePos.store(0);
@@ -138,13 +140,11 @@ public:
 
       // queue is full we cannot enqueue and just return false
       // another option: queue moved forward all way round
-      if (Diff < 0)
-        return false;
+      if (Diff < 0) return false;
 
       // If its Sequence wasn't touched by other producers
       // check if we can increment the enqueue Position
-      if (Diff == 0)
-        Res = EnqueuePos.compare_exchange_weak(Pos, Pos + 1);
+      if (Diff == 0) Res = EnqueuePos.compare_exchange_weak(Pos, Pos + 1);
     }
 
     // write the item we want to enqueue and bump Sequence
@@ -166,13 +166,11 @@ public:
       auto Diff = static_cast<int>(Seq) - static_cast<int>(Pos + 1);
 
       // probably the queue is empty, then return false
-      if (Diff < 0)
-        return false;
+      if (Diff < 0) return false;
 
       // Check if its Sequence was changed by a producer and wasn't changed by
       // other consumers and if we can increment the dequeue Position
-      if (Diff == 0)
-        Res = DequeuePos.compare_exchange_weak(Pos, Pos + 1);
+      if (Diff == 0) Res = DequeuePos.compare_exchange_weak(Pos, Pos + 1);
     }
 
     // read the item and update for the next round of the buffer
@@ -191,27 +189,23 @@ void produce(lf_queue<int> &Q, Config Cfg) {
     int N = NTasks.load();
 
     // check if I need enter CAS loop at all
-    if (N < 0)
-      break;
+    if (N < 0) break;
 
     while (!NTasks.compare_exchange_weak(N, N - 1)) {
       // check if inside CAS loop other producers exhausted tasks
-      if (N < 0)
-        return;
+      if (N < 0) return;
       std::this_thread::yield();
     }
 
     std::this_thread::sleep_for(Cfg.PTime);
-    while (!Q.push(N))
-      std::this_thread::yield();
+    while (!Q.push(N)) std::this_thread::yield();
   }
 }
 
 void consume(lf_queue<int> &Q, Config Cfg) {
   for (;;) {
     int N = NTasks.load();
-    if (N < 0 && Q.is_empty())
-      break;
+    if (N < 0 && Q.is_empty()) break;
     bool Succ = Q.pop(N);
     if (Succ) {
       std::this_thread::sleep_for(Cfg.CTime);
@@ -239,11 +233,9 @@ int main(int argc, char **argv) try {
     for (int N = 0; N < NMAX; ++N)
       Consumers.emplace_back(consume, std::ref(Queue), Cfg);
 
-    for (auto &P : Producers)
-      P.join();
+    for (auto &P : Producers) P.join();
 
-    for (auto &C : Consumers)
-      C.join();
+    for (auto &C : Consumers) C.join();
 
     t.stop();
     std::cout << NMAX << " " << t.elapsed_ms() << std::endl;

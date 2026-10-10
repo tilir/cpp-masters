@@ -10,14 +10,17 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
+#include <stddef.h>
 #include <climits>
-#include <concepts>
+#include <string>
+#include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> struct my_numeric_limits;
-template <> struct my_numeric_limits<char> {
+template <typename T>
+struct my_numeric_limits;
+template <>
+struct my_numeric_limits<char> {
   static constexpr size_t max() { return CHAR_MAX; }
 };
 

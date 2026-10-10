@@ -11,14 +11,15 @@
 //
 //-----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 constexpr int djb2(char const *str) {
   int hash = 5381;
   int c = 0;
 
-  while ((c = *str++))
-    hash = ((hash << 5) + hash) + c;
+  while ((c = *str++)) hash = ((hash << 5) + hash) + c;
 
   return hash;
 }

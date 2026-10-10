@@ -10,8 +10,11 @@
 //
 //----------------------------------------------------------------------------
 
+#include <chrono>
+#include <functional>
 #include <iostream>
 #include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -77,9 +80,7 @@ TEST(threads, dining_lock) {
   for (int i = 0; i < numdiners; ++i) {
     threads[i] = std::thread(&Philosopher::dine, std::ref(diners[i]));
   }
-  for (auto &t : threads)
-    t.join();
+  for (auto &t : threads) t.join();
 
-  for (auto d : diners)
-    EXPECT_EQ(d.full(), numeats);
+  for (auto d : diners) EXPECT_EQ(d.full(), numeats);
 }

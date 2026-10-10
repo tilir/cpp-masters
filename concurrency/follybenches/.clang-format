@@ -1,0 +1,4 @@
+---
+# Standalone folly benchmarks, not part of the main build; do not reformat.
+DisableFormat: true
+...

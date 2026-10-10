@@ -10,7 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
-#include <iostream>
+#include <functional>
+#include <string>
 #include <thread>
 
 #include "gtest/gtest.h"

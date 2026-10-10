@@ -11,14 +11,12 @@
 //----------------------------------------------------------------------------
 
 #include <cstdio>
-#include <limits>
-#include <list>
-#include <memory>
+#include <iostream>
+#include <string>
 #include <vector>
 
-#include "memuse.hpp"
-#include "shortalloc.hpp"
 #include "gtest/gtest.h"
+#include "shortalloc.hpp"
 
 constexpr int BUFSZ = 200;
 

@@ -1,0 +1,11 @@
+---
+# Style derived from the dominant existing repo style: Google-like,
+# 2-space indent, attached braces, east const, right pointer alignment.
+# Check with clang-format-21 (pinned in CI).
+BasedOnStyle: Google
+AccessModifierOffset: -2
+SpacesBeforeTrailingComments: 1
+IncludeBlocks: Preserve
+DerivePointerAlignment: false
+PointerAlignment: Right
+...

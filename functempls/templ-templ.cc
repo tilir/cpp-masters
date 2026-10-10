@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 namespace {
@@ -19,14 +21,19 @@ int get_size(const Container<Element> &A) {
   return A.size();
 }
 
-template <typename T> struct MyCont {
+template <typename T>
+struct MyCont {
   int size() const { return 0; }
 };
 
 // no size function
-template <typename T> struct OtherCont {};
+template <typename T>
+struct OtherCont {};
 
-template <> int get_size<OtherCont, int>(const OtherCont<int> &A) { return 10; }
+template <>
+int get_size<OtherCont, int>(const OtherCont<int> &A) {
+  return 10;
+}
 
 } // namespace
 

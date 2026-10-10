@@ -10,14 +10,16 @@
 //
 //----------------------------------------------------------------------------
 
-#include <iostream>
+#include <stddef.h>
 #include <sstream>
+#include <string>
 
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename Derived> struct object_t {
+template <typename Derived>
+struct object_t {
   void draw(std::ostream &os, size_t pos) const {
     static_cast<const Derived *>(this)->draw(os, pos);
   }
@@ -34,7 +36,8 @@ struct int_t : public object_t<int_t> {
   }
 };
 
-template <typename T> void call_interface(object_t<T> &obj, std::ostream &os) {
+template <typename T>
+void call_interface(object_t<T> &obj, std::ostream &os) {
   obj.draw(os, 0);
 }
 

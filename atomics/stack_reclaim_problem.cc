@@ -32,7 +32,8 @@ namespace {
 std::vector<int> Consumed;
 std::mutex ConsMut;
 
-template <typename T> class lf_stack {
+template <typename T>
+class lf_stack {
   struct Node {
     Node *Next;
     T Data;
@@ -51,16 +52,13 @@ public:
 
     // We can see do-while pattern.
     // In this case I left while form to match slides.
-    if (!Old)
-      return false;
+    if (!Old) return false;
     while (!Head.compare_exchange_weak(Old, Old->Next)) {
-      if (!Old)
-        return false;
+      if (!Old) return false;
       std::this_thread::yield();
     }
 
-    if (!Old)
-      return false;
+    if (!Old) return false;
     Data = std::move(Old->Data);
 #ifndef ALLOW_LEAK
     delete Old;
@@ -78,13 +76,11 @@ void produce(lf_stack<int> &Q) {
     int N = NTasks.load();
 
     // check if I need enter CAS loop at all
-    if (N < 0)
-      break;
+    if (N < 0) break;
 
     while (!NTasks.compare_exchange_weak(N, N - 1)) {
       // check if inside CAS loop other producers exhausted tasks
-      if (N < 0)
-        return;
+      if (N < 0) return;
       std::this_thread::yield();
     }
     Q.push(N);
@@ -94,8 +90,7 @@ void produce(lf_stack<int> &Q) {
 void consume(lf_stack<int> &Q) {
   for (;;) {
     int N = NTasks.load();
-    if (N < 0 && Q.is_empty())
-      break;
+    if (N < 0 && Q.is_empty()) break;
     bool Succ = Q.pop(N);
     if (Succ) {
       // record what was consumed

@@ -10,16 +10,16 @@
 //
 //----------------------------------------------------------------------------
 
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <memory_resource>
-
+// Generic std::swap comes from <utility>; no exception_ptr overload is used.
+// IWYU pragma: no_include <exception>
+#include <string> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
+#include <utility> // Direct dependency for Clang 21/IWYU; the BUG variant is unchanged.
 #include "gtest/gtest.h"
 
 namespace {
 
-template <typename T> class UniquePointer {
+template <typename T>
+class UniquePointer {
   T *value;
 
 public:

@@ -10,16 +10,13 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <array>
 #include <boost/mpl/find.hpp>
-#include <boost/mpl/for_each.hpp>
-#include <boost/mpl/integral_c.hpp>
+#include <boost/mpl/integral_c_fwd.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/vector_c.hpp>
-#include <concepts>
 #include <string>
-#include <type_traits>
+#include "gtest/gtest.h"
 
 namespace mpl = boost::mpl;
 
@@ -28,11 +25,13 @@ struct TagEntity {
   std::string value;
 };
 
-template <typename CommonTags> struct FixMsg {
+template <typename CommonTags>
+struct FixMsg {
   enum { CommonTagsCount = mpl::size<CommonTags>::type::value };
 
   // convert tag to index in compile time
-  template <int Tag> struct index {
+  template <int Tag>
+  struct index {
     enum {
       value = mpl::find<CommonTags, mpl::integral_c<int, Tag>>::type::pos::value
     };
@@ -40,7 +39,8 @@ template <typename CommonTags> struct FixMsg {
                   "tag not found");
   };
 
-  template <int Tag> TagEntity &getTagEntity() {
+  template <int Tag>
+  TagEntity &getTagEntity() {
     int idx = index<Tag>::value;
     return commonTags_[idx];
   }

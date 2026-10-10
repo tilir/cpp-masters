@@ -16,9 +16,12 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <functional> // Required directly by Clang 21/IWYU; teaching behavior is unchanged.
 #include <iostream>
 #include <mutex>
-#include <queue>
+#include <queue> // IWYU pragma: keep -- preserve the original intentional teaching example.
+#include <stdexcept> // Required directly by Clang 21/IWYU; teaching behavior is unchanged.
+#include <string> // Required directly by Clang 21/IWYU; teaching behavior is unchanged.
 #include <thread>
 #include <vector>
 
@@ -78,8 +81,7 @@ Config parse_cfg(int argc, char **argv) {
     throw std::runtime_error("please specify number of consumers >= 1");
   if (PTime < 0)
     throw std::runtime_error("please specify production time >= 0");
-  if (CTime < 0)
-    throw std::runtime_error("please specify consuming time >= 0");
+  if (CTime < 0) throw std::runtime_error("please specify consuming time >= 0");
 
   Cfg.PTime = chrono::milliseconds(PTime);
   Cfg.CTime = chrono::milliseconds(CTime);
@@ -101,7 +103,8 @@ Config parse_cfg(int argc, char **argv) {
 
 namespace {
 
-template <typename T> class ts_stack {
+template <typename T>
+class ts_stack {
   Config Cfg;
 
   // fixed-size queue
@@ -123,8 +126,7 @@ public:
     CondProd.wait(Lk, [this] { return !full(); });
     NCur += 1;
     Buffer[NCur] = Data;
-    if (Cfg.Verbose)
-      std::cout << "+";
+    if (Cfg.Verbose) std::cout << "+";
     CondCons.notify_one();
   }
 
@@ -133,8 +135,7 @@ public:
     CondCons.wait(Lk, [this] { return !empty(); });
     Data = Buffer[NCur];
     NCur -= 1;
-    if (Cfg.Verbose)
-      std::cout << "-";
+    if (Cfg.Verbose) std::cout << "-";
     CondProd.notify_one(); // wake up producer
   }
 };
@@ -148,8 +149,7 @@ void produce(ts_stack<int> &Q, Config Cfg) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0)
-        break;
+      if (NTasks < 0) break;
       N = NTasks;
       NTasks -= 1;
     }
@@ -166,8 +166,7 @@ void consume(ts_stack<int> &Q, Config Cfg) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0)
-        break;
+      if (NTasks < 0) break;
     }
 
     // pop, then spend some time consuming
@@ -195,11 +194,9 @@ int main(int argc, char **argv) try {
   for (int N = 0; N < Cfg.NCons; ++N)
     Consumers.emplace_back(consume, std::ref(Queue), Cfg);
 
-  for (auto &P : Producers)
-    P.join();
+  for (auto &P : Producers) P.join();
 
-  for (auto &C : Consumers)
-    C.join();
+  for (auto &C : Consumers) C.join();
 
   t.stop();
   std::cout << "Done: "

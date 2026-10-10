@@ -12,20 +12,22 @@
 
 #include <string>
 
-#include <boost/type_index.hpp>
 #include <gtest/gtest.h>
+#include <boost/type_index.hpp>
 
 namespace {
 
 #define CT_ERROR 0
 
-template <typename T> std::string deduce(T (*p)(T)) {
+template <typename T>
+std::string deduce(T (*p)(T)) {
   return boost::typeindex::type_id_with_cvr<T>().pretty_name();
 }
 
 int bar(int x) { return x; }
 
-template <typename T, int N> std::string deduce2(T const (&)[N]) {
+template <typename T, int N>
+std::string deduce2(T const (&)[N]) {
   return boost::typeindex::type_id_with_cvr<T>().pretty_name() + " " +
          std::to_string(N);
 }

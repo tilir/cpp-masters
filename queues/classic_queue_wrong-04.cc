@@ -32,7 +32,8 @@ namespace {
 constexpr int NTASKS = 1000;
 constexpr int BUFSZ = 100;
 
-template <typename T> class ts_queue {
+template <typename T>
+class ts_queue {
   std::vector<T> Buffer; // fixed-size queue
   int NCur = -1;
   int NRel = 0; // start position
@@ -59,8 +60,7 @@ public:
   bool wait_and_pop(T &Data) {
     std::unique_lock<std::mutex> Lk{Mut};
     CondCons.wait(Lk, [this] { return !empty() || done(); });
-    if (empty())
-      return false;
+    if (empty()) return false;
     Data = Buffer[NRel % Buffer.size()];
     NRel = (NRel + 1) % Buffer.size();
     NCur -= 1;
@@ -94,8 +94,7 @@ void produce(ts_queue<int> &Q) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0)
-        break;
+      if (NTasks < 0) break;
       N = NTasks;
       NTasks -= 1;
     }
@@ -108,8 +107,7 @@ void consume(ts_queue<int> &Q) {
     // critical section
     {
       std::lock_guard<std::mutex> Lk{TaskMut};
-      if (NTasks < 0 && Q.is_empty_and_done())
-        break;
+      if (NTasks < 0 && Q.is_empty_and_done()) break;
     }
 
     int N;

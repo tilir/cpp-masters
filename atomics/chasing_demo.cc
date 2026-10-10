@@ -13,8 +13,7 @@ void chase() {
   for (;;) {
     a = a + 1;
     b = b + 1;
-    if (a > MAXCOUNT)
-      break;
+    if (a > MAXCOUNT) break;
   }
 }
 
@@ -27,8 +26,7 @@ void check() {
       wrongcount += 1;
       break;
     }
-    if (aval > MAXCOUNT)
-      break;
+    if (aval > MAXCOUNT) break;
   }
 }
 
@@ -38,7 +36,6 @@ int main() {
   t1.join();
   t2.join();
   auto w = wrongcount.load();
-  if (w != 0)
-    std::cout << "Wrong " << w << "times\n";
+  if (w != 0) std::cout << "Wrong " << w << "times\n";
   return w;
 }

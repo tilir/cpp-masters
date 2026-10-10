@@ -10,29 +10,29 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <concepts>
+#include "gtest/gtest.h"
 
 namespace {
 
 // no recursive definitions
 
 template <bool b, bool... bs>
-concept AllTrueRec = b &&((sizeof...(bs) == 0) ? true : AllTrueRec<bs...>);
+concept AllTrueRec = b && ((sizeof...(bs) == 0) ? true : AllTrueRec<bs...>);
 
 template <bool b1, bool b2, bool b3>
-requires AllTrueRec<b1, b2, b3>
-int foo() { return 1; }
+  requires AllTrueRec<b1, b2, b3>
+int foo() {
+  return 1;
+}
 
 // no associated constraints to concepts
 
 template <typename T>
-concept Inner = requires {
-  typename T::inner;
-};
+concept Inner = requires { typename T::inner; };
 
 template <typename T>
-requires Inner<T>
+  requires Inner<T>
 concept Outer = requires { typename T::outer; };
 
 } // namespace

@@ -14,12 +14,11 @@
 //----------------------------------------------------------------------------
 
 #include <atomic>
-#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <mutex>
-#include <thread>
-#include <vector>
+#include <stdexcept>
+#include <string>
 
 #include "opts.hpp"
 #include "timer.hpp"
@@ -90,8 +89,7 @@ void threadfunc_atomic(int Wload) {
   ACnt = 0;
   for (;;) {
     ACnt += 1;
-    if (ACnt >= Wload)
-      break;
+    if (ACnt >= Wload) break;
   }
 }
 
@@ -103,8 +101,7 @@ void threadfunc(int Wload) {
   for (;;) {
     std::lock_guard<std::mutex> L{M};
     MCnt += 1;
-    if (MCnt >= Wload)
-      break;
+    if (MCnt >= Wload) break;
   }
 }
 

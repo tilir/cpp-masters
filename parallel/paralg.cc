@@ -14,6 +14,7 @@
 #include <execution>
 #include <iterator>
 #include <numeric>
+#include <string>
 #include <vector>
 
 #include "gtest/gtest.h"

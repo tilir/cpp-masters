@@ -52,16 +52,17 @@ struct Shared {
 constexpr int nget = 1000000;
 constexpr int nmod = 1000000;
 
-template <typename T> void modifier(T &t) {
+template <typename T>
+void modifier(T &t) {
   for (int i = 0; i < nmod; i += 1) {
-    if ((i % 1000) != 0)
-      continue;
+    if ((i % 1000) != 0) continue;
     t.modify(i);
     noopt(i);
   }
 }
 
-template <typename T> void getter(const T &t) {
+template <typename T>
+void getter(const T &t) {
   for (int i = 0; i < nget; i += 1) {
     int k = t.get();
     noopt(k);

@@ -11,8 +11,11 @@
 //----------------------------------------------------------------------------
 
 #include <coroutine>
+#include <exception>
+#include <iostream>
 #include <list>
 #include <mutex>
+#include <string>
 #include <thread>
 
 #include "gtest/gtest.h"
@@ -89,8 +92,7 @@ public:
       set_ = true;
       toresume.splice(toresume.begin(), lst_);
     }
-    for (auto s : toresume)
-      s.coro_.resume();
+    for (auto s : toresume) s.coro_.resume();
   }
 
   void reset() noexcept { set_ = false; }

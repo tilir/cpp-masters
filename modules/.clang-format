@@ -1,0 +1,5 @@
+---
+# modules/ is driven by runme.sh scripts, outside the CMake build;
+# .cppm and module examples are not reformatted.
+DisableFormat: true
+...

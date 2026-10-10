@@ -10,14 +10,16 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <string>
+#include "gtest/gtest.h"
 
 namespace {
 
 template <typename T, typename U>
-requires requires(T t, U u) { t == u; }
-bool check_eq(T &&lhs, U &&rhs) { return (lhs == rhs); }
+  requires requires(T t, U u) { t == u; }
+bool check_eq(T &&lhs, U &&rhs) {
+  return (lhs == rhs);
+}
 
 } // namespace
 

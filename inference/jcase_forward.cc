@@ -12,9 +12,11 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-
 #include <iostream>
+#include <string>
+#include <utility>
+
+#include "gtest/gtest.h"
 
 struct MyString {
   MyString() {}

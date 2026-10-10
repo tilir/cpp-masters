@@ -10,6 +10,8 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 namespace {
@@ -18,7 +20,8 @@ int g = 0;
 
 void bar(int x) { g += x; }
 
-template <typename... T> void foo(T... ts) {
+template <typename... T>
+void foo(T... ts) {
   using R = int[sizeof...(ts)];
   (void)R{(bar(ts), 0)...};
 }

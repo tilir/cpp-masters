@@ -10,20 +10,24 @@
 //
 //----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
 #include <type_traits>
+#include "gtest/gtest.h"
 
 namespace {
 
 struct Capture {
-  template <typename T, typename U> static auto func(T x, U y) {
+  template <typename T, typename U>
+  static auto func(T x, U y) {
     return x + y;
   };
 
   template <typename T, typename U>
   using func_t = std::decay_t<decltype(func<T, U>)>;
 
-  template <typename T, typename U> operator func_t<T, U>() { return func; }
+  template <typename T, typename U>
+  operator func_t<T, U>() {
+    return func;
+  }
 };
 
 } // namespace

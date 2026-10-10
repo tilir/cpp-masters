@@ -11,7 +11,8 @@
 //----------------------------------------------------------------------------
 
 #include <coroutine>
-#include <list>
+#include <exception>
+#include <string>
 
 #include "gtest/gtest.h"
 
@@ -83,8 +84,12 @@ public:
     auto cur_ = top_;
     top_ = nullptr;
     while (cur_) {
+      // Read next_ BEFORE resume: a resumed coroutine may co_await again and
+      // clang (unlike gcc) may reuse the coroutine frame slot of this awaiter
+      // for the new one, overwriting next_ while we iterate.
+      auto *next = cur_->next_;
       cur_->coro_.resume();
-      cur_ = cur_->next_;
+      cur_ = next;
     }
   }
 

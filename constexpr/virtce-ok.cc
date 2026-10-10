@@ -10,8 +10,8 @@
 //
 //-----------------------------------------------------------------------------
 
+#include <string>
 #include "gtest/gtest.h"
-#include <array>
 
 struct Base {
   constexpr Base() = default;
@@ -28,8 +28,7 @@ constexpr int foo() {
   const Derived d;
   int sum = 0;
   const Base *bases[] = {&b, &d};
-  for (auto pb : bases)
-    sum += pb->data();
+  for (auto pb : bases) sum += pb->data();
   return sum;
 }
 

@@ -10,11 +10,19 @@
 //
 //----------------------------------------------------------------------------
 
+#include <string>
+
 #include "gtest/gtest.h"
 
-template <typename... Ts> auto sum_all(Ts... args) { return (... + args); }
+template <typename... Ts>
+auto sum_all(Ts... args) {
+  return (... + args);
+}
 
-template <typename... Ts> auto and_all(Ts... args) { return (... && args); }
+template <typename... Ts>
+auto and_all(Ts... args) {
+  return (... && args);
+}
 
 TEST(variadic, voidpack) {
 #if 0

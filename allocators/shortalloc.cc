@@ -10,15 +10,12 @@
 //
 //----------------------------------------------------------------------------
 
-#include <cstdio>
-#include <limits>
-#include <list>
-#include <memory>
+#include <string>
 #include <vector>
 
+#include "gtest/gtest.h"
 #include "memuse.hpp"
 #include "shortalloc.hpp"
-#include "gtest/gtest.h"
 
 constexpr int VSZ = 10;
 constexpr int BUFSZ = 200;
@@ -44,6 +41,5 @@ TEST(allocs, shortalloc) {
   EXPECT_EQ(a.used() >= VSZ * sizeof(int), true);
 
   // Yes, the correct values are actually in the vector
-  for (int i = 0; i < VSZ; ++i)
-    EXPECT_EQ(v[i], i);
+  for (int i = 0; i < VSZ; ++i) EXPECT_EQ(v[i], i);
 }

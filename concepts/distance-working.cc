@@ -10,9 +10,10 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-#include <concepts>
 #include <iterator>
+#include <string>
+#include <type_traits>
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -41,7 +42,8 @@ concept Incrementable = requires(I it) {
 };
 
 template <typename I>
-concept ForwardIterator = InputIterator<I> && Incrementable<I> &&
+concept ForwardIterator =
+    InputIterator<I> && Incrementable<I> &&
     DerivedFrom<typename I::iterator_category, std::forward_iterator_tag>;
 
 template <typename I>
@@ -51,7 +53,8 @@ concept Decrementable = requires(I it) {
 };
 
 template <typename I>
-concept BidirectionalIterator = ForwardIterator<I> && Decrementable<I> &&
+concept BidirectionalIterator =
+    ForwardIterator<I> && Decrementable<I> &&
     DerivedFrom<typename I::iterator_category, std::bidirectional_iterator_tag>;
 
 template <typename I>
@@ -61,7 +64,8 @@ concept RandomAccess = requires(I it, typename I::difference_type n) {
 };
 
 template <typename I>
-concept RandomAccessIterator = BidirectionalIterator<I> && RandomAccess<I> &&
+concept RandomAccessIterator =
+    BidirectionalIterator<I> && RandomAccess<I> &&
     DerivedFrom<typename I::iterator_category, std::random_access_iterator_tag>;
 
 template <InputIterator Iter>
@@ -112,8 +116,7 @@ public:
   }
 
   junk_iter_t &operator+=(int n) {
-    for (int i = 0; i < n; ++i)
-      ++(*this);
+    for (int i = 0; i < n; ++i) ++(*this);
     return *this;
   }
 
@@ -129,8 +132,7 @@ public:
   }
 
   junk_iter_t &operator-=(int n) {
-    for (int i = 0; i < n; ++i)
-      --(*this);
+    for (int i = 0; i < n; ++i) --(*this);
     return *this;
   }
 

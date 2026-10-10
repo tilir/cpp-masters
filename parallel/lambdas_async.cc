@@ -10,20 +10,19 @@
 //
 //----------------------------------------------------------------------------
 
+#include <exception>
 #include <future>
-#include <iostream>
-#include <thread>
-#include <utility>
+#include <stdexcept>
+#include <string>
 
 #include "gtest/gtest.h"
 
 namespace {
 auto divi = [](auto a, auto b) {
-  if (b == 0)
-    throw std::overflow_error("Divide by zero");
+  if (b == 0) throw std::overflow_error("Divide by zero");
   return a / b;
 };
-}
+} // namespace
 
 TEST(parallel, lambdas_async) {
   std::future<int> f = std::async(divi, 30, 5);

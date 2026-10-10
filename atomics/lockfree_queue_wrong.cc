@@ -32,17 +32,16 @@ std::vector<int> Consumed;
 std::mutex ConsMut;
 std::mutex LogMut;
 
-template <typename T> class lf_queue {
+template <typename T>
+class lf_queue {
   std::vector<T> Buffer;
   std::atomic<unsigned> EnqueuePos = 0, DequeuePos = 0;
 
 public:
   lf_queue(unsigned BufSize) : Buffer(BufSize) {
-    if (BufSize > (1 << 30))
-      throw std::runtime_error("buffer size too large");
+    if (BufSize > (1 << 30)) throw std::runtime_error("buffer size too large");
 
-    if (BufSize < 2)
-      throw std::runtime_error("buffer size too small");
+    if (BufSize < 2) throw std::runtime_error("buffer size too small");
 
     if ((BufSize & (BufSize - 1)) != 0)
       throw std::runtime_error("buffer size is not power of 2");
@@ -68,8 +67,7 @@ public:
 
       // queue is full (enqueue reached dequeue) and we cannot enqueue and just
       // return false
-      if (is_full())
-        return false;
+      if (is_full()) return false;
 
       // check if we can increment the enqueue Position
       Res = EnqueuePos.compare_exchange_weak(Pos, Pos + 1);
@@ -99,8 +97,7 @@ public:
 #endif
 
       // probably the queue is empty, then return false
-      if (is_empty())
-        return false;
+      if (is_empty()) return false;
 
       // Check if we can increment the dequeue Position
       Res = DequeuePos.compare_exchange_weak(Pos, Pos + 1);
@@ -131,25 +128,21 @@ void produce(lf_queue<int> &Q) {
     int N = NTasks.load();
 
     // check if I need enter CAS loop at all
-    if (N < 0)
-      break;
+    if (N < 0) break;
 
     while (!NTasks.compare_exchange_weak(N, N - 1)) {
       // check if inside CAS loop other producers exhausted tasks
-      if (N < 0)
-        return;
+      if (N < 0) return;
       std::this_thread::yield();
     }
-    while (!Q.push(N))
-      std::this_thread::yield();
+    while (!Q.push(N)) std::this_thread::yield();
   }
 }
 
 void consume(lf_queue<int> &Q) {
   for (;;) {
     int N = NTasks.load();
-    if (N < 0 && Q.is_empty())
-      break;
+    if (N < 0 && Q.is_empty()) break;
     bool Succ = Q.pop(N);
     if (Succ) {
       // record what was consumed
