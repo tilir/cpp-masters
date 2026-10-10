@@ -83,7 +83,7 @@ public:
   template <typename T>
   void operator()(T *ptr) {
     std::pmr::polymorphic_allocator<T> talloc(alloc_);
-    talloc.destroy(ptr);
+    std::destroy_at(ptr);
     talloc.deallocate(ptr, 1);
   }
 };
